@@ -1,0 +1,4 @@
+# ne objavljuje se: testovi i snimke zaslona, sistemske datoteke
+qa/
+.DS_Store
+zvuk-izvor/

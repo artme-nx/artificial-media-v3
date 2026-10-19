@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Artificial Media</title>
+<meta name="description" content="Artificial Media">
+<meta name="theme-color" content="#ECE8DF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/ampuni-font.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Crna traka: pojavi se tek kad se dođe do reelova. ART i ME crveno, ostalo bijelo. -->
+<header class="bar" id="bar">
+  <a class="bar-logo" href="#top" aria-label="Artificial Media, back to top"><span class="r">ART</span>IFICIAL <span class="r">ME</span>DIA</a>
+</header>
+
+<main>
+  <!-- HERO: video se vidi samo kroz slova ARTIFICIAL / MEDIA. Na scroll slova rastu (zum u puno slovo D) dok video ne ispuni ekran. -->
+  <section class="hero has-cards" id="top" aria-label="Artificial Media">
+    <div class="hero-stage">
+      <!-- PRIVREMENI VIDEO: zamijeni video/hero.mp4 (i video/hero-poster.jpg) pravim videom istog imena. -->
+      <video class="hero-video" src="video/hero.mp4" poster="video/hero-poster.jpg" autoplay muted loop playsinline preload="auto"></video>
+      <svg class="cover" id="cover" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <!-- papir: boja pozadine + zrno, isto kao pozadina stranice -->
+          <pattern id="paper" patternUnits="userSpaceOnUse" width="256" height="256">
+            <rect class="paper-base" width="256" height="256"/>
+            <image href="img/paper.png" width="256" height="256"/>
+          </pattern>
+          <mask id="holes" maskUnits="userSpaceOnUse" x="0" y="0">
+            <rect id="mask-rect" x="0" y="0" fill="#fff"/>
+            <g id="letters" fill="#000"></g>
+          </mask>
+        </defs>
+        <rect id="cover-rect" class="cover-rect" x="0" y="0" fill="url(#paper)" mask="url(#holes)"/>
+      </svg>
+      <!-- DRUGI SLIDE (Kristian, 19. 10. 2026.): nakon zuma u slovo D tri videa se dižu jedan za drugim i slažu kao karte.
+           Prvi preko cijelog ekrana s rečenicom u gornjoj trećini, drugi stane od druge trećine, treći u donjoj trećini.
+           PRIVREMENI VIDEI: zamijeni video/cards/card-1.mp4, card-2.mp4 i card-3.mp4 (i .jpg) pravim videima istog imena. -->
+      <div class="cards" id="cards">
+        <div class="card c1"><video class="card-v" src="video/cards/card-1.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
+        <div class="card c2"><video class="card-v" src="video/cards/card-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
+        <div class="card c3"><video class="card-v" src="video/cards/card-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p><p class="cards-go" id="cards-go" aria-hidden="true">SCROLL</p></div>
+      </div>
+      <h1 class="sr-only">Artificial Media</h1>
+      <p class="hint" id="hint" aria-hidden="true">SCROLL</p>
+    </div>
+  </section>
+
+  <!-- ISKLJUČENO (Kristian, 19. 10. 2026.): slide sa scenarijem zamijenile su tri karte u heroju. Kod je ostao;
+       povratak: makni "hidden" ovdje, u js/main.js stavi SCREENPLAY = true i vrati js/typewriter-sounds.js dolje. -->
+  <!-- PETLJA: ME, ART, AI, pa ARTIFICIAL MEDIA; ispod se tipka kao filmski scenarij. Tekst: Kristian, 13. 10. 2026. (u js/main.js, SCRIPT). -->
+  <section class="loop" id="loop" aria-labelledby="loop-title" hidden>
+    <div class="loop-stage" id="loop-stage" data-beat="0">
+      <h2 class="sr-only" id="loop-title">Me. Art. AI. Artificial Media: where art meets intelligence.</h2>
+      <p class="name" aria-hidden="true"><span class="p art">ART</span><span class="p tool">IFICI</span><span class="p ai">A</span><span class="p tool">L</span><br class="m"> <span class="p me">ME</span><span class="p tool">D</span><span class="p ai">I</span><span class="p tool">A</span></p>
+      <div class="script" id="script" aria-hidden="true"></div>
+      <div class="sr-only" id="script-text"></div>
+    </div>
+  </section>
+
+  <!-- REELOVI: nakon papira rez na crno. Pozornica preko cijelog ekrana; monitor mijenja veličinu po formatu
+       (Kristian, 14. 10. 2026.): 21:9 od ruba do ruba, 16:9 skoro preko cijelog ekrana, 9:16 od vrha do dna.
+       Dolje je ploča kao na kameri: tipke formata i klipovi. Radovi se upisuju u js/reels-data.js. -->
+  <section class="reels" id="reels" aria-labelledby="reels-title">
+    <div class="reels-in">
+      <header class="reels-head">
+        <h2 class="reels-title" id="reels-title"><span class="rt-w"><span>REELS</span></span><span class="rt-n" id="reels-count" aria-hidden="true"></span></h2>
+        <p class="reels-note">Client work and spec work, always labeled.</p>
+      </header>
+    </div>
+    <div class="stage" id="stage">
+      <div class="monitor" id="monitor">
+        <div class="screen" id="screen">
+          <video class="v" muted playsinline preload="metadata" aria-hidden="true"></video>
+          <video class="v" muted playsinline preload="metadata" aria-hidden="true"></video>
+        </div>
+        <div class="frame" aria-hidden="true"><span class="vf tl"></span><span class="vf tr"></span><span class="vf bl"></span><span class="vf br"></span></div>
+        <div class="hud hud-tl" aria-hidden="true"><span class="rec"><i></i>REC</span><span class="tc" id="tc">00:00:00:00</span></div>
+        <div class="hud hud-tr" aria-hidden="true"><span id="m-ratio">16:9</span><span class="m-count" id="m-count">01/01</span></div>
+        <div class="prog" aria-hidden="true"><i id="m-prog"></i></div>
+        <!-- strelice: prethodni i sljedeći klip istog formata (i tipke ← →, na mobitelu povlačenje prstom) -->
+        <button class="mnav mnav-prev" id="m-prev" type="button" aria-label="Previous clip"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10.5 2.5 5 8l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        <button class="mnav mnav-next" id="m-next" type="button" aria-label="Next clip"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M5.5 2.5 11 8l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        <button class="watch" id="watch" type="button" aria-label="Watch reel full screen"><span><svg viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M0 0v14l12-7z" fill="currentColor"/></svg>Watch</span></button>
+      </div>
+      <!-- Ploča kao na filmskoj kameri: lijevo tipke formata (21:9 CINEMA, 16:9 COMMERCIAL, 9:16 SOCIAL MEDIA), desno klipovi tog formata. -->
+      <div class="deck" id="deck">
+        <div class="formats" id="formats" role="group" aria-label="Format">
+          <span class="fmt-cap" aria-hidden="true">Select format</span>
+          <div class="fmt-keys">
+            <button type="button" class="fk" data-f="21:9" aria-pressed="false" aria-label="21:9 Cinema"><span class="fk-ic" style="width:30px;height:12.9px"></span><span class="fk-t"><b>21:9</b><small>Cinema</small></span><i class="fk-led"></i><span class="fk-n"></span></button>
+            <button type="button" class="fk" data-f="16:9" aria-pressed="false" aria-label="16:9 Commercial"><span class="fk-ic" style="width:26px;height:14.6px"></span><span class="fk-t"><b>16:9</b><small>Commercial</small></span><i class="fk-led"></i><span class="fk-n"></span></button>
+            <button type="button" class="fk" data-f="9:16" aria-pressed="false" aria-label="9:16 Social media"><span class="fk-ic" style="width:11.8px;height:21px"></span><span class="fk-t"><b>9:16</b><small>Social media</small></span><i class="fk-led"></i><span class="fk-n"></span></button>
+          </div>
+        </div>
+        <div class="clips" id="clips">
+          <span class="fmt-cap" aria-hidden="true">Select clip</span>
+          <div class="clip-deck">
+            <div class="clip-info" aria-live="polite"><b id="ci-n">01<i>/01</i></b><span class="ci-text"><span id="ci-t"></span><small id="ci-m"></small></span></div>
+            <ol class="reel-list" id="reel-list" aria-label="Clips"></ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLJEDEĆE: objašnjenje (Kristianov raspored: hero → objašnjenje → reelovi → objašnjenje; sadržaj se tek dogovara). -->
+  <section class="next" id="next" aria-label="Next">
+    <p class="todo">Ovdje dolazi objašnjenje · sljedeći korak</p>
+  </section>
+</main>
+
+<!-- Reel preko cijelog ekrana, sa zvukom (otvara se klikom na monitor). -->
+<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="pl-title" hidden>
+  <div class="pl-top">
+    <span class="pl-no" id="pl-no">01 / 06</span>
+    <span class="pl-title" id="pl-title"></span>
+    <button class="pl-x" id="pl-close" type="button">Close<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6"/></svg></button>
+  </div>
+  <div class="pl-stage" id="pl-stage"><video id="pl-video" playsinline preload="auto"></video></div>
+  <div class="pl-bar">
+    <button class="pl-btn" id="pl-play" type="button" aria-label="Pause"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path class="i-pause" d="M2 1h3.5v12H2zM8.5 1H12v12H8.5z" fill="currentColor"/><path class="i-play" d="M2 0v14l12-7z" fill="currentColor"/></svg></button>
+    <button class="pl-btn" id="pl-prev" type="button" aria-label="Previous reel"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M2 1h2v12H2zM13 1v12L5 7z" fill="currentColor"/></svg></button>
+    <button class="pl-btn" id="pl-next" type="button" aria-label="Next reel"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M10 1h2v12h-2zM1 1v12l8-6z" fill="currentColor"/></svg></button>
+    <div class="pl-seek" id="pl-seek" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pl-fill"></i></div>
+    <span class="pl-time" id="pl-time">0:00 / 0:00</span>
+    <button class="pl-btn pl-mute" id="pl-mute" type="button" aria-pressed="false">Sound<span>ON</span></button>
+  </div>
+</div>
+
+<!-- Zvuk: preglednik pusti zvuk tek nakon klika. Uključuje zvuk videa i zvuk pisaćeg stroja. -->
+<button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Sound">SOUND <span>OFF</span></button>
+
+
+<script src="js/logo-data.js"></script>
+<!-- <script src="js/typewriter-sounds.js"></script>  zvuk pisaćeg stroja: samo uz slide sa scenarijem -->
+<script src="js/main.js"></script>
+<script src="js/reels-data.js"></script>
+<script src="js/reels.js"></script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+/* Artificial Media v3 · prototip (13. 10. 2026.)
+   Pismo: AM Puni (brand/05-logo/runda9-font). Crvena: REC crvena iz dosadašnjih tokena (#E23B2E). */
+/* @font-face za AM Puni je u css/ampuni-font.css (generirano, pismo ugrađeno). */
+:root {
+  --bg: #ECE8DF;          /* papir za scenarij: topla, nježno siva bijela (Kristian, 13. 10. 2026.) */
+  --paper: url("../img/paper.png");   /* zrno papira (tools/make_paper.py) */
+  --ink: #1D1B18;         /* tinta pisaćeg stroja: toplo crna */
+  --red: #E23B2E;         /* REC crvena: ART i ME */
+  --red-dim: rgba(226, 59, 46, .25);
+  --ghost: rgba(29, 27, 24, .09);
+  --bar: #0A0A0A;
+  --bar-ink: #F4F3EF;
+  --mute: #6F6A60;
+  --bar-h: 56px;
+  --script: "Courier Prime", "Courier New", Courier, monospace;
+  --ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;   /* moderno pismo za reelove i sučelje */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; cursor: default; scrollbar-gutter: stable; }   /* strelica i iznad teksta; linkovi i gumbi imaju ruku */
+html.locked { overflow: hidden; overscroll-behavior: none; }   /* tijek se ne može preskočiti (js/main.js, Flow) */
+body { margin: 0; background: var(--bg) var(--paper) repeat; background-size: 256px 256px; color: var(--ink); font-family: var(--script); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- crna traka ---------- */
+.bar {
+  position: fixed; inset: 0 0 auto 0; height: var(--bar-h); z-index: 20;
+  display: flex; align-items: center; padding: 0 24px;
+  background: var(--bar);
+  transform: translateY(-101%); visibility: hidden;   /* skrivena traka ne smije ostaviti ni crticu na vrhu (mobitel) */
+  transition: transform .55s cubic-bezier(.2, .7, .2, 1), visibility 0s linear .55s;
+}
+.bar.on { transform: none; visibility: visible; transition: transform .55s cubic-bezier(.2, .7, .2, 1); }
+.bar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(244, 243, 239, .08); }   /* traka nad crnim reelovima */
+.bar-logo {
+  font-family: "AM Puni"; font-size: 26px; line-height: 1; color: var(--bar-ink);
+  text-decoration: none; white-space: nowrap; padding-top: 2px;
+}
+.bar-logo .r { color: var(--red); }
+.bar-logo:focus-visible { outline: 2px solid var(--red); outline-offset: 6px; }
+
+/* ---------- hero ---------- */
+.hero { position: relative; height: 320vh; }
+.hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg) var(--paper) repeat; background-size: 256px 256px; }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cover { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.paper-base { fill: var(--bg); }
+.hint {
+  cursor: pointer;
+  position: absolute; left: 50%; bottom: 26px; margin: 0; transform: translateX(-50%);
+  font: 12px/1 var(--script); letter-spacing: .28em; color: var(--mute); transition: opacity .3s;
+}
+
+/* ---------- drugi slide: tri karte s videom (Kristian, 19. 10. 2026.) ----------
+   Karte su u pozornici heroja, iznad pokrova. Svaka se diže odozdo (js/main.js, renderCards) i stane:
+   prva na vrhu (cijeli ekran), druga od druge trećine, treća u donjoj trećini. Rečenica je u gornjem dijelu karte,
+   pa na kraju svaka stoji u svojoj trećini ekrana. */
+.hero.has-cards { height: 620vh; height: 620svh; }   /* 220 za zum u slovo D + 3 × 100 za karte + 100 pozornica */
+.cards { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+.hero:not(.has-cards) .cards { display: none; }
+html.cards-dark { background: #0A0A0A; }
+.card {
+  position: absolute; left: 0; right: 0; top: 0; overflow: hidden; background: #0A0A0A;
+  transform: translateY(101%); visibility: hidden; will-change: transform;
+  box-shadow: 0 -18px 50px rgba(0, 0, 0, .5);
+}
+.card.c1 { height: 100%; --band: 33.334%; }
+.card.c2 { height: 66.667%; --band: 50%; }
+.card.c3 { height: 33.334%; --band: 100%; }
+.card-v { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.card::before {                                                      /* blago zatamnjenje iza rečenice */
+  content: ""; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: var(--band);
+  background: linear-gradient(180deg, rgba(8, 8, 8, .5) 0%, rgba(8, 8, 8, .22) 75%, rgba(8, 8, 8, 0) 100%);
+}
+.card-t {
+  position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: var(--band); margin: 0;
+  display: flex; align-items: center; padding: 0 clamp(20px, 4vw, 64px);
+  font: 400 clamp(34px, 5.6vw, 108px)/.86 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em;
+  color: #F4F3EF; text-wrap: balance; text-shadow: 0 2px 30px rgba(0, 0, 0, .25); will-change: transform, opacity;
+}
+.card-t .dot { color: var(--red); }
+/* SCROLL na trećoj karti: pojavi se nakon 2,5 s mirovanja, kad se scrollom smije dalje (js/main.js, klasa ready) */
+.cards-go {
+  position: absolute; z-index: 3; left: 50%; bottom: 14px; margin: 0; padding: 8px 14px 8px calc(14px + .28em); transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font: 13px/1 var(--script); letter-spacing: .28em; color: #F4F3EF; text-shadow: 0 1px 12px rgba(0, 0, 0, .6);
+  opacity: 0; transition: opacity .5s ease; pointer-events: none; cursor: pointer;
+}
+.cards-go::after { content: ""; width: 1px; height: 26px; margin-left: -.28em; background: currentColor; animation: go-line 1.6s ease-in-out infinite; }
+.card.c3.ready .cards-go { opacity: 1; pointer-events: auto; }
+@keyframes go-line {
+  0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; }
+  50.1% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ---------- petlja: ART / ME kao scenarij ---------- */
+.loop { position: relative; height: 180vh; }   /* tekst se tipka sam; sekcija malo zastane dok se čita */
+.loop-stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6vh;
+  padding: 32px 24px;
+  background: var(--bg) var(--paper) repeat; background-size: 256px 256px;   /* papir stoji s tekstom, ne klizi dok se tipka */
+}
+.name {
+  -webkit-user-select: none; user-select: none;
+  margin: 0; font-family: "AM Puni"; font-size: clamp(44px, 8.4vw, 134px); line-height: .82; white-space: nowrap; text-align: left;
+}
+.name .m { display: none; }
+.name .p { color: var(--ghost); transition: color .4s ease, opacity .4s ease; display: inline-block; }
+[data-beat="1"] .me,
+[data-beat="2"] .me, [data-beat="2"] .art { color: var(--red); }
+[data-beat="3"] .me, [data-beat="3"] .art { color: var(--red-dim); }
+[data-beat="3"] .ai { color: var(--ink); }
+[data-beat="4"] .tool, [data-beat="4"] .ai { color: var(--ink); }
+[data-beat="4"] .art, [data-beat="4"] .me { color: var(--red); opacity: 1; animation: close-loop .7s cubic-bezier(.2, .8, .2, 1); }
+/* kad je sve otipkano: blok pod mišem pali samo svoj dio imena */
+.focusable[data-focus="me"] .p, .focusable[data-focus="art"] .p, .focusable[data-focus="ai"] .p { color: var(--ghost); animation: none; }
+.focusable[data-focus="me"] .me, .focusable[data-focus="art"] .art { color: var(--red); }
+.focusable[data-focus="ai"] .ai { color: var(--ink); }
+.focusable .blk { cursor: default; }
+@keyframes close-loop { 0% { transform: translateY(0); } 35% { transform: translateY(-6%); } 100% { transform: translateY(0); } }
+
+.script {
+  -webkit-user-select: none; user-select: none;
+  width: 50ch; max-width: 100%; text-align: center;
+  font-family: var(--script); font-weight: 700; font-size: clamp(16px, 1.45vw, 21px); line-height: 1.45; color: var(--ink);
+}
+.script .blk { margin: 0 0 2.6em; }   /* mjesta za crveni marker između blokova */
+.script .blk:last-child { margin-bottom: 0; }
+.script .ln { display: block; white-space: pre-wrap; }
+.script .dlg { max-width: 44ch; margin: 0 auto; }
+.script .rest { visibility: hidden; }        /* još neotipkano: drži mjesto, pa se ništa ne pomiče */
+/* crveni marker (rukom dopisano nakon tipkanja) */
+.marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+.marks path { fill: none; stroke: var(--red); stroke-linecap: round; stroke-linejoin: round; opacity: .92; filter: url(#marker-rough); mix-blend-mode: multiply; }
+.caret { display: inline-block; position: relative; width: 0; height: 1.1em; vertical-align: -.2em; }
+.caret::after { content: ""; position: absolute; left: 1px; top: 0; width: .6em; height: 100%; background: var(--ink); animation: blink 1s steps(1) infinite; }
+.caret.typing::after { animation: none; }   /* dok tipka, kursor je pun; kad stane, trepće */
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- gumb za zvuk ---------- */
+.sound {
+  position: fixed; right: 18px; bottom: 18px; z-index: 30;
+  font: 700 12px/1 var(--script); letter-spacing: .2em; color: #F4F3EF; background: rgba(14, 14, 14, .78);
+  border: 0; border-radius: 999px; padding: 10px 14px; cursor: pointer;
+}
+.sound span { color: var(--red); }
+.bar.on ~ .sound { top: calc((var(--bar-h) - 32px) / 2); bottom: auto; background: rgba(40, 40, 40, .9); }   /* kad je traka gore, SOUND je u njoj, da ne pokrije ploču reelova */
+.sound[aria-pressed="true"] span { color: #F4F3EF; }
+.sound:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+/* ---------- reelovi: rez s papira na crno, moderan monitor (js/reels.js) ---------- */
+.reels {
+  --s-bg: #0A0A0A; --s-ink: #F4F3EF; --s-dim: rgba(244, 243, 239, .5); --s-low: rgba(244, 243, 239, .3); --s-line: rgba(244, 243, 239, .12);
+  --pad: clamp(20px, 3.6vw, 56px); --ease: cubic-bezier(.65, 0, .25, 1);
+  position: relative; z-index: 1;
+  padding: calc(var(--bar-h) + clamp(28px, 6vh, 64px)) 0 0;
+  background: var(--s-bg); color: var(--s-ink); font-family: var(--ui);
+}
+.reels-in { max-width: 1680px; margin: 0 auto; padding: 0 var(--pad); }
+html.dark { background: #0A0A0A; }   /* traka za scrollbar uz crne reelove (js/reels.js) */
+html.hold { overflow: hidden; overscroll-behavior: none; }   /* reelovi stoje dok ne prođu tri pokreta (js/reels.js, Hold) */
+.stage.nudge { animation: nudge .5s cubic-bezier(.2, .8, .2, 1); }   /* pokret je primljen, ali reelovi ostaju */
+@keyframes nudge { 30% { transform: translateY(-12px); } 100% { transform: none; } }
+.reels-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 40px; margin-bottom: clamp(28px, 6vh, 64px); }
+.reels-title { margin: 0; display: flex; align-items: flex-start; gap: .1em; font: 400 clamp(64px, 10vw, 164px)/1 "AM Puni"; }
+.rt-w { display: block; overflow: hidden; height: .72em; }          /* samo visina velikog slova: naslov izroni odozdo */
+.rt-w > span { display: block; line-height: .72; padding-top: .005em; transform: translateY(102%); transition: transform 1s cubic-bezier(.2, .8, .2, 1); }
+.rt-n { font: 500 clamp(12px, .95vw, 15px)/1 var(--ui); letter-spacing: .06em; color: var(--s-dim); font-variant-numeric: tabular-nums; margin-top: .2em; opacity: 0; transition: opacity .6s .5s; }
+.reels-note { margin: 0 0 .3em; font: 400 13px/1.4 var(--ui); color: var(--s-dim); opacity: 0; transition: opacity .7s .35s; }
+
+/* pozornica: cijeli ekran ispod trake. Monitor mijenja veličinu po formatu (Kristian, 14. 10. 2026.):
+   21:9 od ruba do ruba, 16:9 skoro preko cijelog ekrana, 9:16 od vrha do dna. Veličinu računa js/reels.js (layoutStage). */
+.stage { position: relative; height: calc(100vh - var(--bar-h)); height: calc(100svh - var(--bar-h)); overflow: hidden; overflow: clip; }   /* clip: fokus ni klik ne smiju pomaknuti sadržaj pozornice */
+.stage::before {                                                    /* blago svjetlo iz kadra po pozornici */
+  content: ""; position: absolute; inset: -15%; background: var(--poster, none) center / cover no-repeat;
+  filter: blur(90px) brightness(.5) saturate(1.3); opacity: .3; pointer-events: none; transition: opacity .8s;
+}
+.monitor {
+  position: absolute; z-index: 1; left: var(--mx, 0); top: var(--my, 0); width: var(--mw, 100%); height: var(--mh, 56%); background: #000;
+  transition: left .75s var(--ease), top .75s var(--ease), width .75s var(--ease), height .75s var(--ease);
+}
+.monitor.no-anim { transition: none; }
+.monitor::before, .monitor::after {                                   /* zastor: monitor se otvori od sredine, kao ekran */
+  content: ""; position: absolute; z-index: 6; left: -1px; right: -1px; height: calc(50% + 1px); background: var(--s-bg); pointer-events: none;
+  transition: transform .9s cubic-bezier(.7, 0, .2, 1) .1s;
+}
+.monitor::before { top: -1px; transform-origin: 50% 0; }
+.monitor::after { bottom: -1px; transform-origin: 50% 100%; }
+.monitor.open::before, .monitor.open::after { transform: scaleY(0); }
+.screen { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .55s ease; }
+.v.on { opacity: 1; }
+.frame { position: absolute; z-index: 3; inset: 0; pointer-events: none; }   /* kutne oznake kao u tražilu kamere */
+.vf { position: absolute; z-index: 3; width: 22px; height: 22px; border: 0 solid rgba(255, 255, 255, .78); pointer-events: none; opacity: 0; transition: opacity .5s 1s, transform .7s cubic-bezier(.2, .8, .2, 1) 1s; }
+.vf.tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; transform: translate(14px, 14px); }
+.vf.tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; transform: translate(-14px, 14px); }
+.vf.bl { bottom: 14px; left: 12px; border-width: 0 0 2px 2px; transform: translate(14px, -14px); }
+.vf.br { bottom: 14px; right: 12px; border-width: 0 2px 2px 0; transform: translate(-14px, -14px); }
+.hud {
+  position: absolute; z-index: 3; top: 24px; display: flex; align-items: center; gap: 14px;
+  font: 500 12px/1 var(--ui); letter-spacing: .08em; color: rgba(255, 255, 255, .9); font-variant-numeric: tabular-nums; white-space: nowrap;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .45); pointer-events: none; opacity: 0; transition: opacity .5s 1.1s;
+}
+.hud-tl { left: 46px; }
+.hud-tr { right: 46px; }
+.rec { display: inline-flex; align-items: center; gap: 7px; color: #fff; }
+.rec i { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 10px rgba(226, 59, 46, .7); }
+.monitor.playing .rec i { animation: rec 1.2s steps(1) infinite; }
+@keyframes rec { 50% { opacity: .2; } }
+.prog { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .14); pointer-events: none; }
+.prog i, .r-prog, .pl-seek i { display: block; height: 100%; background: var(--red); transform: scaleX(0); transform-origin: 0 50%; }
+.watch { position: absolute; z-index: 4; inset: 0; display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.watch span {
+  display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px 14px 19px; border-radius: 999px;
+  font: 600 13px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: #0A0A0A; background: rgba(244, 243, 239, .95);
+  opacity: 0; transform: scale(.9); transition: opacity .25s, transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+.watch:hover span, .watch:focus-visible span { opacity: 1; transform: none; }
+
+/* ploča kao na filmskoj kameri: lijevo tipke formata, desno klipovi */
+.deck {
+  position: absolute; z-index: 2; left: var(--pad); right: var(--pad); bottom: 16px;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; pointer-events: none;
+  opacity: 0; transition: opacity .7s .5s;
+}
+.deck > * { pointer-events: auto; }
+.fmt-cap { display: flex; align-items: center; gap: 10px; font: 600 9.5px/1 var(--ui); letter-spacing: .34em; text-transform: uppercase; color: var(--s-low); }
+.fmt-cap::before { content: ""; width: 28px; height: 1px; background: var(--s-line); }
+.formats { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; flex: none; }
+.clips { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; min-width: 0; max-width: var(--clips-max, 60%); }
+.clips .fmt-cap { flex-direction: row-reverse; }
+.fmt-keys {                                                          /* udubljena ploča */
+  display: flex; gap: 3px; padding: 3px; border-radius: 7px;
+  background: #040404; border: 1px solid rgba(244, 243, 239, .07); box-shadow: inset 0 2px 4px rgba(0, 0, 0, .9);
+}
+.fk, .reel {                                                         /* tvrde tipke */
+  position: relative; border: 0; border-radius: 4px; cursor: pointer; text-align: left; font-family: var(--ui); color: rgba(244, 243, 239, .5);
+  background: linear-gradient(180deg, #1d1d1d 0%, #131313 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(0, 0, 0, .7), 0 1px 2px rgba(0, 0, 0, .7);
+  transition: color .25s, box-shadow .25s, transform .08s;
+}
+.fk { display: grid; grid-template-columns: 30px auto; align-items: center; column-gap: 12px; min-width: 152px; padding: 12px 28px 12px 13px; }
+.fk-ic { justify-self: center; display: block; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 1.5px; transition: border-color .25s, background-color .25s; }
+.fk-t b { display: block; font: 600 16px/1 var(--ui); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.fk-t small { display: block; margin-top: 6px; font: 600 9px/1 var(--ui); letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
+.fk-led { position: absolute; top: 9px; right: 9px; width: 5px; height: 5px; border-radius: 50%; background: #2b1211; box-shadow: inset 0 0 1px #000; transition: background-color .2s, box-shadow .2s; }
+.fk:hover, .reel:hover { color: rgba(244, 243, 239, .85); }
+.fk:active, .reel:active { transform: translateY(1px); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .9); }
+.fk[aria-pressed="true"], .reel[aria-current="true"] {
+  color: #fff; background: linear-gradient(180deg, #282828 0%, #1b1b1b 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(244, 243, 239, .2), 0 1px 2px rgba(0, 0, 0, .7);
+}
+.fk[aria-pressed="true"] .fk-ic { border-color: #fff; background: rgba(226, 59, 46, .3); }
+.fk[aria-pressed="true"] .fk-led { background: var(--red); box-shadow: 0 0 7px 1px rgba(226, 59, 46, .9); }
+.fk:disabled { opacity: .3; cursor: default; }
+.deck.compact .fk { min-width: 0; grid-template-columns: 24px auto; column-gap: 9px; padding: 11px 20px 11px 10px; }
+.deck.compact .fk-t small { letter-spacing: .14em; }
+.deck.tiny .fk { grid-template-columns: auto; padding: 10px 18px 10px 11px; }   /* još uže: bez ikone */
+.deck.tiny .fk-ic { display: none; }
+.deck.compact .fk-n { display: none; }                               /* uske tipke: broj klipova se vidi na traci sličica */
+.monitor.tight .fmt-name { display: none; }                         /* uski monitor: gore desno samo omjer */
+.fk:focus-visible, .reel:focus-visible, .watch:focus-visible span, .pl-btn:focus-visible, .pl-x:focus-visible, .pl-seek:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+/* klipovi: lijevo "zaslon" s brojem aktivnog klipa (npr. 02/05), nazivom i oznakom, desno traka sličica s brojevima */
+.clip-deck {
+  display: flex; align-items: stretch; gap: 3px; padding: 3px; border-radius: 7px; max-width: 100%;
+  background: #040404; border: 1px solid rgba(244, 243, 239, .07); box-shadow: inset 0 2px 4px rgba(0, 0, 0, .9);
+}
+.clip-info {
+  flex: none; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 12px; min-width: 0; border-radius: 4px;
+  background: #0b0b0b; box-shadow: inset 0 0 0 1px rgba(244, 243, 239, .06);
+}
+.clip-info b { font: 400 22px/.72 "AM Puni"; color: var(--red); white-space: nowrap; }
+.clip-info b i { font-style: normal; color: rgba(244, 243, 239, .35); font-size: .62em; margin-left: 2px; }
+.ci-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+#ci-t { font: 600 13px/1 var(--ui); color: #fff; white-space: nowrap; max-width: 15ch; overflow: hidden; text-overflow: ellipsis; }
+#ci-m { font: 600 8.5px/1 var(--ui); letter-spacing: .16em; text-transform: uppercase; color: rgba(244, 243, 239, .45); white-space: nowrap; }
+.reel-list { display: flex; gap: 3px; margin: 0; padding: 0; list-style: none; min-width: 0; overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
+.reel-list::-webkit-scrollbar { display: none; }
+.reel-list li { flex: none; }
+.reel { display: block; height: 100%; padding: 6px; }
+.r-th {
+  display: block; height: 40px; width: calc(40px * var(--tr, 1.7778)); min-width: 22px; border-radius: 2px;
+  background: #000 center / cover no-repeat; box-shadow: 0 0 0 1px rgba(255, 255, 255, .1); opacity: .55; transition: opacity .25s, box-shadow .25s;
+}
+.r-no { position: absolute; left: 9px; bottom: 9px; font: 400 11px/.72 "AM Puni"; color: #fff; text-shadow: 0 1px 4px rgba(0, 0, 0, .9); opacity: .8; }
+.r-prog { position: absolute; left: 6px; right: 6px; bottom: 3px; width: auto; height: 2px; }
+.reel:hover .r-th { opacity: .9; }
+.reel[aria-current="true"] .r-th { opacity: 1; box-shadow: 0 0 0 1.5px var(--red); }
+.reel[aria-current="true"] .r-no { color: var(--red); opacity: 1; }
+.reel-list li.enter { animation: row-in .45s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--k, 0) * 60ms); }
+@keyframes row-in { from { opacity: 0; transform: translateY(8px); } }
+.fk-n { position: absolute; right: 9px; bottom: 8px; font: 600 9px/1 var(--ui); letter-spacing: .06em; font-variant-numeric: tabular-nums; color: rgba(244, 243, 239, .35); }
+.fk[aria-pressed="true"] .fk-n { color: rgba(244, 243, 239, .7); }
+
+/* strelice na monitoru: prethodni / sljedeći klip; uvijek malo vidljive, jasne kad je miš na monitoru */
+.mnav {
+  position: absolute; z-index: 5; top: 50%; width: 46px; height: 46px; margin-top: -23px; display: grid; place-items: center;
+  border: 1px solid rgba(255, 255, 255, .28); border-radius: 50%; background: rgba(10, 10, 10, .45); color: #fff; cursor: pointer;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); opacity: .5; transition: opacity .25s, background-color .25s, transform .2s;
+}
+.mnav-prev { left: 18px; }
+.mnav-next { right: 18px; }
+.monitor:hover .mnav { opacity: 1; }
+.mnav:hover { background: rgba(226, 59, 46, .85); border-color: transparent; }
+.mnav:active { transform: scale(.94); }
+.mnav:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; opacity: 1; }
+.monitor.single .mnav { display: none; }
+.m-count { margin-left: 14px; color: rgba(255, 255, 255, .6); }
+
+/* znak, jednom: lampice formata i sličice zasvijetle redom (js/reels.js, hint; klasa hinting) */
+.deck.hinting .fk .fk-led { animation: led-sweep .7s ease both; }
+.deck.hinting .fk:nth-child(2) .fk-led { animation-delay: .2s; }
+.deck.hinting .fk:nth-child(3) .fk-led { animation-delay: .4s; }
+@keyframes led-sweep { 45% { background: var(--red); box-shadow: 0 0 9px 2px rgba(226, 59, 46, .95); } }
+.deck.hinting .reel .r-th { animation: th-sweep .7s ease both; animation-delay: calc(.7s + var(--k, 0) * .12s); }
+@keyframes th-sweep { 45% { opacity: 1; box-shadow: 0 0 0 1.5px rgba(244, 243, 239, .9); } }
+
+/* ulazak u sekciju (js/reels.js doda .in) */
+.reels.in .rt-w > span { transform: none; }
+.reels.in .rt-n, .reels.in .reels-note, .reels.in .deck { opacity: 1; }
+.monitor.open .vf, .monitor.open .hud { opacity: 1; transform: none; }
+
+/* ---------- reel preko cijelog ekrana ---------- */
+html.player-open { overflow: hidden; }
+.player {
+  position: fixed; inset: 0; z-index: 50; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr);
+  background: #070707; color: #F4F3EF; font-family: var(--ui);
+  opacity: 0; transition: opacity .3s ease;
+}
+.player[hidden] { display: none; }
+.player.open { opacity: 1; }
+.pl-top, .pl-bar { display: flex; align-items: center; gap: 18px; padding: 18px clamp(16px, 3vw, 40px); }
+.pl-no { font: 500 12px/1 var(--ui); letter-spacing: .12em; color: rgba(244, 243, 239, .5); font-variant-numeric: tabular-nums; }
+.pl-title { flex: 1; min-width: 0; font: 500 14px/1.3 var(--ui); letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl-x, .pl-btn {
+  display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(244, 243, 239, .2); border-radius: 999px; background: transparent;
+  color: #F4F3EF; font: 500 12px/1 var(--ui); letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; cursor: pointer;
+  transition: border-color .2s, background-color .2s;
+}
+.pl-x:hover, .pl-btn:hover { border-color: rgba(244, 243, 239, .6); }
+.pl-btn { padding: 10px 12px; }
+.pl-btn .i-play { display: none; }
+.player.paused .pl-btn .i-play { display: block; }
+.player.paused .pl-btn .i-pause { display: none; }
+.pl-mute span { color: var(--red); margin-left: 2px; }
+.pl-stage { position: relative; min-height: 0; }
+.pl-stage video { position: absolute; top: 0; bottom: 0; left: clamp(16px, 3vw, 40px); right: clamp(16px, 3vw, 40px); width: calc(100% - 2 * clamp(16px, 3vw, 40px)); height: 100%; object-fit: contain; background: transparent; cursor: pointer; }
+.pl-seek { position: relative; flex: 1; height: 22px; cursor: pointer; touch-action: none; }
+.pl-seek::before { content: ""; position: absolute; left: 0; right: 0; top: 10px; height: 2px; background: rgba(244, 243, 239, .18); }
+.pl-seek i { position: absolute; left: 0; right: 0; top: 10px; height: 2px; width: auto; }
+.pl-time { font: 500 12px/1 var(--ui); color: rgba(244, 243, 239, .6); font-variant-numeric: tabular-nums; min-width: 84px; text-align: right; }
+
+/* ---------- sljedeće (privremeno) ---------- */
+.next { min-height: 60vh; display: grid; place-items: center; padding: 40px 24px; background: #0A0A0A; border-top: 1px solid rgba(244, 243, 239, .08); }
+.todo { margin: 0; padding: 26px 34px; border: 1px dashed rgba(244, 243, 239, .25); font: 14px/1.4 var(--script); color: rgba(244, 243, 239, .5); text-align: center; }
+
+/* ---------- mobitel ---------- */
+@media (max-width: 640px) {
+  .card-t { font-size: clamp(30px, 9.4vw, 46px); line-height: .9; padding: 0 16px; }
+  :root { --bar-h: 48px; }
+  .bar { padding: 0 16px; }
+  .bar-logo { font-size: 21px; }
+  .name { font-size: 15.5vw; }
+  .name .m { display: inline; }
+  .loop-stage { gap: 4vh; padding-left: 16px; padding-right: 16px; }
+  .sound { right: 12px; bottom: 12px; }
+  .script { width: 100%; font-size: 15px; }
+}
+
+/* reelovi na tabletu i mobitelu: gore tipke formata, pa monitor (21:9 od ruba do ruba, 16:9 skoro, 9:16 koliko ekran dopušta), pa klipovi */
+@media (max-width: 900px) {
+  .reels-head { flex-direction: column; align-items: flex-start; margin-bottom: 28px; }
+  .reels-title { font-size: clamp(64px, 22vw, 150px); }
+  .stage { height: auto; display: flex; flex-direction: column; gap: 14px; padding: 16px 0 40px; }
+  .deck { display: contents; }
+  .formats { order: 0; padding: 0 16px; align-items: stretch; }
+  .monitor { order: 1; position: relative; left: auto; top: auto; margin: 0 auto; flex: none; transition: width .6s var(--ease), height .6s var(--ease); }
+  .clips { order: 2; padding: 0 16px; align-items: stretch; max-width: none; }
+  .clip-deck { flex-wrap: wrap; }
+  .clip-info { flex: 1 1 100%; padding: 10px 12px; }
+  .reel-list { flex: 1 1 100%; }
+  .mnav { width: 38px; height: 38px; margin-top: -19px; opacity: .8; }
+  .mnav-prev { left: 10px; } .mnav-next { right: 10px; }
+  .clips .fmt-cap { flex-direction: row; }
+  .fmt-keys { width: 100%; }
+  .fk { flex: 1 1 0; min-width: 0; grid-template-columns: 1fr; justify-items: start; row-gap: 11px; padding: 12px 10px 11px; }
+  .fk-ic { justify-self: start; }
+  .fk-t b { font-size: 15px; }
+  .fk-t small { font-size: 8.5px; letter-spacing: .14em; }
+  .hud-tl { left: 40px; } .hud-tr { right: 40px; }
+  .hud { top: 22px; font-size: 11px; gap: 10px; }
+}
+@media (max-width: 420px) {
+  .monitor[data-fmt="9:16"] .hud-tr { display: none; }
+  .tc { font-size: 10.5px; }
+}
+@media (hover: none) {
+  .watch { place-items: end center; padding: 0 0 18px; }
+  .watch span { opacity: 1; transform: none; padding: 10px 14px 10px 12px; font-size: 11px; gap: 8px; background: rgba(244, 243, 239, .9); }
+}
+@media (max-width: 640px) {
+  .pl-bar { flex-wrap: wrap; gap: 10px; }
+  .pl-seek { order: -1; flex-basis: 100%; }
+  .pl-time { margin-left: auto; min-width: 0; }
+  .pl-top { gap: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar { transition: none; }
+  .caret::after { animation: none; }
+  [data-beat="4"] .art, [data-beat="4"] .me { animation: none; }
+  .reels *, .reels *::before { transition: none !important; animation: none !important; }
+  .reels .monitor::before, .reels .monitor::after { display: none; }
+  .reels-note, .deck, .rt-n { opacity: 1 !important; }
+}
