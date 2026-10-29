@@ -43,9 +43,18 @@
            Prvi preko cijelog ekrana s rečenicom u gornjoj trećini, drugi stane od druge trećine, treći u donjoj trećini.
            PRIVREMENI VIDEI: zamijeni video/cards/card-1.mp4, card-2.mp4 i card-3.mp4 (i .jpg) pravim videima istog imena. -->
       <div class="cards" id="cards">
+        <!-- ZAKLJUČAK (Kristian, 21. 10. 2026.): na prvi pokret prema dolje nakon treće karte rečenice na kartama nestanu, a trake odu svaka na svoju stranu
+             (gornja lijevo, srednja desno, donja lijevo) i otkriju ovaj blok ispod njih: lijevo papir s rečenicom, desno video (js/main.js, Sum).
+             Tekst se mijenja ovdje. PRIVREMENI VIDEO: zamijeni video/sum.mp4 pravim videom istog imena. -->
+        <div class="sum split split--text-left" id="sum">
+          <div class="split-paper"><p class="split-t">Where <span class="r">Art</span><br>Meets<br>Intelligence<span class="r">.</span></p></div>
+          <div class="split-media"><video class="split-v" src="video/sum.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
+        </div>
         <div class="card c1"><video class="card-v" src="video/cards/card-1.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
         <div class="card c2"><video class="card-v" src="video/cards/card-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
-        <div class="card c3"><video class="card-v" src="video/cards/card-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p><p class="cards-go" id="cards-go" aria-hidden="true">SCROLL</p></div>
+        <div class="card c3"><video class="card-v" src="video/cards/card-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p></div>
+        <!-- SCROLL: na trećoj karti nakon sekunde mira, pa na zaključku 1,5 s nakon rečenice (js/main.js, Flow, klasa ready na .cards) -->
+        <p class="cards-go" id="cards-go" aria-hidden="true">SCROLL</p>
       </div>
       <h1 class="sr-only">Artificial Media</h1>
       <p class="hint" id="hint" aria-hidden="true">SCROLL</p>
@@ -64,78 +73,115 @@
     </div>
   </section>
 
-  <!-- REELOVI: nakon papira rez na crno. Pozornica preko cijelog ekrana; monitor mijenja veličinu po formatu
-       (Kristian, 14. 10. 2026.): 21:9 od ruba do ruba, 16:9 skoro preko cijelog ekrana, 9:16 od vrha do dna.
-       Dolje je ploča kao na kameri: tipke formata i klipovi. Radovi se upisuju u js/reels-data.js. -->
-  <section class="reels" id="reels" aria-labelledby="reels-title">
-    <div class="reels-in">
-      <header class="reels-head">
-        <h2 class="reels-title" id="reels-title"><span class="rt-w"><span>REELS</span></span><span class="rt-n" id="reels-count" aria-hidden="true"></span></h2>
-        <p class="reels-note">Client work and spec work, always labeled.</p>
-      </header>
-    </div>
-    <div class="stage" id="stage">
-      <div class="monitor" id="monitor">
-        <div class="screen" id="screen">
-          <video class="v" muted playsinline preload="metadata" aria-hidden="true"></video>
-          <video class="v" muted playsinline preload="metadata" aria-hidden="true"></video>
-        </div>
-        <div class="frame" aria-hidden="true"><span class="vf tl"></span><span class="vf tr"></span><span class="vf bl"></span><span class="vf br"></span></div>
-        <div class="hud hud-tl" aria-hidden="true"><span class="rec"><i></i>REC</span><span class="tc" id="tc">00:00:00:00</span></div>
-        <div class="hud hud-tr" aria-hidden="true"><span id="m-ratio">16:9</span><span class="m-count" id="m-count">01/01</span></div>
-        <div class="prog" aria-hidden="true"><i id="m-prog"></i></div>
-        <!-- strelice: prethodni i sljedeći klip istog formata (i tipke ← →, na mobitelu povlačenje prstom) -->
-        <button class="mnav mnav-prev" id="m-prev" type="button" aria-label="Previous clip"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10.5 2.5 5 8l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-        <button class="mnav mnav-next" id="m-next" type="button" aria-label="Next clip"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M5.5 2.5 11 8l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-        <button class="watch" id="watch" type="button" aria-label="Watch reel full screen"><span><svg viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M0 0v14l12-7z" fill="currentColor"/></svg>Watch</span></button>
-      </div>
-      <!-- Ploča kao na filmskoj kameri: lijevo tipke formata (21:9 CINEMA, 16:9 COMMERCIAL, 9:16 SOCIAL MEDIA), desno klipovi tog formata. -->
-      <div class="deck" id="deck">
-        <div class="formats" id="formats" role="group" aria-label="Format">
-          <span class="fmt-cap" aria-hidden="true">Select format</span>
-          <div class="fmt-keys">
-            <button type="button" class="fk" data-f="21:9" aria-pressed="false" aria-label="21:9 Cinema"><span class="fk-ic" style="width:30px;height:12.9px"></span><span class="fk-t"><b>21:9</b><small>Cinema</small></span><i class="fk-led"></i><span class="fk-n"></span></button>
-            <button type="button" class="fk" data-f="16:9" aria-pressed="false" aria-label="16:9 Commercial"><span class="fk-ic" style="width:26px;height:14.6px"></span><span class="fk-t"><b>16:9</b><small>Commercial</small></span><i class="fk-led"></i><span class="fk-n"></span></button>
-            <button type="button" class="fk" data-f="9:16" aria-pressed="false" aria-label="9:16 Social media"><span class="fk-ic" style="width:11.8px;height:21px"></span><span class="fk-t"><b>9:16</b><small>Social media</small></span><i class="fk-led"></i><span class="fk-n"></span></button>
-          </div>
-        </div>
-        <div class="clips" id="clips">
-          <span class="fmt-cap" aria-hidden="true">Select clip</span>
-          <div class="clip-deck">
-            <div class="clip-info" aria-live="polite"><b id="ci-n">01<i>/01</i></b><span class="ci-text"><span id="ci-t"></span><small id="ci-m"></small></span></div>
-            <ol class="reel-list" id="reel-list" aria-label="Clips"></ol>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- EKRANI 2 i 3 (Kristian, 27. 10. 2026.): puni ekrani iza bloka WHERE ART, isti izgled kao on (zajednička klasa .split, css/style.css).
+       .split--text-right: video lijevo, papir s tekstom desno; .split--text-left: papir lijevo, video desno. Na mobitelu je papir gore, video dolje.
+       Tijek: jedan pokret = jedan ekran (js/main.js, Flow). PRIVREMENO: video/split-2.mp4 i split-3.mp4 (kopije card-2 i card-3), tekst ekrana 3. -->
+  <section class="split split--text-right split-screen" id="split-2" aria-labelledby="split-2-title">
+    <div class="split-paper"><h2 class="split-t" id="split-2-title">Who<br>We<br>Are<span class="r">?</span></h2></div>
+    <div class="split-media"><video class="split-v" src="video/split-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video></div>
+  </section>
+  <section class="split split--text-left split-screen" id="split-3" aria-labelledby="split-3-title">
+    <div class="split-paper"><h2 class="split-t" id="split-3-title">Headline goes here</h2><p class="split-p">Paragraph goes here.</p></div>
+    <div class="split-media"><video class="split-v" src="video/split-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video></div>
   </section>
 
-  <!-- SLJEDEĆE: objašnjenje (Kristianov raspored: hero → objašnjenje → reelovi → objašnjenje; sadržaj se tek dogovara). -->
-  <section class="next" id="next" aria-label="Next">
-    <p class="todo">Ovdje dolazi objašnjenje · sljedeći korak</p>
+  <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. 2026.; tablica 29. 10.): leži točno ispod ekrana 3. Pokret dolje razdvoji ekran 3 (papir lijevo,
+       video desno) i otkrije zaglavlje; svaki sljedeći pokret dovede jedan red (js/main.js, Why).
+       SAV TEKST I BROJKE SU PRIVREMENI (nisu tvrdnje). U svakom redu: naziv dimenzije (.why-dim), brojka klasične produkcije i naša brojka
+       (data-value na .why-val: cijeli broj, isti broj znamenki ostaje i dok se odbrojava; upiši ga i u sam element), jedinica uz našu brojku
+       (.why-unit, npr. %, X, DAYS) i data-max na redu (vrijednost koja ispuni cijelu traku; prazno = veća od dvije brojke). -->
+  <section class="why" id="why" aria-labelledby="why-title">
+    <div class="why-in">
+      <p class="why-tag" id="why-title">Why AI production</p>
+      <div class="why-table" role="table" aria-labelledby="why-title">
+        <div class="why-head" role="row">
+          <span class="why-h why-h--dim" role="columnheader"></span>
+          <span class="why-h why-h--trad" role="columnheader">Traditional<span class="why-h-x"> shoot</span></span>
+          <span class="why-h why-h--am" role="columnheader">Artificial Media</span>
+        </div>
+      <div class="why-row" role="row" data-max="">
+        <p class="why-dim" role="rowheader">Days to delivery</p>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row" data-max="">
+        <p class="why-dim" role="rowheader">Cost</p>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row" data-max="">
+        <p class="why-dim" role="rowheader">Formats from one master</p>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row" data-max="">
+        <p class="why-dim" role="rowheader">Rounds of revisions</p>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      </div>
+    </div>
+    <p class="why-go" id="why-go" aria-hidden="true">SCROLL</p>
   </section>
+
+  <!-- THE WORK (Kristian, 29. 10. 2026.; mockup brand/14-the-work-mockup-desktop.pdf): monitor lijevo, ispod ploča s projektima
+       (PREV, kartica po projektu, NEXT), desno kartica projekta. Projekt se mijenja samo klikom (ili Enter / razmak), nikad scrollom.
+       Monitor mijenja oblik po formatu klipa (16:9, 9:16, 21:9). Projekti i klipovi su u js/reels-data.js, ponašanje u js/reels.js.
+       Tijek: jedan pokret s #why dovede ovu sekciju, sljedeći ide dalje na #next (js/main.js, Flow). -->
+  <section class="work" id="work" aria-labelledby="work-title">
+    <header class="wk-head">
+      <h2 class="wk-title" id="work-title"><span class="wk-tw"><span>THE WORK<span class="r">.</span></span></span><span class="wk-n" id="wk-count" aria-hidden="true"></span></h2>
+      <p class="wk-note">Client work and spec work, always labeled.</p>
+    </header>
+    <div class="wk-body">
+      <div class="wk-main">
+        <div class="wk-screen" id="wk-screen">
+          <div class="monitor" id="monitor">
+            <div class="screen" id="screen">
+              <video class="v" muted playsinline loop preload="metadata" aria-hidden="true"></video>
+              <video class="v" muted playsinline loop preload="metadata" aria-hidden="true"></video>
+            </div>
+            <div class="frame" aria-hidden="true"><span class="vf tl"></span><span class="vf tr"></span><span class="vf bl"></span><span class="vf br"></span></div>
+            <div class="hud hud-tl" aria-hidden="true"><span class="rec"><i></i>REC</span><span class="tc" id="tc">00:00:00:00</span></div>
+            <div class="hud hud-tr" aria-hidden="true"><span id="m-ratio">16:9</span></div>
+            <div class="prog" aria-hidden="true"><i id="m-prog"></i></div>
+          </div>
+        </div>
+        <p class="wk-tap" aria-hidden="true">Tap to watch with sound</p>
+        <!-- ploča kao na kameri: PREV, kartica po projektu (sličica, broj, naziv, oznaka), NEXT; na mobitelu se kartice listaju prstom -->
+        <div class="wk-deck" id="wk-deck" role="group" aria-label="Projects">
+          <button type="button" class="wk-key wk-nav" id="wk-prev" aria-label="Previous project"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M11 1 3 7l8 6M20 1l-8 6 8 6"/></svg><span>Prev</span></button>
+          <div class="wk-cards" id="wk-cards"></div>
+          <button type="button" class="wk-key wk-nav" id="wk-next" aria-label="Next project"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m11 1 8 6-8 6M2 1l8 6-8 6"/></svg><span>Next</span></button>
+        </div>
+      </div>
+      <!-- kartica projekta: sve se upisuje iz js/reels-data.js. Popis klipova i WATCH WITH SOUND zasad su samo prikaz (korak 2). -->
+      <aside class="wk-card" id="wk-card" aria-live="polite">
+        <div class="wk-pnr"><span class="wk-cap">Project</span><span class="wk-pnum"><b id="wk-pi">01</b><i id="wk-pc"> / 03</i></span></div>
+        <div class="wk-name"><h3 id="wk-pt"></h3><span class="wk-tag" id="wk-ptag"></span></div>
+        <dl class="wk-facts">
+          <dt>Client</dt><dd id="wk-client"></dd>
+          <dt>Year</dt><dd id="wk-year"></dd>
+          <dt>Format</dt><dd id="wk-format"></dd>
+          <dt>Delivered in</dt><dd id="wk-days"></dd>
+          <dt>Made with</dt><dd id="wk-tools"></dd>
+        </dl>
+        <p class="wk-desc" id="wk-desc"></p>
+        <ol class="wk-clips" id="wk-clips" aria-label="Clips"></ol>
+        <button type="button" class="wk-watch" id="wk-watch">Watch with sound <span aria-hidden="true">↗</span></button>
+      </aside>
+    </div>
+    <p class="wk-go" id="wk-go" aria-hidden="true">SCROLL</p>
+  </section>
+
+  <!-- SLJEDEĆE (privremeno): prazan papir od 50vh, da se vidi da stranica ide dalje. Ovdje se grade sljedeće sekcije.
+       -->
+  <section class="next" id="next" aria-label="Next"></section>
 </main>
 
-<!-- Reel preko cijelog ekrana, sa zvukom (otvara se klikom na monitor). -->
-<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="pl-title" hidden>
-  <div class="pl-top">
-    <span class="pl-no" id="pl-no">01 / 06</span>
-    <span class="pl-title" id="pl-title"></span>
-    <button class="pl-x" id="pl-close" type="button">Close<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6"/></svg></button>
-  </div>
-  <div class="pl-stage" id="pl-stage"><video id="pl-video" playsinline preload="auto"></video></div>
-  <div class="pl-bar">
-    <button class="pl-btn" id="pl-play" type="button" aria-label="Pause"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path class="i-pause" d="M2 1h3.5v12H2zM8.5 1H12v12H8.5z" fill="currentColor"/><path class="i-play" d="M2 0v14l12-7z" fill="currentColor"/></svg></button>
-    <button class="pl-btn" id="pl-prev" type="button" aria-label="Previous reel"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M2 1h2v12H2zM13 1v12L5 7z" fill="currentColor"/></svg></button>
-    <button class="pl-btn" id="pl-next" type="button" aria-label="Next reel"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M10 1h2v12h-2zM1 1v12l8-6z" fill="currentColor"/></svg></button>
-    <div class="pl-seek" id="pl-seek" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pl-fill"></i></div>
-    <span class="pl-time" id="pl-time">0:00 / 0:00</span>
-    <button class="pl-btn pl-mute" id="pl-mute" type="button" aria-pressed="false">Sound<span>ON</span></button>
-  </div>
-</div>
-
-<!-- Zvuk: preglednik pusti zvuk tek nakon klika. Uključuje zvuk videa i zvuk pisaćeg stroja. -->
-<button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Sound">SOUND <span>OFF</span></button>
+<!-- Zvuk: preglednik pusti zvuk tek nakon klika. Uključuje zvuk videa i zvuk pisaćeg stroja.
+     SKRIVEN (26. 10. 2026.): nijedan video na stranici zasad nema zvuk. Povratak: makni "hidden". -->
+<button class="sound" id="sound" hidden type="button" aria-pressed="false" aria-label="Sound">SOUND <span>OFF</span></button>
 
 
 <script src="js/logo-data.js"></script>

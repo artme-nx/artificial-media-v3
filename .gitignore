@@ -2,3 +2,4 @@
 qa/
 .DS_Store
 zvuk-izvor/
+.playwright-mcp/

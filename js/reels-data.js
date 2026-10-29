@@ -1,27 +1,45 @@
-/* Reelovi: jedino mjesto gdje se upisuju radovi (redom kojim se prikazuju).
-   Dok pravih radova nema, ovdje su PRIVREMENI klipovi iz video/reels/ (tools/make_reel_placeholders.sh).
-   Nikad izmišljen rad, klijent ni rezultat: koji radovi smiju biti javni, odlučuje Kristian (brief §4, pitanje 5).
+/* THE WORK (#work, 29. 10. 2026.): jedino mjesto gdje se upisuju projekti, redom kojim se prikazuju.
+   Nikad izmišljen rad, klijent, broj ni rezultat: što ne znamo, ostaje doslovno u uglatoj zagradi ([X] days, [TOOLS] ...).
+   Koji radovi smiju biti javni i s imenom klijenta, odlučuje Kristian [TREBA POTVRDU za EVCharge i Gidru].
 
-   Polja jednog reela:
-     title   naziv rada (engleski)
-     ratio   "21:9" | "16:9" | "9:16"   format, ujedno i gumb na kojem se reel prikazuje (Kristian, 14. 10. 2026.):
-             21:9 CINEMA, 16:9 COMMERCIAL, 9:16 SOCIAL MEDIA. Video mora biti baš u tom omjeru.
-     kind    "client" | "spec" | null    oznaka client / spec (03 §7 R3); null = još nije potvrđeno
-     src     MP4 (H.264, zvuk AAC), poster = jedan kadar kao JPG
-     placeholder: true                   privremeni klip; u popisu piše PLACEHOLDER */
-// Privremeno, kao primjer: 3 klipa 21:9, 5 klipova 16:9 i 5 klipova 9:16.
-window.AM_REELS = [
-  { title: "Reel 01", ratio: "21:9", kind: null, src: "video/reels/reel-01.mp4", poster: "video/reels/reel-01.jpg", placeholder: true },
-  { title: "Reel 02", ratio: "21:9", kind: null, src: "video/reels/reel-02.mp4", poster: "video/reels/reel-02.jpg", placeholder: true },
-  { title: "Reel 03", ratio: "21:9", kind: null, src: "video/reels/reel-03.mp4", poster: "video/reels/reel-03.jpg", placeholder: true },
-  { title: "Reel 04", ratio: "16:9", kind: null, src: "video/reels/reel-04.mp4", poster: "video/reels/reel-04.jpg", placeholder: true },
-  { title: "Reel 05", ratio: "16:9", kind: null, src: "video/reels/reel-05.mp4", poster: "video/reels/reel-05.jpg", placeholder: true },
-  { title: "Reel 06", ratio: "16:9", kind: null, src: "video/reels/reel-06.mp4", poster: "video/reels/reel-06.jpg", placeholder: true },
-  { title: "Reel 07", ratio: "16:9", kind: null, src: "video/reels/reel-07.mp4", poster: "video/reels/reel-07.jpg", placeholder: true },
-  { title: "Reel 08", ratio: "16:9", kind: null, src: "video/reels/reel-08.mp4", poster: "video/reels/reel-08.jpg", placeholder: true },
-  { title: "Reel 09", ratio: "9:16", kind: null, src: "video/reels/reel-09.mp4", poster: "video/reels/reel-09.jpg", placeholder: true },
-  { title: "Reel 10", ratio: "9:16", kind: null, src: "video/reels/reel-10.mp4", poster: "video/reels/reel-10.jpg", placeholder: true },
-  { title: "Reel 11", ratio: "9:16", kind: null, src: "video/reels/reel-11.mp4", poster: "video/reels/reel-11.jpg", placeholder: true },
-  { title: "Reel 12", ratio: "9:16", kind: null, src: "video/reels/reel-12.mp4", poster: "video/reels/reel-12.jpg", placeholder: true },
-  { title: "Reel 13", ratio: "9:16", kind: null, src: "video/reels/reel-13.mp4", poster: "video/reels/reel-13.jpg", placeholder: true }
+   Polja projekta:
+     id           kratko ime (mala slova)
+     number       "01", "02" ... (broj na kartici)
+     title        naziv projekta (velika slova)
+     tag          "CLIENT" | "ORIGINAL" | "SPEC" (03 §7 R3: client i spec uvijek označeni)
+     client, year, format, deliveredIn, madeWith   redovi na kartici projekta
+     description  jedna rečenica
+     clips        [{ title, file, poster, format }]; format "16:9" | "9:16" | "21:9" (po njemu monitor mijenja oblik).
+                  Trajanje se čita iz samog videa (loadedmetadata); polje duration upiši samo ako treba ručno (u sekundama).
+     disabled     true = ugašena kartica (bez klipova, ne može se izabrati ni fokusirati)
+   PRIVREMENI VIDEI: video/work/*.mp4 i *.jpg su kopije placeholdera iz video/reels/; zamijeni ih pravima pod istim imenima. */
+window.AM_WORK = [
+  {
+    id: "evcharge", number: "01", title: "EVCHARGE", tag: "CLIENT",
+    client: "EVCharge.hr", year: "2026", format: "16:9 Commercial", deliveredIn: "[X] days", madeWith: "[TOOLS]",
+    description: "Two films for an EV charging payment system: one for location owners, one for drivers.",
+    clips: [
+      { title: "B2B film", file: "video/work/evcharge-01.mp4", poster: "video/work/evcharge-01.jpg", format: "16:9" },
+      { title: "Drivers film", file: "video/work/evcharge-02.mp4", poster: "video/work/evcharge-02.jpg", format: "16:9" }
+    ]
+  },
+  {
+    id: "gidra", number: "02", title: "GIDRA", tag: "CLIENT",
+    client: "Gidra · Connect group", year: "[YEAR]", format: "[FORMAT]", deliveredIn: "[X] days", madeWith: "[TOOLS]",
+    description: "[DESCRIPTION]",
+    clips: [
+      { title: "[CLIP TITLE]", file: "video/work/gidra-01.mp4", poster: "video/work/gidra-01.jpg", format: "16:9" }   // format zasad 16:9
+    ]
+  },
+  {
+    id: "sofia", number: "03", title: "SOFIA", tag: "ORIGINAL",
+    client: "Artificial Media (own character)", year: "2026", format: "9:16 Social media", deliveredIn: "[X] days", madeWith: "Nano Banana Pro, Seedance",
+    description: "Our own AI artist. One character, directed video after video.",
+    clips: [
+      { title: "[CLIP 1]", file: "video/work/sofia-01.mp4", poster: "video/work/sofia-01.jpg", format: "9:16" },
+      { title: "[CLIP 2]", file: "video/work/sofia-02.mp4", poster: "video/work/sofia-02.jpg", format: "9:16" },
+      { title: "[CLIP 3]", file: "video/work/sofia-03.mp4", poster: "video/work/sofia-03.jpg", format: "9:16" }
+    ]
+  },
+  { id: "next", number: "04", title: "NEXT CLIENT", tag: "COMING SOON", disabled: true, clips: [] }
 ];
