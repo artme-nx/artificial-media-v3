@@ -1,0 +1,113 @@
+/* Zajednički izgled stranica za Stripe (shop, FUNSWAP, akademija, kontakt, pravne), s gornjom trakom i footerom.
+   Boje i pisma dolaze iz css/style.css. Mobitel je prvi: FUNSWAP se otvara s QR koda na sajmu. Bez zaključanog scrolla i bez efekata. */
+
+/* ---------- footer (nove stranice) ---------- */
+.foot { position: relative; z-index: 1; padding: 40px 16px 44px; background: var(--bg) var(--paper) repeat; background-size: 256px 256px; border-top: 1px solid var(--ink); font: 400 14px/1.55 var(--ui); color: var(--ink); }
+.foot p { margin: 0; }
+.foot a { color: inherit; }
+.foot-nav { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 16px 0; }
+.foot-nav a { padding: 6px 0; font: 13px/1.2 var(--script); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; }
+.foot a:hover { color: var(--red); }
+.foot-pay { color: var(--mute); font-size: 13px; }
+
+/* ---------- stranica ---------- */
+.pg { padding-top: var(--bar-h); font: 400 17px/1.55 var(--ui); }
+.pg .bar { transform: none; visibility: visible; transition: none; }
+.pg-logo { font-size: 26px; }
+.pg main { display: block; max-width: 1120px; margin: 0 auto; padding: 44px 16px 72px; }
+.pg a { color: inherit; }
+.pg .bar a { text-decoration: none; }
+.pg .bar-nav { display: flex; gap: 22px; margin-left: auto; }
+.pg .bar-nav a { padding: 8px 0; font: 13px/1 var(--script); letter-spacing: .18em; text-transform: uppercase; color: var(--bar-ink); text-decoration: none; }
+.pg .bar-nav a:hover { color: var(--red); }
+.pg .bar-nav a:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
+.pg p { margin: 0 0 14px; }
+.pg ul, .pg ol { margin: 0; padding: 0; list-style: none; }
+.pg h1, .pg h2, .pg h3 { margin: 0; font-weight: 400; font-family: "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; line-height: .92; }
+.pg h1 { font-size: clamp(46px, 10vw, 104px); margin-bottom: 18px; text-wrap: balance; }
+.pg h2 { font-size: clamp(30px, 5.4vw, 56px); margin-bottom: 18px; text-wrap: balance; }
+.pg h3 { font-size: 26px; margin-bottom: 8px; }
+.pg .r { color: var(--red); }
+.tag { display: block; margin: 0 0 14px; font: 13px/1.4 var(--script); letter-spacing: .16em; text-transform: uppercase; color: var(--mute); }
+.lead { font-size: 19px; max-width: 42em; }
+.small { font-size: 14px; color: var(--mute); }
+.sec { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--ink); }
+.dots li { position: relative; padding-left: 20px; margin-bottom: 10px; }
+.dots li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
+
+/* gumb: tinta, crvena REC točka */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 14px 26px; background: var(--ink); color: var(--bg) !important; font: 600 16px/1.2 var(--ui); text-decoration: none; }
+.btn::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--red); }
+.btn:hover { background: #000; }
+.btn:focus-visible, .pg a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.btn + .small { display: block; margin-top: 12px; }
+
+/* podaci o proizvodu: oznaka lijevo, vrijednost desno */
+.facts { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px 14px; margin: 0 0 24px; }
+.facts dt { font: 12px/1.7 var(--script); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+.facts dd { margin: 0; }
+
+/* shop */
+.shop { display: grid; gap: 18px; margin-top: 32px; }
+.prod { display: flex; flex-direction: column; padding: 24px 20px; border: 1px solid var(--ink); }
+.prod h2 { font-size: 40px; margin-bottom: 12px; }
+.prod .btn { margin-top: auto; }
+
+/* koraci i dva stupca */
+.steps { counter-reset: s; display: grid; gap: 14px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: baseline; }
+.steps li::before { content: counter(s); font: 34px/1 "AM Puni", "Arial Black", Impact, sans-serif; color: var(--red); }
+.cols { display: grid; gap: 28px; }
+
+/* pravne stranice */
+.legal { max-width: 44em; }
+.legal h2 { font-size: 28px; margin: 36px 0 12px; line-height: 1; }
+.legal .dots { margin-bottom: 14px; }
+
+/* kontakt */
+.contact { margin: 28px 0; }
+.contact { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+.contact dd { margin-bottom: 14px; font-size: 19px; overflow-wrap: anywhere; }
+
+/* ---------- akademija ---------- */
+.ac-hero h1 { font-size: clamp(44px, 9.4vw, 112px); }
+.ac-hero .btn { margin-top: 10px; }
+.honest p { max-width: 34em; font-size: 21px; line-height: 1.4; }
+.stages { display: grid; gap: 14px; }
+.stage { padding: 20px; border: 1px solid var(--ink); }
+.stage-n { display: block; font: 84px/.9 "AM Puni", "Arial Black", Impact, sans-serif; }
+.stage h3 { margin: 10px 0 2px; font-size: 32px; }
+.stage .tag { margin-bottom: 12px; }
+.stage-end { margin: 14px 0 0 !important; font-style: italic; }
+.stage-end--pass { color: #C22F24; font-weight: 600; }   /* REC crvena, malo tamnija da se čita na papiru */
+
+/* CLIENT FINDER: crni slate, kao THE WORK */
+.slate { margin-top: 56px; padding: 44px 0; background: #0A0A0A; box-shadow: 0 0 0 100vmax #0A0A0A; clip-path: inset(0 -100vmax); color: var(--bg); }   /* crno do rubova ekrana, bez vodoravnog scrolla */
+.slate + .sec { border-top: 0; padding-top: 0; }
+.slate .tag { color: #A8A399; }
+.slate-steps { display: grid; gap: 28px; margin: 30px 0; }
+.slate-n { display: block; margin-bottom: 12px; font: 22px/1 "AM Puni", "Arial Black", Impact, sans-serif; letter-spacing: .02em; color: var(--red); }
+.slate-end { margin: 0 !important; font: 400 clamp(26px, 4.4vw, 46px)/1 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; }
+
+.qa dt { font-weight: 600; margin-top: 18px; }
+.qa dd { margin: 4px 0 0; }
+.price li strong { font-weight: 600; }
+.ac-end { text-align: left; }
+.ac-end .small { max-width: 40em; margin-top: 18px; }
+
+@media (min-width: 760px) {
+  .pg main { padding: 72px 32px 96px; }
+  .foot { padding: 44px 32px 48px; }
+  .shop, .cols { grid-template-columns: 1fr 1fr; }
+  .prod { padding: 30px 28px; }
+  .stages { grid-template-columns: 1fr 1fr; }
+  .slate { padding: 64px 0; }
+  .slate-steps { grid-template-columns: 1.5fr 1fr 1fr; gap: 36px; }
+}
+@media (min-width: 1040px) {
+  .stages { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 640px) {
+  .pg-logo { font-size: 21px; }
+  .pg .bar-nav { gap: 16px; }
+}
