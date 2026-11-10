@@ -106,6 +106,8 @@ Dolje desno je gumb **SOUND**. Preglednici ne puštaju zvuk dok posjetitelj jedn
 
 `video/hero.mp4` i `video/hero-poster.jpg` su **privremeni** (apstraktno svjetlo, napravljeno u ffmpegu). Pravi video stavi pod istim imenom, kao MP4 (H.264, zvuk AAC), 1280×720 ili 1920×1080. Najbolje je da bude kratka petlja od 8 do 15 sekundi. Poster je jedan kadar iz videa i prikazuje se dok video ne krene.
 
+**Pločice završnog ekrana** (Kristian, 10. 11. 2026.): pozadina se stavlja u `video/tiles/` pod imenima `work`, `academy` i `funswap` (`.mp4` i/ili `.jpg`). Što postoji, to se samo prikaže; bez datoteka pločica ostaje tamna. Format: MP4 H.264, bez zvuka, petlja 6–10 s, 1920×1080 za veliku pločicu (`work`) i 1280×720 za manje, do oko 3 MB; JPG poster iste rezolucije. Jačina tamnog sloja iza teksta je `--end-shade` u `css/style.css`.
+
 ## Datoteke
 
 | Datoteka | Što je |

@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/ampuni-font.css">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/pages.css">
 </head>
 <body>
 
@@ -78,6 +79,7 @@
        Tijek: jedan pokret = jedan ekran (js/main.js, Flow). PRIVREMENO: video/split-2.mp4 (kopija card-2). -->
   <section class="split split--text-right split-screen" id="split-2" aria-labelledby="split-2-title">
     <div class="split-paper"><h2 class="split-t" id="split-2-title">Who<br>We<br>Are<span class="r">?</span></h2></div>
+    <p class="who-go" id="who-go" aria-hidden="true">SCROLL</p>
     <div class="split-media"><video class="split-v" src="video/split-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
   </section>
   <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. i 10. 11. 2026.): leži točno ispod ekrana WHO WE ARE?. Pokret dolje razdvoji taj ekran (video gore, papir dolje)
@@ -169,9 +171,29 @@
     <p class="wk-go" id="wk-go" aria-hidden="true">SCROLL</p>
   </section>
 
-  <!-- SLJEDEĆE (privremeno): prazan papir od 50vh, da se vidi da stranica ide dalje. Ovdje se grade sljedeće sekcije.
-       -->
-  <section class="next" id="next" aria-label="Next"></section>
+  <!-- ZAVRŠNI EKRAN (Kristian, 10. 11. 2026.; brand/23): tri pločice-linka. SAV TEKST je ovdje: end-label (oznaka), end-t (naslov), end-line (redak).
+       Naslov velike pločice je radni (kandidati: MAKE YOUR COMMERCIAL. / CONTACT US.). Pozadina: video/tiles/work|academy|funswap (.mp4 i/ili .jpg); kad datoteka postoji, pojavi se sama (js/main.js). -->
+  <section class="end" id="next" aria-label="Next steps">
+    <div class="end-grid">
+      <a class="end-tile end-tile--big" href="contact/">
+        <span class="end-media" data-media="video/tiles/work"></span>
+        <span class="end-text"><span class="end-label">Contact</span><span class="end-body"><span class="end-t">Work with us<span class="r">.</span></span><span class="end-line">AI video ads and websites. Quoted individually, invoiced directly.</span></span></span><svg class="end-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M8 6h10v10"/></svg>
+      </a>
+      <a class="end-tile" href="academy/">
+        <span class="end-media" data-media="video/tiles/academy"></span>
+        <span class="end-text"><span class="end-label">Opens 18 March 2027</span><span class="end-body"><span class="end-t"><span class="r">ART.ME</span> Academy</span><span class="end-line">This school doesn't end with a video. It ends with a client.</span></span></span><svg class="end-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M8 6h10v10"/></svg>
+      </a>
+      <a class="end-tile" href="funswap/">
+        <span class="end-media" data-media="video/tiles/funswap"></span>
+        <span class="end-text"><span class="end-label">€25</span><span class="end-body"><span class="end-t">FUNSWAP</span><span class="end-line">Give us three photos of yourself and get the viral video you chose, with you in it.</span></span></span><svg class="end-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M8 6h10v10"/></svg>
+      </a>
+    </div>
+  </section>
+  <footer class="foot">
+    <p class="foot-id">© 2026 Artificial Media LLC · Sheridan, Wyoming, USA · <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a></p>
+    <nav class="foot-nav" aria-label="Footer"><a href="shop/">Shop</a><a href="terms/">Terms</a><a href="privacy/">Privacy</a><a href="refund-policy/">Refund &amp; Cancellation</a><a href="contact/">Contact</a></nav>
+    <p class="foot-pay">Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIALMEDIASTUDIO.</p>
+  </footer>
 </main>
 
 <!-- Zvuk: preglednik pusti zvuk tek nakon klika. Uključuje zvuk videa i zvuk pisaćeg stroja.

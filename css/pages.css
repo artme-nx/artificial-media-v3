@@ -41,6 +41,17 @@
 .btn:hover { background: #000; }
 .btn:focus-visible, .pg a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
 .btn + .small { display: block; margin-top: 12px; }
+.btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.note { display: block; margin-top: 4px; }
+/* četiri kvačice iznad gumba Order FUNSWAP */
+.consent { max-width: 40em; margin: 0 0 18px; }
+.consent label { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; font-size: 16px; line-height: 1.4; cursor: pointer; }
+.consent input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--ink); cursor: pointer; }
+.consent input:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.consent .small { margin: 8px 0 0; }
+.consent-msg { margin: 12px 0 0; }
+.consent-msg[hidden] { display: none; }
+.consent-msg + .small { display: block; margin-top: 12px; }
 
 /* podaci o proizvodu: oznaka lijevo, vrijednost desno */
 .facts { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px 14px; margin: 0 0 24px; }
@@ -110,4 +121,137 @@
 @media (max-width: 640px) {
   .pg-logo { font-size: 21px; }
   .pg .bar-nav { gap: 16px; }
+}
+
+/* ---------- FUNSWAP: put kupca (galerija, tri fotografije, zahvala; brand/26, mockup brand/funswap-mockup). Mobitel je prvi: kupac dolazi s QR koda. ---------- */
+.fs-logo { font-size: 19px; }
+.pg .fs-logo { color: #F4F3EF; }
+.fs-step { margin-left: auto; font: 700 11px/1 var(--script); letter-spacing: .2em; color: rgba(244, 243, 239, .8); }
+.fs-nav { display: none !important; }
+.fs-only-d { display: none !important; }
+.fs main { max-width: none; padding: 0; }
+.fs h1 { margin: 0; font-size: 58px; line-height: .86; }
+.fs-eyebrow { margin: 0 !important; font: 700 11px/1.3 var(--script); letter-spacing: .24em; text-transform: uppercase; color: #5C574E; }
+.fs-lead { margin: 0 !important; font-size: 15px; line-height: 1.45; color: #3B3833; }
+.fs-note { margin: 14px 0 0 !important; font-size: 13px; line-height: 1.45; color: #3B3833; }
+.fs-mini { display: block; margin: 0 !important; font: 700 10px/1.2 var(--script); letter-spacing: .22em; text-transform: uppercase; color: #5C574E; }
+.fs-nojs { margin: 12px 0 0 !important; font-size: 15px; }
+.fs-err { margin: 10px 0 0 !important; font-size: 14px; color: #B3261E; }
+.fs-err[hidden] { display: none; }
+.fs-intro { display: flex; flex-direction: column; gap: 10px; padding: 24px 16px 14px; }
+.fs-pick { padding: 0 16px; }
+.fs-chips { display: flex; gap: 8px; margin: 0 -16px 14px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+.fs-chips[hidden] { display: none; }
+.fs-chip { flex: none; min-height: 44px; padding: 0 14px; border: 1px solid rgba(29, 27, 24, .45); border-radius: 22px; background: transparent; color: var(--ink); font: 700 11px/1 var(--script); letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
+.fs-chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+.fs-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.fs-tile { position: relative; display: block; width: 100%; aspect-ratio: 9 / 16; padding: 0; overflow: hidden; border: 0; border-radius: 3px; background: #0A0A0A; color: #F4F3EF; cursor: pointer; font: inherit; }
+.fs-tile img, .fs-player { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fs-tile-n { position: absolute; z-index: 1; left: 8px; top: 8px; font: 400 22px/1 "AM Puni", "Arial Black", Impact, sans-serif; color: #F4F3EF; text-shadow: 0 1px 8px rgba(0, 0, 0, .6); }
+.fs-badge { position: absolute; z-index: 2; right: 7px; top: 7px; display: none; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #F4F3EF; }
+.fs-play { position: absolute; z-index: 1; left: 50%; top: 50%; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; margin: -18px 0 0 -18px; border: 1px solid rgba(255, 255, 255, .55); border-radius: 50%; background: rgba(0, 0, 0, .35); }
+.fs-tile.playing .fs-play { display: none; }
+.fs-tile-b { position: absolute; z-index: 1; left: 8px; right: 8px; bottom: 8px; display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; font: 600 10px/1.2 var(--ui); color: rgba(244, 243, 239, .85); text-align: left; text-shadow: 0 1px 6px rgba(0, 0, 0, .7); }
+.fs-tile-d { font-variant-numeric: tabular-nums; }
+.fs-tile.on { outline: 3px solid var(--red); outline-offset: -3px; }
+.fs-tile.on .fs-badge { display: flex; }
+.fs-tile:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.fs-more { margin: 0 !important; padding: 12px 0 14px; text-align: center; font: 700 11px/1 var(--script); letter-spacing: .24em; text-transform: uppercase; color: #5C574E; }
+.fs-more[hidden] { display: none; }
+.fs-info { max-width: 1120px; margin: 0 auto; padding: 8px 16px 72px; }
+.fs-thumb { display: block; flex: none; width: 34px; height: 60px; border-radius: 2px; background: #111 center / cover no-repeat; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); }
+.fs-bar { position: fixed; z-index: 15; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); background: #0A0A0A; color: #F4F3EF; }
+.fs[data-fs="gallery"] { padding-bottom: 86px; }
+.fs-bar-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; font: 700 10px/1 var(--script); letter-spacing: .22em; text-transform: uppercase; color: rgba(244, 243, 239, .7); }
+.fs-bar-t strong { font: 400 24px/1 "AM Puni", "Arial Black", Impact, sans-serif; letter-spacing: 0; color: #F4F3EF; }
+.fs-cta { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 16px; border: 0; border-radius: 3px; background: var(--bg); color: var(--ink); font: 600 14px/1 var(--ui); cursor: pointer; }
+.fs-cta:disabled { opacity: .45; cursor: not-allowed; }
+.fs-cta:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.fs-cta--ink { background: var(--ink); color: var(--bg); }
+.fs-cta--wide { width: 100%; min-height: 52px; font-size: 15px; }
+.fs-cta[hidden] { display: none; }
+/* tri fotografije */
+.fs-photos { max-width: 560px !important; margin: 0 auto; padding: 16px 16px 24px !important; }
+.fs-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 3px; background: #0A0A0A; color: #F4F3EF; }
+.fs-card .fs-thumb { width: 30px; height: 53px; }
+.fs-card .fs-bar-t strong { font-size: 22px; }
+.fs-change { display: flex; align-items: center; min-height: 44px; font: 600 13px/1 var(--ui); color: #F4F3EF; }
+.fs-photos h1 { margin-top: 24px; }
+.fs-photos .fs-lead { margin-top: 10px !important; }
+.fs-slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.fs-slot { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; height: 168px; padding: 12px 6px; overflow: hidden; border: 1.5px dashed rgba(29, 27, 24, .6); border-radius: 3px; color: var(--ink); cursor: pointer; }
+.fs-slot input { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.fs-slot:focus-within { outline: 2px solid var(--red); outline-offset: 2px; }
+.fs-shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fs-ico { position: relative; margin-top: 6px; margin-bottom: auto; opacity: .6; }
+.fs-slot-l { position: relative; z-index: 1; font: 400 20px/1 "AM Puni", "Arial Black", Impact, sans-serif; }
+.fs-slot-a { position: relative; z-index: 1; font: 600 12px/1 var(--ui); }
+.fs-slot.on, .fs-slot.busy { border: 1px solid #0A0A0A; background: #0A0A0A; color: #F4F3EF; }
+.fs-slot.on .fs-ico { opacity: .9; }
+.fs-slot.on .fs-badge { display: flex; }
+.fs-slot.on:has(.fs-shot img)::after, .fs-slot.busy:has(.fs-shot img)::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(8, 8, 8, .85), rgba(8, 8, 8, .1) 60%); }
+.fs-slot:has(.fs-shot img) .fs-ico { visibility: hidden; }
+.fs-checks { display: flex; flex-direction: column; gap: 0; max-width: none; margin: 18px 0 0; padding-top: 6px; border-top: 1px solid rgba(29, 27, 24, .25); }
+.fs-checks label { padding: 10px 0; font-size: 13px; line-height: 1.45; }
+.fs-checks input { width: 24px; height: 24px; }
+.fs-happens { margin-top: 16px; padding: 12px 14px; border-radius: 3px; background: rgba(29, 27, 24, .07); }
+.fs-happens p:last-child { margin: 6px 0 0; font-size: 13px; line-height: 1.5; }
+.fs-pay { margin-top: 16px; padding: 14px 16px 16px; border-radius: 3px; background: #0A0A0A; color: #F4F3EF; }
+.fs-pay-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.fs-pay-row .fs-mini { color: rgba(244, 243, 239, .7); }
+.fs-pay-row strong { font: 600 16px/1 var(--ui); white-space: nowrap; }
+.fs-missing { display: flex; align-items: center; justify-content: center; min-height: 52px; margin: 0 !important; padding: 8px; border: 1px solid rgba(244, 243, 239, .4); border-radius: 3px; text-align: center; font: 500 14px/1.3 var(--ui); color: rgba(244, 243, 239, .8); }
+.fs-missing[hidden] { display: none; }
+.fs-pay .fs-err { color: #FFB4AB; }
+/* status narudžbe */
+.fs main.fs-status { max-width: 560px; margin: 0 auto; padding: 0 16px 24px; }
+.fs-wait { display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - var(--bar-h)); min-height: calc(100svh - var(--bar-h)); padding-top: calc(50vh - var(--bar-h) - 48px); padding-top: calc(50svh - var(--bar-h) - 48px); text-align: center; }
+.fs-wait[hidden], .fs-done[hidden], .fs-wait-t[hidden], .fs-wait-c[hidden] { display: none; }
+.fs-ring { flex: none; box-sizing: border-box; width: 96px; height: 96px; border: 4px solid rgba(29, 27, 24, .35); border-top-color: transparent; border-radius: 50%; animation: fs-spin 1s linear infinite; will-change: transform; }
+.fs-wait.red .fs-ring { border-color: var(--red); border-top-color: transparent; }
+@keyframes fs-spin { to { transform: rotate(360deg); } }
+@keyframes fs-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .fs-ring { animation: fs-pulse 2s ease-in-out infinite; } }
+.fs-wait-l { margin: 24px 0 0 !important; font: 700 16px/1.3 var(--script); letter-spacing: .24em; }
+.fs-wait-t { margin: 10px 0 0 !important; font-size: 15px; line-height: 1.45; color: #3B3833; }
+.fs-done { padding-top: 28px; }
+.fs-done h1 { margin-top: 12px; font-size: 64px; line-height: .86; }
+.fs-done .fs-lead { margin-top: 14px !important; }
+.fs-final { display: block; width: min(100%, calc(70vh * 9 / 16)); aspect-ratio: 9 / 16; margin: 18px auto 0; border-radius: 3px; background: #0A0A0A; }
+.fs-download { margin-top: 14px; color: var(--bg) !important; text-decoration: none; }
+.fs-path { margin: 8px 0 0 !important; border-top: 1px solid rgba(29, 27, 24, .25); }
+.fs-path li { display: flex; gap: 14px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid rgba(29, 27, 24, .25); font-size: 15px; line-height: 1.2; }
+.fs-path .n { flex: none; width: 34px; font: 400 24px/1 "AM Puni", "Arial Black", Impact, sans-serif; color: var(--red); }
+.fs-path .n.off { color: rgba(29, 27, 24, .45); }
+.fs-path .on { font-weight: 600; }
+.fs-academy { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 16px; border-radius: 3px; background: #0A0A0A; color: #F4F3EF !important; text-decoration: none; }
+.fs-academy strong { display: block; margin: 8px 0; font: 400 30px/.9 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; }
+.fs-academy small { display: block; font-size: 13px; line-height: 1.4; color: rgba(244, 243, 239, .85); }
+.fs-academy .fs-mini { color: rgba(244, 243, 239, .7); }
+.fs-academy svg { flex: none; margin-bottom: 4px; }
+@media (min-width: 1024px) {
+  .fs-logo { font-size: 26px; }
+  .fs-step { display: none; }
+  .fs-nav { display: flex !important; }
+  .fs-only-m { display: none !important; }
+  .fs-only-d { display: block !important; }
+  .fs-path.fs-only-d { display: block !important; }
+  .fs[data-fs="gallery"] { padding-bottom: 0; }
+  .fs main.fs-gallery { display: flex; align-items: flex-start; gap: 48px; padding: 44px 56px 40px !important; }
+  .fs-intro { width: 340px; flex: none; gap: 18px; padding: 0; }
+  .fs-gallery h1 { font-size: 92px; line-height: .84; }
+  .fs-lead { font-size: 17px; line-height: 1.5; }
+  .fs-eyebrow { font-size: 12px; }
+  .fs-preview { position: sticky; top: calc(var(--bar-h) + 24px); flex: none; width: min(300px, calc((100vh - 220px) * 9 / 16)); }
+  .fs-stage { position: relative; aspect-ratio: 9 / 16; overflow: hidden; border-radius: 3px; background: #0A0A0A; color: #F4F3EF; }
+  .fs-stage-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+  .fs-stage-empty span { font: 500 11px/1 var(--ui); letter-spacing: .3em; text-transform: uppercase; color: rgba(244, 243, 239, .7); }
+  .fs-stage-empty strong { font: 400 64px/1 "AM Puni", "Arial Black", Impact, sans-serif; }
+  .fs-player { z-index: 1; }
+  .fs-cta--ink { display: flex !important; width: 100%; min-height: 52px; margin-top: 14px; font-size: 15px; }
+  .fs-pick { flex: 1; min-width: 0; padding: 0; }
+  .fs-chips { margin: 0 0 14px; padding: 0; }
+  .fs-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+  .fs-tile-n { font-size: 20px; }
+  .fs-photos h1, .fs-done h1 { font-size: 76px; }
 }
