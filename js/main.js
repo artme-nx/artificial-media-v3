@@ -25,7 +25,21 @@
   var hero = $(".hero"), hint = $("#hint"), bar = $("#bar");
   var next = $("#next");                                               // završni ekran (tri pločice) ispod THE WORK
   var work = $("#work");                                               // THE WORK (29. 10. 2026.): zadnje zaustavljanje tijeka, iza #why
-  var AT_END = !!next && location.hash === "#next";                     // podstranice (logo, "Back to the homepage"; brand/28, H2–H3): odmah završni ekran, bez uvoda
+  // osvježavanje početne uvijek kreće od heroja, i s #next u adresi (brand/28, J); dolazak linkom s #next ostaje na pločicama
+  // Natrag i Naprijed (brand/28, K): u povijesti preglednika stoji je li posjetitelj bio na pločicama ili ispod njih (history.state.end); povratak strelicom to vrati
+  var NAV = window.performance && performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null, RELOAD = !!NAV && NAV.type === "reload";
+  var BACKFWD = !!NAV && NAV.type === "back_forward";
+  function markEnd(v) {                                                   // zapis u povijest (i bez #next u adresi); samo kad se promijeni
+    if (!history.replaceState) return;
+    var st = history.state || {};
+    if (!!st.end === v && !location.hash) return;
+    history.replaceState({ end: v }, "", location.pathname + location.search);
+  }
+  if (RELOAD) {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    markEnd(false);
+  }
+  var AT_END = !!next && !RELOAD && (location.hash === "#next" || (BACKFWD && !!history.state && !!history.state.end));   // link s #next (logo, "Back to the homepage"; H2–H3) ili Natrag/Naprijed s pločica (K): odmah završni ekran
   // Drugi slide (Kristian, 19. 10. 2026.): tri karte s videom u pozornici heroja umjesto slidea sa scenarijem.
   // Povratak na scenarij: SCREENPLAY = true, makni klasu has-cards s heroja i "hidden" sa sekcije #loop (index.html).
   var SCREENPLAY = false, CARDS = hero.classList.contains("has-cards"), ZOOM_VH = 2.2;   // zum u slovo D traje 220vh scrolla
@@ -948,9 +962,24 @@
   if (barLogo && next) barLogo.addEventListener("click", function (e) {
     e.preventDefault(); AT_END = true; next.classList.remove("wait"); Flow.toEnd();
   });
+  if (next) window.addEventListener("scroll", function () { markEnd(window.scrollY + window.innerHeight / 2 >= next.offsetTop); }, { passive: true });   // pločice zauzimaju sredinu ekrana, ili je ispod njih (footer)
+  window.addEventListener("pageshow", function (e) {                     // povratak iz memorije preglednika (bfcache, osobito Safari)
+    if (!e.persisted || !next) return;
+    if (history.state && history.state.end) { AT_END = true; next.classList.remove("wait"); Flow.toEnd(); }
+    else if (window.scrollY > 0) location.reload();                      // otišao s ranijeg ekrana: hero, kao kod osvježavanja (J)
+  });
+  window.addEventListener("hashchange", function () {                   // #next upisan dok je početna već otvorena: isto kao dolazak linkom
+    if (location.hash !== "#next" || !next) return;
+    AT_END = true; next.classList.remove("wait"); Flow.toEnd(); markEnd(true);
+  });
+  if (RELOAD) {                                                          // preglednik bi sam skočio na staro mjesto ili na #next: natrag na vrh, dok posjetitelj ništa ne dirne
+    var fresh = true, top = function () { if (fresh && window.scrollY) window.scrollTo(0, 0); };
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach(function (t) { window.addEventListener(t, function () { fresh = false; }, { once: true, passive: true }); });
+    window.scrollTo(0, 0); window.addEventListener("load", top); setTimeout(top, 0);
+  }
   if (AT_END) {
     Flow.toEnd();
-    if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);   // osvježavanje opet otvara početnu od heroja
+    markEnd(true);                                                       // bez #next u adresi: osvježavanje opet otvara hero (J), a Natrag pločice (K)
     var touched = false;
     ["wheel", "touchstart", "keydown", "pointerdown"].forEach(function (t) { window.addEventListener(t, function () { touched = true; }, { once: true, passive: true }); });
     var reEnd = function () { if (!touched) Flow.toEnd(); };                   // THE WORK, pisma i slike mijenjaju raspored (i točke zaustavljanja) do učitavanja

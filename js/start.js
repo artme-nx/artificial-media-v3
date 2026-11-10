@@ -5,7 +5,6 @@
   var T = window.AM_START, API = window.AM_START_API || "", KEY = "am-start", WEEK = 7 * 864e5;
   var form = document.getElementById("st-form"), bar = document.getElementById("st-progress"), status = document.getElementById("st-status");
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var ARROW = '<svg class="st-arr" viewBox="0 0 18 12" aria-hidden="true"><path d="M1 6h15M11.5 1.5 16 6l-4.5 4.5"/></svg>';
   var BACK = '<svg class="st-arr" viewBox="0 0 16 12" aria-hidden="true"><path d="M15 6H2M6.5 1.5 2 6l4.5 4.5"/></svg>';
   var TICK = '<span class="st-tick" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="m2 6.5 2.6 2.6L10 3.4"/></svg></span>';
 
@@ -41,7 +40,12 @@
   /* ---------- pomoćno ---------- */
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function title(t) { var end = t.slice(-1); return /[?.]/.test(end) ? esc(t.slice(0, -1)) + '<span class="r">' + end + "</span>" : esc(t); }
-  function nextBtn(label, cls) { return '<button type="button" class="st-btn ' + (cls || "") + '" data-go="next">' + esc(label || T.next) + ARROW + "</button>"; }
+  /* glavni gumb, smjer B "REC" (brand/28, I): REC točka i natpis lijevo, desno brojač koraka "02 / 06" (isti n i N kao STEP n / N u zaglavlju) */
+  function nextBtn(label, cls, count) {
+    return '<button type="button" class="st-btn st-rec ' + (count ? "" : "st-rec--mid ") + (cls || "") + '" data-go="next"><span class="st-rec-l"><i class="st-rec-dot" aria-hidden="true"></i><span>' + esc(label || T.next) + "</span></span>" +
+      (count ? '<span class="st-rec-n" aria-hidden="true">' + count + "</span>" : "") + "</button>";
+  }
+  function two(x) { return (x < 10 ? "0" : "") + x; }
   function backBtn() { return '<button type="button" class="st-back" data-go="back">' + BACK + esc(T.back) + "</button>"; }
   function timeText(i) { return i === 0 ? T.time.stops[0] : "Within " + T.time.stops[i].toLowerCase(); }
   function short(t) {
@@ -55,7 +59,7 @@
   function screen(step) {
     var list = steps(), n = list.indexOf(step) + 1, N = list.length, p = path(), h = "";
     var count = step === "need" ? "STEP 1" : "STEP " + n + " / " + N;
-    var head = '<p class="st-count">' + count + "</p>";
+    var head = '<p class="st-count">' + count + "</p>", rec = two(n) + " / " + two(N);
     if (step === "intro") {
       h = '<p class="st-eyebrow"><i></i>' + esc(T.intro.eyebrow) + "</p>" +
         '<h1 id="st-h" tabindex="-1">' + esc(T.intro.title) + '<span class="r">.</span></h1>' +
@@ -70,7 +74,7 @@
         '<button type="button" class="st-tile" data-need="web" aria-pressed="' + nd.web + '">' + TICK + '<span class="st-tile-k">' + esc(nd.web ? N0.web.on : N0.web.off) + '</span><span class="st-tile-t">' + esc(N0.web.label) + "</span></button>" +
         '<button type="button" class="st-tile" data-need="other" aria-pressed="' + nd.other + '">' + TICK + '<span class="st-tile-k">' + esc(nd.other ? N0.other.on : N0.other.off) + '</span><span class="st-tile-t">' + esc(N0.other.label) + "</span></button>" +
         "</div>" +
-        '<div class="st-act">' + (p ? nextBtn() : '<p class="st-wait">' + esc(T.choose) + "</p>") + "</div>";
+        '<div class="st-act">' + (p ? nextBtn(0, 0, rec) : '<p class="st-wait">' + esc(T.choose) + "</p>") + "</div>";
     } else if (step === "run") {
       h = head + '<h1 id="st-h" tabindex="-1">' + title(T.run.title) + "</h1>" +
         '<p class="st-hint">' + esc(T.run.hint) + "</p>" +
@@ -79,7 +83,7 @@
             '<svg class="st-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="' + o.icon + '"/></svg>' +
             '<span class="st-run-l"><span class="st-run-t">' + esc(o.label) + "</span>" + (o.sub ? '<span class="st-run-s">' + esc(o.sub) + "</span>" : "") + "</span></button>";
         }).join("") + "</div>" +
-        '<div class="st-act">' + (S.run.length ? nextBtn() : '<p class="st-wait">' + esc(T.choose) + "</p>") + backBtn() + "</div>";
+        '<div class="st-act">' + (S.run.length ? nextBtn(0, 0, rec) : '<p class="st-wait">' + esc(T.choose) + "</p>") + backBtn() + "</div>";
     } else if (step === "time") {
       var ticks = "", marks = "", POS = { 0: [170, 24], 1: [234, 38], 6: [282, 290], 9: [100, 318], 14: [58, 48] };
       for (var i = 0; i < 15; i++) { var a = pt(i, 98), b = pt(i, 106); ticks += "M" + a[0] + " " + a[1] + "L" + b[0] + " " + b[1]; }
@@ -90,7 +94,7 @@
         '<path class="st-dial-arc" d=""/><circle class="st-dial-knob" cx="170" cy="52" r="14"/><g class="st-dial-marks">' + marks + "</g></svg>" +
         '<p class="st-dial-val" aria-hidden="true"><span class="st-dial-lead"></span><span class="st-dial-v"></span></p></div>' +
         '<div class="st-time-side"><p class="st-hint st-hint--dial">' + esc(T.time.drag) + "</p>" +
-        '<div class="st-act">' + nextBtn() + '<button type="button" class="st-btn st-btn--ghost" data-skip="time">' + esc(T.time.skip) + "</button>" + backBtn() + "</div></div></div>";
+        '<div class="st-act">' + nextBtn(0, 0, rec) + '<button type="button" class="st-btn st-btn--ghost" data-skip="time">' + esc(T.time.skip) + "</button>" + backBtn() + "</div></div></div>";
     } else if (step === "budget") {
       var B = T.budget[p], idx = budgetSet() && S.budget !== "x" ? S.budget.i : B.start;
       h = head + '<h1 id="st-h" tabindex="-1">' + title(T.budget.title) + "</h1>" +
@@ -99,7 +103,7 @@
         '<label class="st-label" for="st-range">' + esc(T.budget.drag) + "</label>" +
         '<input id="st-range" class="st-range" type="range" min="0" max="' + (B.stops.length - 1) + '" step="1" value="' + idx + '">' +
         '<div class="st-ends" aria-hidden="true"><span>' + esc(B.lo) + "</span><span>" + esc(B.hi) + "</span></div></div>" +
-        '<div class="st-act">' + nextBtn() + '<button type="button" class="st-btn st-btn--ghost" data-skip="budget">' + esc(T.budget.skip) + "</button>" + backBtn() + "</div>";
+        '<div class="st-act">' + nextBtn(0, 0, rec) + '<button type="button" class="st-btn st-btn--ghost" data-skip="budget">' + esc(T.budget.skip) + "</button>" + backBtn() + "</div>";
     } else if (step === "note") {
       var req = p === "other";
       h = head + '<h1 id="st-h" tabindex="-1">' + title(T.note.title) + "</h1>" +
@@ -108,7 +112,7 @@
         '<textarea id="st-note" class="st-input st-area" rows="4" maxlength="' + T.note.max + '" placeholder="' + esc(T.note.placeholder[p]) + '"' + (req ? " required" : "") + "></textarea></div>" +
         '<div class="st-field"><label class="st-label" for="st-link">' + esc(T.note.link) + "</label>" +
         '<input id="st-link" class="st-input" type="text" inputmode="url" autocapitalize="off" autocomplete="url" spellcheck="false" maxlength="200"></div></div>' +
-        '<div class="st-act">' + nextBtn() + backBtn() + "</div>";
+        '<div class="st-act">' + nextBtn(0, 0, rec) + backBtn() + "</div>";
     } else if (step === "contact") {
       h = head + '<h1 id="st-h" tabindex="-1">' + title(T.contact.title) + "</h1>" +
         '<form class="st-fields st-fields--contact" id="st-contact" novalidate>' +
@@ -257,13 +261,48 @@
       var h = document.getElementById("st-h"); if (h) h.focus({ preventScroll: true });
     }
   }
+  /* ---------- povijest preglednika (brand/28, L.1): svaki korak je unos u povijesti (stanje, ne adresa); Natrag/Naprijed i gumb "Back" rade isto ---------- */
+  var ORDER = ["intro", "need", "run", "time", "budget", "note", "contact"], sent = false, toStart = false;
+  function depth() { return history.state && typeof history.state.d === "number" ? history.state.d : 0; }
+  function mark(step, push) {                                            // push: novi korak naprijed; inače se zamijeni trenutni unos
+    if (!history.pushState) return;
+    try { if (push) history.pushState({ st: step, d: depth() + 1 }, ""); else history.replaceState({ st: step, d: depth() }, ""); } catch (e) {}
+  }
+  function fit(st) {                                                      // korak iz povijesti koji u trenutnom putu ne postoji: najbliži raniji koji postoji
+    if (st === "intro" || st === "need") return st;
+    if (!path() || ORDER.indexOf(st) < 0) return "need";                 // bez odabira u koraku 1 dalje se ne može
+    var list = steps(), i = ORDER.indexOf(st);
+    while (i > 1 && list.indexOf(ORDER[i]) < 0) i--;
+    return ORDER[i];
+  }
+  function forward(step) { show(step, 1); mark(step, true); }
+  window.addEventListener("popstate", function (e) {
+    var h = e.state; if (!h || !h.st) return;
+    if (toStart) { toStart = false; show("intro", 0); mark("intro", false); return; }
+    if (sent) {                                                           // nakon slanja: nikad ispunjena forma; povijest forme se preskoči do uvoda
+      sent = false; show("intro", -1);
+      if (h.d > 0) { toStart = true; history.go(-h.d); } else mark("intro", false);
+      return;
+    }
+    var step = fit(h.st);
+    show(step, ORDER.indexOf(step) < ORDER.indexOf(S.step) ? -1 : 1);
+    if (step !== h.st) mark(step, false);
+  });
+
   function go(d) {
     var list = steps(), i = list.indexOf(S.step);
-    if (S.step === "intro") return show("need", 1);
-    if (d < 0) return show(i > 0 ? list[i - 1] : "intro", -1);
+    if (S.step === "intro") return forward("need");
+    if (d < 0) {                                                          // gumb "Back" = strelica preglednika, bez dvostrukih unosa
+      if (depth() > 0) return history.back();
+      var prev = i > 0 ? list[i - 1] : "intro";
+      show(prev, -1); mark(prev, false); return;
+    }
     if (!valid()) return;
-    if (S.step === "contact") return send();
-    show(list[i + 1], 1);
+    if (S.step === "contact") {
+      if (path() === "other" && !S.note.trim()) { show("note", -1); mark("note", false); return valid(); }   // obavezan opis preskočen strelicom Naprijed
+      return send();
+    }
+    forward(list[i + 1]);
   }
   function valid() {
     var st = S.step;
@@ -298,7 +337,7 @@
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); })
       .then(function () {
         clear(); S = blank(); S.step = "sent";
-        show("sent", 1); fillSent(sum);
+        show("sent", 1); fillSent(sum); sent = true; mark("sent", false);
       })
       .catch(function () {
         btn.disabled = false; btn.removeAttribute("aria-busy");
@@ -310,7 +349,7 @@
   form.addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b || b.disabled) return;
     if (b.dataset.go) return go(b.dataset.go === "back" ? -1 : 1);
-    if (b.dataset.skip) { S[b.dataset.skip] = "x"; save(); return show(steps()[steps().indexOf(S.step) + 1], 1); }
+    if (b.dataset.skip) { S[b.dataset.skip] = "x"; save(); return forward(steps()[steps().indexOf(S.step) + 1]); }
     if (b.dataset.need) {
       var k = b.dataset.need;
       if (k === "other") S.need = { video: false, web: false, other: !S.need.other };
@@ -345,5 +384,9 @@
   });
 
   load();
+  var h0 = history.state;
+  if (t0 && h0 && h0.st && h0.st !== "sent") S.step = fit(h0.st);         // Natrag/Naprijed s druge stranice: korak iz povijesti (odgovori su iz preglednika)
+  if (!t0) S.step = "intro";                                              // nema spremljenih odgovora (poslano ili isteklo): uvod
   show(S.step, 0);
+  mark(S.step, false);
 })();

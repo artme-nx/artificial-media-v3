@@ -35,11 +35,20 @@
 .dots li { position: relative; padding-left: 20px; margin-bottom: 10px; }
 .dots li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
 
-/* gumb: tinta, crvena REC točka */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 14px 26px; background: var(--ink); color: var(--bg) !important; font: 600 16px/1.2 var(--ui); text-decoration: none; }
-.btn::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--red); }
-.btn:hover { background: #000; }
-.btn:focus-visible, .pg a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+/* gumb: smjer B "REC" na papiru (brand/28, I.4): tinta, crvena REC točka, natpis u AM Puni; crveno na hover i pritisak. Cijena desno (.btn-price), u Courier Prime */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 2px 20px 0; border-radius: 3px; background: var(--ink); color: var(--bg) !important; font: 400 26px/1 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; white-space: nowrap; text-decoration: none; transition: background-color .12s ease, color .12s ease; }
+.btn::before { content: ""; flex: none; width: 14px; height: 14px; margin-top: -2px; border-radius: 50%; background: var(--red); transition: background-color .12s ease; }
+.btn-price { margin-left: 12px; font: 700 12px/1 var(--script); letter-spacing: .16em; }
+/* natpis uvijek u jednom retku (I.4): gdje 26 px ne stane, natpis se smanjuje s ekranom, najmanje do 20 px */
+.btn--fit { font-size: clamp(20px, calc((100vw - 152px) / 10), 26px); }             /* academy: "Reserve your seat · €50" (na 390 px: 24 px) */
+.prod .btn { font-size: clamp(20px, calc((100vw - 140px) / 10.6), 26px); }          /* shop, mobitel: "See ART.ME ACADEMY" u kartici (na 390 px: 23,6 px) */
+@media (min-width: 760px) { .prod .btn { font-size: clamp(20px, calc((100vw - 298px) / 21.2), 26px); } }   /* dvije kartice u retku */
+@media (hover: hover) { .btn:hover { background: var(--red); color: #0A0A0A !important; } .btn:hover::before { background: #0A0A0A; } }
+.btn:active { background: var(--red); color: #0A0A0A !important; }
+.btn:active::before { background: #0A0A0A; }
+.pg a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.pg a.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .btn, .btn::before { transition: none; } }
 .btn + .small { display: block; margin-top: 12px; }
 .btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
 .note { display: block; margin-top: 4px; }
@@ -289,12 +298,29 @@
 /* gumbi */
 .st-act { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; flex: 1; }
 .st-btn { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 60px; padding: 0 22px; border: 0; border-radius: 3px; background: var(--st-btn); color: #1D1B18; font: 600 17px/1 var(--ui); text-decoration: none; cursor: pointer; }
-.st-btn:hover { background: #fff; }
-.st-btn:disabled { opacity: .35; cursor: not-allowed; background: var(--st-btn); }
-.st-btn[aria-busy="true"] { opacity: .6; cursor: progress; }
+/* glavni gumb, smjer B "REC" (brand/28, I.1–I.2): blok boje papira, crvena REC točka, natpis u AM Puni, brojač koraka desno; crveno na hover i pritisak */
+.st-rec { justify-content: space-between; gap: 16px; padding: 0 20px; background: var(--st-btn); color: #1D1B18; transition: background-color .12s ease, color .12s ease; }
+.st-rec--mid { justify-content: center; }           /* bez brojača ("Start", "Send brief"): točka i natpis u sredini */
+.st-rec-l { display: flex; align-items: center; gap: 12px; min-width: 0; padding-top: 2px; font: 400 26px/1 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; white-space: nowrap; }   /* AM Puni sjedi visoko: 2 px niže, u ravnini s točkom */
+.st-rec-dot { flex: none; width: 14px; height: 14px; margin-top: -2px; border-radius: 50%; background: var(--red); transition: background-color .12s ease; }
+.st-rec-n { flex: none; font: 700 12px/1 var(--script); letter-spacing: .16em; color: #5C574E; transition: color .12s ease; }
+@media (hover: hover) { .st-rec:hover { background: var(--red); color: #0A0A0A; } .st-rec:hover .st-rec-dot { background: #0A0A0A; } .st-rec:hover .st-rec-n { color: #0A0A0A; } }
+.st-rec:active { background: var(--red); color: #0A0A0A; }
+.st-rec:active .st-rec-dot { background: #0A0A0A; }
+.st-rec:active .st-rec-n { color: #0A0A0A; }
+.st .st-rec:focus-visible { outline: 2px solid var(--st-ink); outline-offset: 3px; }     /* crveni obrub se na crvenom gumbu ne vidi */
+.st-rec:disabled, .st-rec:disabled:hover, .st-rec:disabled:active { opacity: 1; cursor: not-allowed; border: 1px solid #3A3834; background: #141312; color: #7A766E; }
+.st-rec:disabled .st-rec-dot { background: #56534D; }
+.st-rec:disabled .st-rec-n { color: #7A766E; }
+/* zadnji korak: crveni blok; hover i pritisak obrnuto (papir, crvena točka) */
 .st-btn--send { background: var(--red); color: #0A0A0A; }
-.st-btn--send:hover { background: #F04A3C; }
-.st-btn--send:disabled { background: var(--red); }
+.st-btn--send .st-rec-dot { background: #0A0A0A; }
+@media (hover: hover) { .st-btn--send:hover { background: var(--st-btn); color: #1D1B18; } .st-btn--send:hover .st-rec-dot { background: var(--red); } }
+.st-btn--send:active { background: var(--st-btn); color: #1D1B18; }
+.st-btn--send:active .st-rec-dot { background: var(--red); }
+.st-rec[aria-busy="true"], .st-rec[aria-busy="true"]:hover { opacity: .6; cursor: progress; border: 0; background: var(--red); color: #0A0A0A; }   /* slanje u tijeku: kao prije */
+.st-rec[aria-busy="true"] .st-rec-dot { background: #0A0A0A; }
+@media (prefers-reduced-motion: reduce) { .st-rec, .st-rec-dot, .st-rec-n { transition: none; } }
 .st-btn--ghost { min-height: 52px; background: transparent; border: 1.5px solid rgba(244, 243, 239, .6); color: var(--st-ink); font-size: 16px; }
 .st-btn--ghost:hover { background: transparent; border-color: var(--st-ink); }
 .st-arr { flex: none; width: 18px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; }
@@ -446,7 +472,7 @@
   .st-act { flex: none; flex-direction: row; align-items: center; margin-top: auto; padding-top: 24px; }
   .st-scr--intro .st-act { margin-top: 8px; padding-top: 0; }
   .st-btn { width: 220px; }
-  .st-btn--start { width: 260px; min-height: 64px; font-size: 18px; }
+  .st-btn--start { width: 260px; min-height: 64px; }
   .st-btn--ghost { width: 180px; min-height: 60px; }
   .st-btn--send { width: 240px; }
   .st-wait { width: 300px; }
@@ -509,3 +535,20 @@
   .st-sent { gap: 56px; }
   .st-next { width: 340px; }
 }
+
+/* ---------- FUNSWAP: glavni gumb, smjer B "REC" (brand/28, I.4) ----------
+   Uski gumbi (.fs-cta bez --wide): natpis 20 px, točka 10 px. Široki: 26 px i 14 px. U crnoj traci i bloku plaćanja kao u formi /start/; .fs-cta--ink stoji na papiru. */
+.fs .fs-cta { gap: 10px; padding: 2px 16px 0; font: 400 20px/1 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; white-space: nowrap; transition: background-color .12s ease, color .12s ease; }
+.fs .fs-cta::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: -2px; border-radius: 50%; background: var(--red); transition: background-color .12s ease; }
+.fs .fs-cta--wide { gap: 12px; padding: 2px 20px 0; font-size: 26px; }
+.fs .fs-cta--wide::before { width: 14px; height: 14px; }
+@media (hover: hover) { .fs .fs-cta:hover:not(:disabled) { background: var(--red); color: #0A0A0A !important; } .fs .fs-cta:hover:not(:disabled)::before { background: #0A0A0A; } }
+.fs .fs-cta:active:not(:disabled) { background: var(--red); color: #0A0A0A !important; }
+.fs .fs-cta:active:not(:disabled)::before { background: #0A0A0A; }
+.fs .fs-cta:focus-visible { outline: 2px solid #F4F3EF; outline-offset: 3px; }
+.fs .fs-cta:disabled { opacity: 1; border: 1px solid #3A3834; background: #141312; color: #7A766E; }
+.fs .fs-cta:disabled::before { background: #56534D; }
+.fs .fs-cta--ink:focus-visible { outline-color: var(--ink); }
+.fs .fs-cta--ink:disabled { border: 0; background: var(--ink); color: var(--bg); opacity: .45; }   /* na papiru: nedostupno kao prije */
+.fs .fs-cta--ink:disabled::before { background: var(--red); }
+@media (prefers-reduced-motion: reduce) { .fs .fs-cta, .fs .fs-cta::before { transition: none; } }

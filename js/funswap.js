@@ -100,7 +100,7 @@
     var q = new URLSearchParams(location.search), state = read(), o = q.get("o") || state.o;
     if (!o) { location.replace("../"); return; }
     if (state.o !== o) state = { o: o, uploaded: {} };
-    state.uploaded = state.uploaded || {}; write(state);
+    state.uploaded = state.uploaded || {}; state.thumbs = state.thumbs || {}; write(state);   // thumbs: male sličice poslanih fotografija, samo u ovoj kartici (brand/28, L.2)
     var slots = [].slice.call(document.querySelectorAll(".fs-slot")), checks = [].slice.call(document.querySelectorAll("[data-fs-checks] input")), err = $("#fs-photo-err"), payErr = $("#fs-pay-err"), pay = $("#fs-pay"), missing = $("#fs-missing"), busy = 0;
     if (state.number) { $("#fs-card-n").innerHTML = 'No<span class="r">.</span> ' + state.number; setThumb($("#fs-card-thumb"), state); }
     function count() { return slots.filter(function (s) { return state.uploaded[s.dataset.slot]; }).length; }
@@ -119,11 +119,11 @@
         return new Promise(function (res, rej) { c.toBlob(function (b) { if (b) res(b); else rej(); }, "image/jpeg", 0.9); });
       }).then(function (b) { URL.revokeObjectURL(url); return b; }, function () { URL.revokeObjectURL(url); throw new Error("read"); });
     }
-    function clear(slot) { var box = slot.querySelector(".fs-shot"); if (box.firstChild) { URL.revokeObjectURL(box.firstChild.src); box.removeChild(box.firstChild); } }
+    function clear(slot) { var box = slot.querySelector(".fs-shot"); if (box.firstChild) { if (box.firstChild.src.indexOf("blob:") === 0) URL.revokeObjectURL(box.firstChild.src); box.removeChild(box.firstChild); } }
     function restart() {                                                  // narudžba je istekla (sat vremena bez aktivnosti): nova narudžba za isti video, fotografije iznova
       if (!state.id) { location.replace("../"); return; }
       return api("/orders", json({ video: state.id, number: state.number })).then(function (j) {
-        o = state.o = j.id; state.uploaded = {}; write(state);
+        o = state.o = j.id; state.uploaded = {}; state.thumbs = {}; write(state);
         history.replaceState(null, "", "?o=" + encodeURIComponent(o));
         slots.forEach(function (s) { clear(s); paint(s, false, "Add photo"); });
         fail(err, "Your photos were deleted after an hour without activity. Please add them again."); sync();
@@ -134,19 +134,32 @@
       clear(slot); img.alt = "";
       img.src = URL.createObjectURL(blob); box.appendChild(img);
     }
+    function small(blob) {                                                // sličica ~200 px po duljoj strani, za povratak na ovu stranicu (Natrag, Naprijed, refresh)
+      var url = URL.createObjectURL(blob), img = new Image();
+      return new Promise(function (res) { img.onload = res; img.onerror = res; img.src = url; }).then(function () {
+        URL.revokeObjectURL(url);
+        if (!img.naturalWidth) return "";
+        var k = Math.min(1, 200 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        try { return c.toDataURL("image/jpeg", 0.7); } catch (e) { return ""; }
+      });
+    }
+    function restore(slot, data) { var box = slot.querySelector(".fs-shot"), img = new Image(); clear(slot); img.alt = ""; img.src = data; box.appendChild(img); }
     slots.forEach(function (slot) {
       var input = slot.querySelector("input"), name = slot.dataset.slot;
-      if (state.uploaded[name]) paint(slot, true, "Replace");
+      if (state.uploaded[name]) { paint(slot, true, "Replace"); if (state.thumbs[name]) restore(slot, state.thumbs[name]); }   // bez sličice ostaje samo "Replace"
       input.addEventListener("change", function () {
         var f = input.files[0]; input.value = ""; err.hidden = true;
         if (!f) return;
-        delete state.uploaded[name]; write(state); paint(slot, false, "Uploading…"); slot.classList.add("busy"); busy++; sync();
+        delete state.uploaded[name]; delete state.thumbs[name]; write(state); paint(slot, false, "Uploading…"); slot.classList.add("busy"); busy++; sync();
+        var mini = "";
         toJpeg(f).then(function (b) {
           if (b.size > cfg.maxPhotoMB * 1048576) throw new Error("big");
           thumb(slot, b);
-          return api("/orders/" + encodeURIComponent(o) + "/photos/" + name, { method: "PUT", headers: { "Content-Type": "image/jpeg" }, body: b });
+          return small(b).then(function (d) { mini = d; return api("/orders/" + encodeURIComponent(o) + "/photos/" + name, { method: "PUT", headers: { "Content-Type": "image/jpeg" }, body: b }); });
         }).then(function () {
-          state.uploaded[name] = true; write(state); paint(slot, true, "Replace");
+          state.uploaded[name] = true; if (mini) state.thumbs[name] = mini; write(state); paint(slot, true, "Replace");
         }).catch(function (e) {
           clear(slot); paint(slot, false, "Add photo");
           if (e.status === 410) return restart();
@@ -171,6 +184,7 @@
   function status() {
     var q = new URLSearchParams(location.search), s = read(), o = q.get("o") || s.o;
     if (!o) { location.replace("../"); return; }
+    if (s.thumbs) { delete s.thumbs; write(s); }                          // narudžba je plaćena: sličice više ne trebaju
     var wait = $("#fs-wait"), blocks = [wait, $("#fs-ready"), $("#fs-refunded"), $("#fs-gone")], flying = false, done = false, poll;
     var WAIT = {
       confirming: { label: "CONFIRMING PAYMENT", text: "", close: false, red: false },
