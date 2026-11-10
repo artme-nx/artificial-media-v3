@@ -25,6 +25,7 @@
   var hero = $(".hero"), hint = $("#hint"), bar = $("#bar");
   var next = $("#next");                                               // završni ekran (tri pločice) ispod THE WORK
   var work = $("#work");                                               // THE WORK (29. 10. 2026.): zadnje zaustavljanje tijeka, iza #why
+  var AT_END = !!next && location.hash === "#next";                     // podstranice (logo, "Back to the homepage"; brand/28, H2–H3): odmah završni ekran, bez uvoda
   // Drugi slide (Kristian, 19. 10. 2026.): tri karte s videom u pozornici heroja umjesto slidea sa scenarijem.
   // Povratak na scenarij: SCREENPLAY = true, makni klasu has-cards s heroja i "hidden" sa sekcije #loop (index.html).
   var SCREENPLAY = false, CARDS = hero.classList.contains("has-cards"), ZOOM_VH = 2.2;   // zum u slovo D traje 220vh scrolla
@@ -181,8 +182,11 @@
       if (!v || on === seen) return; seen = on;
       if (on && state !== "idle") playV(v); else v.pause();
     }
+    function instant() {                                                // #next: blok WHERE ART već otvoren, bez animacije
+      if (!el) return; state = "out"; ["fade", "open", "out", "in"].forEach(function (c) { set(c, true); }); gone = true;
+    }
     return {
-      start: start, back: back, view: view,
+      start: start, back: back, view: view, instant: instant,
       busy: function () { return state !== "idle"; },                  // trake vani ili se vraćaju
       out: function () { return state === "out"; },
       gone: function () { return gone; }
@@ -259,7 +263,8 @@
         setTimeout(function () { el.classList.remove("moving"); set("off"); if (done) done(); }, T.IN);
       }); });
     }
-    return { enter: enter, leave: leave, hint: hint, covers: function () { return state === "in"; } };
+    function instant() { if (!el) return; el.classList.add("in"); state = "in"; if (why) why.classList.add("under"); }   // #next: polovice već stoje
+    return { enter: enter, leave: leave, hint: hint, instant: instant, covers: function () { return state === "in"; } };
   })();
   function renderCards(q, inView) {
     if (!CARDS) return;
@@ -761,7 +766,17 @@
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
       window.scrollTo(0, 0); setLock(true);
     }
+    function toEnd() {                                                   // #next: kao da su prođeni svi ekrani; gore se ide ekran po ekran, kao inače
+      if (reduce || !CARDS) { window.scrollTo(0, next.offsetTop); return; }
+      Bands.instant(true); Sum.instant(); if (screens.length) Who.instant(); if (Why) Why.instant();
+      var S = stops(), L = S.length - 1;
+      tweening = false; setReady(false); clearTimeout(holdT); tweenEnd = arrived = performance.now();
+      if (Math.abs(S[L] - next.offsetTop) < 1) { phase = "hero"; idx = L; cur = target = S[L]; setLock(true); }   // desktop: završni ekran je zadnje zaustavljanje
+      else { phase = "free"; idx = L; cur = target = S[L]; setLock(false); }                                   // mobitel: iza #work je običan scroll
+      window.scrollTo(0, next.offsetTop);
+    }
     return {
+      toEnd: toEnd,
       scriptDone: function (ms) { setTimeout(function () { phase = "free"; setLock(false); }, (ms || 0) + 250); },
       free: function () { return phase === "free"; },
       release: function () { if (phase !== "hero") return; if (idx === W3) fromWhy(); else if (idx < stops().length - 1) tweenTo(idx + 1); else leave(); },   // klik na SCROLL u #why (→ #work) i u #work (→ #next)
@@ -855,7 +870,12 @@
     }
     if (reduce) { rows.forEach(function (row) { row.classList.add("on"); }); note.classList.add("on"); setReady(true); }   // smanjeni pokret: sve odmah, bez odbrojavanja i crtanja, SCROLL odmah
     if (go) go.addEventListener("click", function () { if (ready) Flow.release(); });
-    return { down: down, up: up, isOpen: function () { return open; }, state: function () { return (open ? sec.querySelectorAll(".why-row.on").length : "zatvoren") + (ready ? "+SCROLL" : ""); } };
+    function instant() {                                                 // #next: WHO WE ARE? razdvojen, svi redovi stoje, SCROLL
+      open = true; door.classList.add("apart"); note.classList.add("on");
+      rows.forEach(function (row, k) { row.classList.add("on"); count(row, D.rows[k]); });
+      setReady(true);
+    }
+    return { down: down, up: up, instant: instant, isOpen: function () { return open; }, state: function () { return (open ? sec.querySelectorAll(".why-row.on").length : "zatvoren") + (ready ? "+SCROLL" : ""); } };
   })();
   window.AM_WHY = Why;
 
@@ -888,11 +908,11 @@
       [].forEach.call(next.querySelectorAll(".end-media"), attach);
     }, { rootMargin: "100% 0px" });
     nearIO.observe(next);
-    if (!reduce) next.classList.add("wait");
+    if (!reduce && !AT_END) next.classList.add("wait");                  // s #next pločice već stoje
     var io = new IntersectionObserver(function (es) {
       if (!es[0].isIntersecting) return;
       io.disconnect();
-      next.classList.remove("wait"); next.classList.add("in");
+      next.classList.remove("wait"); if (!AT_END) next.classList.add("in");
       setTimeout(function () { started = true; sync(); }, ENTER);
     }, { threshold: 0.2 });
     io.observe(next);
@@ -924,6 +944,20 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", function () { layout(); onScroll(); Marks.redraw(); });
   layout(); update();
+  var barLogo = bar && bar.querySelector(".bar-logo");                // logo u crnoj traci (WHY, THE WORK): završni ekran s tri pločice, kao na podstranicama (brand/28, H4)
+  if (barLogo && next) barLogo.addEventListener("click", function (e) {
+    e.preventDefault(); AT_END = true; next.classList.remove("wait"); Flow.toEnd();
+  });
+  if (AT_END) {
+    Flow.toEnd();
+    if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);   // osvježavanje opet otvara početnu od heroja
+    var touched = false;
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach(function (t) { window.addEventListener(t, function () { touched = true; }, { once: true, passive: true }); });
+    var reEnd = function () { if (!touched) Flow.toEnd(); };                   // THE WORK, pisma i slike mijenjaju raspored (i točke zaustavljanja) do učitavanja
+    setTimeout(reEnd, 0);
+    window.addEventListener("load", reEnd);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(reEnd);
+  }
   window.addEventListener("load", function () {                          // prvi kadrovi se dekodiraju kad je stranica učitana, a ne usred pokreta
     if (CARDS) { cards.forEach(function (c) { primeVideo(c.v); }); primeVideo($("#split-2 .split-v")); }
   });
