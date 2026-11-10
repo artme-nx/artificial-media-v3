@@ -50,49 +50,51 @@ body { margin: 0; background: var(--bg) var(--paper) repeat; background-size: 25
   font: 12px/1 var(--script); letter-spacing: .28em; color: var(--mute); transition: opacity .3s;
 }
 
-/* ---------- drugi slide: tri karte s videom (Kristian, 19. 10. 2026.) ----------
-   Karte su u pozornici heroja, iznad pokrova. Svaka se diže odozdo (js/main.js, renderCards) i stane:
-   prva na vrhu (cijeli ekran), druga od druge trećine, treća u donjoj trećini. Rečenica je u gornjem dijelu karte,
-   pa na kraju svaka stoji u svojoj trećini ekrana. */
-.hero.has-cards { height: 620vh; height: 620svh; }   /* 220 za zum u slovo D + 3 × 100 za karte + 100 pozornica */
+/* ---------- drugi slide: tri trake s videom (Kristian, 19. 10. i 10. 11. 2026.) ----------
+   Trake su u pozornici heroja, iznad pokrova. Na jedan pokret ulaze vodoravno, jedna za drugom (js/main.js, Bands, vremena u T):
+   gornja s lijeve strane, srednja s desne, donja s lijeve. Svaka traka je točno trećina visine; video je viši od nje i pomaknut, pa ostaje isti kadar. Kreće se samo transform. */
+.hero.has-cards { height: 620vh; height: 620svh; }   /* 220 za zum u slovo D + 3 × 100 (ostalo od dizanja karata; trake ih preskoče, a treba ih slobodan scroll) + 100 pozornica */
 .cards { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
 .hero:not(.has-cards) .cards { display: none; }
 html.cards-dark { background: #0A0A0A; }
 .card {
   position: absolute; left: 0; right: 0; top: 0; overflow: hidden; background: #0A0A0A;
-  transform: translateY(101%); visibility: hidden; will-change: transform;
-  box-shadow: 0 -18px 50px rgba(0, 0, 0, .5);
+  height: var(--band-h, 33.334%); box-shadow: 0 -18px 50px rgba(0, 0, 0, .5);
 }
-.card.c1 { height: 100%; --band: 33.334%; }
-.card.c2 { height: 66.667%; --band: 50%; }
-.card.c3 { height: 33.334%; --band: 100%; }
-.card-v { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.card.c2 { top: var(--band-h, 33.333%); }
+.card.c3 { top: calc(2 * var(--band-h, 33.333%)); height: var(--band-h3, 33.334%); }
+.card.c1, .card.c3 { transform: translate3d(calc(-100% - 90px), 0, 0); }   /* čeka izvan ekrana, na strani s koje ulazi */
+.card.c2 { transform: translate3d(calc(100% + 90px), 0, 0); }
+.card.seat { transform: none; }                                      /* sjela: bez vlastitog sloja, tekst je oštar */
+.cards.bands .card { transition: transform var(--band-in, 1050ms) var(--band-ease, cubic-bezier(.16, 1, .3, 1)); will-change: transform; }   /* sloj samo dok se traka miče (Bands) */
+.card-v { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+.card.c1 .card-v { top: -100%; height: 300%; }                       /* u trećini ostane sredina kadra */
+.card.c2 .card-v { top: -50%; height: 200%; }
 .card::before {                                                      /* blago zatamnjenje iza rečenice */
-  content: ""; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: var(--band);
+  content: ""; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 100%;
   background: linear-gradient(180deg, rgba(8, 8, 8, .5) 0%, rgba(8, 8, 8, .22) 75%, rgba(8, 8, 8, 0) 100%);
 }
 .card-t {
-  position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: var(--band); margin: 0;
+  position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 100%; margin: 0;
   display: flex; align-items: center; padding: 0 clamp(20px, 4vw, 64px);
   font: 400 clamp(34px, 5.6vw, 108px)/.86 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em;
-  color: #F4F3EF; text-wrap: balance; text-shadow: 0 2px 30px rgba(0, 0, 0, .25); will-change: transform, opacity;
+  color: #F4F3EF; text-wrap: balance; text-shadow: 0 2px 30px rgba(0, 0, 0, .25);
 }
 .card-t .dot { color: var(--red); }
 /* ZAKLJUČAK (21. 10. 2026.): na pokret prema dolje nakon treće karte rečenice na kartama izblijede, a trake odu svaka na svoju
    stranu (gornja lijevo, srednja desno, donja lijevo) i otkriju #sum: lijevo papir s rečenicom, desno video. Natrag: obrnutim redom.
    Klase na .cards: fade (rečenice na kartama), open (#sum vidljiv), out (trake vani), in (rečenica). VREMENA su u js/main.js (Sum, T):
    tamo se postave varijable --sum-fade, --sum-out, --sum-step, --sum-vfade, --sum-in, --sum-rise i --sum-back. */
-/* samo dok je zaključak otvoren (open); karte se inače dižu bez ikakve CSS tranzicije, kao prije (js/main.js, renderCards) */
-.cards.open .card { transition: translate var(--sum-back) cubic-bezier(.65, 0, .35, 1); }
+/* samo dok je zaključak otvoren (open) */
+.cards.open .card { transition: transform var(--sum-back) cubic-bezier(.65, 0, .35, 1); }
 .cards.open .card.c3 { transition-delay: 0s; } .cards.open .card.c2 { transition-delay: var(--sum-step); } .cards.open .card.c1 { transition-delay: calc(2 * var(--sum-step)); }
 .cards.out .card { transition-duration: var(--sum-out); }
-.cards.out .card.c1 { translate: calc(-100% - 90px) 0; transition-delay: 0s; }   /* + 90 px da ne ostane sjena trake */
-.cards.out .card.c2 { translate: calc(100% + 90px) 0; transition-delay: var(--sum-step); }
-.cards.out .card.c3 { translate: calc(-100% - 90px) 0; transition-delay: calc(2 * var(--sum-step)); }
-.cards.open .card { background: transparent; }   /* dio karte bez videa (video je pomaknut gore) ne bljesne crno: ispod je #sum */
+.cards.out .card.c1 { transform: translate3d(calc(-100% - 90px), 0, 0); transition-delay: 0s; }   /* + 90 px da ne ostane sjena trake */
+.cards.out .card.c2 { transform: translate3d(calc(100% + 90px), 0, 0); transition-delay: var(--sum-step); }
+.cards.out .card.c3 { transform: translate3d(calc(-100% - 90px), 0, 0); transition-delay: calc(2 * var(--sum-step)); }
 .card-t > span { transition: opacity var(--sum-fade) ease; }
 .cards.fade .card-t > span { opacity: 0; }
-/* SPLIT (27. 10. 2026.): zajednički izgled bloka WHERE ART (#sum) i ekrana 2 i 3 iza njega: pola ekrana papir s naslovom, pola video.
+/* SPLIT (27. 10. 2026.): zajednički izgled bloka WHERE ART (#sum) i ekrana WHO WE ARE? iza njega: pola ekrana papir s naslovom, pola video.
    .split--text-left: papir lijevo; .split--text-right: video lijevo. Na mobitelu (dolje) papir gore, video dolje. */
 .split { display: grid; grid-template-columns: 1fr 1fr; }
 .split-paper {
@@ -101,47 +103,61 @@ html.cards-dark { background: #0A0A0A; }
 }
 .split-t { margin: 0; font: 400 5.6vw/.86 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; color: var(--ink); text-wrap: balance; }
 .split-t .r { color: var(--red); }
-.split-p { margin: 1.6vw 0 0; max-width: 34ch; font: 400 1.15rem/1.5 var(--script); color: var(--ink); }
 .split-media { position: relative; overflow: hidden; background: #0A0A0A; }
 .split-v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .split--text-right .split-media { order: -1; }
 .split-screen { height: 100vh; height: 100svh; }
-/* ekran 3 je vrata sekcije #why (29. 10. 2026.): pokret dolje razdvoji ga, papir ode lijevo, video desno (js/main.js, Why, klasa apart) */
-#split-3 { position: relative; z-index: 1; overflow: hidden; }
-#split-3 .split-paper, #split-3 .split-media { transition: translate var(--why-split, 900ms) cubic-bezier(.65, 0, .35, 1); }
-#split-3.apart .split-paper { translate: -100% 0; }
-#split-3.apart .split-media { translate: 100% 0; }
+/* WHO WE ARE? (10. 11. 2026.): leži točno preko bloka WHERE ART (negativni margin), polovice čekaju izvan ekrana (js/main.js, Who, klasa in): video odozdo, papir odozgo.
+   Ujedno je vrata sekcije #why: pokret dolje nastavi kretanje polovica (video gore, papir dolje) i otkrije tablicu (js/main.js, Why, klasa apart). */
+#split-2 { position: relative; z-index: 1; margin-top: -100vh; margin-top: -100svh; overflow: hidden; pointer-events: none; }
+#split-2 .split-paper, #split-2 .split-media { transition: transform var(--who-in, 1050ms) var(--who-ease, cubic-bezier(.16, 1, .3, 1)); }
+#split-2 .split-media { transform: translate3d(0, 100%, 0); }
+#split-2 .split-paper { transform: translate3d(0, -100%, 0); }
+#split-2.in .split-paper, #split-2.in .split-media { transform: none; }
+#split-2.moving .split-paper, #split-2.moving .split-media { will-change: transform; }   /* sloj samo dok se polovice miču (Who, Why) */
+#split-2.apart .split-paper, #split-2.apart .split-media { transition: transform var(--why-split, 900ms) cubic-bezier(.65, 0, .35, 1); }
+#split-2.apart .split-media { transform: translate3d(0, -100%, 0); }
+#split-2.apart .split-paper { transform: translate3d(0, 100%, 0); }
 
 /* ---------- ZAŠTO AI PRODUKCIJA (#why, 29. 10. 2026.) ----------
-   Leži točno ispod ekrana 3 (negativni margin), crna. Tablica: zaglavlje (TRADITIONAL SHOOT sivo, ARTIFICIAL MEDIA crveno) i četiri reda;
-   svaki red: naziv, brojka klasične produkcije (siva) i naša (papir) s trakama ispod. Vremena su u js/main.js (Why, T). */
+   Leži točno ispod ekrana WHO WE ARE? (negativni margin), crna; skrivena dok taj ekran ne stoji, jer je inače preko bloka WHERE ART. Tablica: zaglavlje (TRADITIONAL SHOOT sivo, ARTIFICIAL MEDIA crveno) i četiri reda;
+   svaki red: naziv s podnaslovom, brojka klasične produkcije (siva) i naša (papir) s trakama ispod, a pod tablicom footnote.
+   Sve mora stati u jedan ekran: redovi se stisnu ako treba, veličine prate i visinu ekrana. Podaci: js/why-data.js. Vremena: js/main.js (Why, T). */
 .why {
   --why-grey: #8A867E; --why-line: rgba(236, 232, 223, .25);
-  position: relative; z-index: 0; height: 100vh; height: 100svh; margin-top: -100vh; margin-top: -100svh; overflow: hidden;
+  position: relative; z-index: 0; height: 100vh; height: 100svh; margin-top: -100vh; margin-top: -100svh; overflow: hidden; visibility: hidden;
   background: #0A0A0A; color: var(--bg);
 }
-.why-in { position: absolute; left: 8vw; right: 8vw; top: calc(var(--bar-h) + 3vh); }   /* sadržaj 84vw, ispod crne trake */
-.why-tag { margin: 0 0 4vh; font: .85rem/1 var(--script); letter-spacing: .28em; text-transform: uppercase; color: var(--bg); }
-.why-head, .why-row { display: grid; grid-template-columns: 34% 33% 33%; align-items: center; border-bottom: 1px solid var(--why-line); }
-.why-head { padding-bottom: 1.4vh; }
+.why.under { visibility: visible; }
+.why-in { position: absolute; left: 8vw; right: 8vw; top: calc(var(--bar-h) + 3vh); bottom: 88px; display: flex; flex-direction: column; }   /* sadržaj 84vw, između crne trake i SCROLL-a */
+.why-tag { flex: none; margin: 0 0 3.4vh; font: .85rem/1 var(--script); letter-spacing: .28em; text-transform: uppercase; color: var(--bg); }
+.why-table { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.why-head, .why-row { display: grid; grid-template-columns: 34fr 33fr 33fr; column-gap: 3vw; align-items: center; border-bottom: 1px solid var(--why-line); }
+.why-head { flex: none; padding-bottom: 1.4vh; }
 .why-h { font: .85rem/1.2 var(--script); letter-spacing: .18em; text-transform: uppercase; }
 .why-h--trad { color: var(--why-grey); }
 .why-h--am { color: var(--red); }
-.why-row { height: 16vh; }
-.why-dim { margin: 0; padding-right: 2vw; font: 1rem/1.3 var(--script); letter-spacing: .06em; text-transform: uppercase; color: var(--bg); }
+.why-row { flex: 0 1 16vh; min-height: 0; }
+.why-dim { margin: 0; font: 1rem/1.3 var(--script); letter-spacing: .06em; text-transform: uppercase; color: var(--bg); }
+.why-sub { margin: .5em 0 0; font: .68rem/1.2 var(--script); letter-spacing: .18em; text-transform: uppercase; color: var(--why-grey); }
 .why-cell { min-width: 0; }
-.why-num { margin: 0 0 1.2vh; font: 400 5vw/.86 "AM Puni", "Arial Black", Impact, sans-serif; white-space: nowrap; }
+.why-num { position: relative; margin: 0 0 1.2vh; font: 400 5vw/.86 "AM Puni", "Arial Black", Impact, sans-serif; font-size: min(5vw, 8.5svh); white-space: nowrap; }
 .why-cell--trad .why-num { color: var(--why-grey); }
 .why-cell--am .why-num { color: var(--bg); }
-.why-unit { margin-left: .5em; font: 1rem/1 var(--script); letter-spacing: .06em; text-transform: uppercase; color: var(--red); }
-.why-bar { display: block; width: calc(100% - 3vw); height: 4px; }      /* najveća vrijednost ispuni stupac minus 3vw */
-.why-bar b { display: block; height: 100%; transform: scaleX(0); transform-origin: 0 50%; transition: transform .3s ease; }
+.why-from { font: .85rem/1 var(--script); letter-spacing: .18em; text-transform: uppercase; color: var(--why-grey); }
+.why-from { position: absolute; left: 0; bottom: 100%; margin-bottom: 5px; }   /* iznad broja, da brojevi i trake u redu ostanu poravnati */
+.why-bar { display: block; height: 4px; }
+.why-bar b { display: block; width: max(24px, calc(var(--f, 1) * 100%)); height: 100%; transform: scaleX(0); transform-origin: 0 50%; transition: transform .3s ease; }   /* --f računa js/main.js (Why) */
 .why-cell--trad .why-bar b { background: var(--why-grey); }
 .why-cell--am .why-bar b { background: var(--red); }
-/* red dolazi (klasa on): fade s pomakom; traka se iscrta do svoje duljine (--f, js/main.js) */
-.why-row { opacity: 0; transform: translateY(16px); transition: opacity .3s ease, transform .3s ease; }
-.why-row.on { opacity: 1; transform: none; transition: opacity var(--why-in, 400ms) ease, transform var(--why-in, 400ms) ease; }
-.why-row.on .why-bar b { transform: scaleX(var(--f, 0)); transition: transform var(--why-count, 600ms) cubic-bezier(.22, .61, .36, 1); }
+.why-note { flex: none; max-width: 62em; margin: 14px 0 0; font: 400 .75rem/1.45 var(--ui); color: var(--why-grey); }
+.why-note a { color: inherit; }
+.why-note a:hover { color: var(--bg); }
+.why-note a:focus-visible { outline: 1px solid var(--red); outline-offset: 2px; }
+/* red dolazi (klasa on): fade s pomakom; traka naraste do svoje širine; krivulja je ista kao kod brojača (js/main.js, count) */
+.why-row, .why-note { opacity: 0; transform: translateY(16px); transition: opacity .3s ease, transform .3s ease; }
+.why-row.on, .why-note.on { opacity: 1; transform: none; transition: opacity var(--why-in, 400ms) ease, transform var(--why-in, 400ms) ease; }
+.why-row.on .why-bar b { transform: none; transition: transform var(--why-count, 600ms) var(--why-ease, cubic-bezier(.33, 1, .68, 1)); }
 .why-go {
   position: absolute; z-index: 3; left: 50%; bottom: 14px; margin: 0; padding: 8px 14px 8px calc(14px + .28em); transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -387,21 +403,38 @@ html.dark { background: #0A0A0A; }   /* traka za scrollbar uz crnu sekciju (js/r
 .next { height: 50vh; height: 50svh; background: var(--bg) var(--paper) repeat; background-size: 256px 256px; }
 .todo { margin: 0; padding: 26px 34px; border: 1px dashed rgba(244, 243, 239, .25); font: 14px/1.4 var(--script); color: rgba(244, 243, 239, .5); text-align: center; }
 
+/* #why na niskom ekranu računala: manji broj i razmaci, da FROM ostane unutar reda */
+@media (min-width: 641px) and (max-height: 720px) {
+  .why-tag { margin-bottom: 2vh; }
+  .why-num { font-size: min(5vw, 7svh); }
+  .why-from { margin-bottom: 2px; }
+  .why-note { max-width: none; margin-top: 8px; }
+}
+
 /* ---------- mobitel ---------- */
 @media (max-width: 640px) {
   .card-t { font-size: clamp(30px, 9.4vw, 46px); line-height: .9; padding: 0 16px; }
   .split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }    /* mobitel: gore papir s naslovom, dolje video */
   .split--text-right .split-media { order: 0; }
-  .why-in { left: 16px; right: 16px; top: calc(var(--bar-h) + 20px); }     /* mobitel: dva stupca, naziv preko cijele širine */
-  .why-tag { margin-bottom: 22px; }
+  .why-in { left: 16px; right: 16px; top: calc(var(--bar-h) + 1.4svh); bottom: 50px; }     /* mobitel: dva stupca, naziv preko cijele širine */
+  .why-tag { margin-bottom: 1.4svh; font-size: .75rem; }
   .why-head, .why-row { grid-template-columns: 1fr 1fr; column-gap: 12px; }
+  .why-head { padding-bottom: 6px; }
+  .why-h { font-size: .75rem; }
   .why-h--dim, .why-h-x { display: none; }
-  .why-row { height: auto; min-height: 16vh; padding: 14px 0; box-sizing: border-box; align-content: center; }
-  .why-dim { grid-column: 1 / -1; margin-bottom: 10px; padding-right: 0; font-size: .9rem; }
-  .why-num { margin-bottom: 8px; font-size: 11vw; }
-  .why-bar { width: calc(100% - 3vw); }
+  .why-row { flex: 0 1 15svh; align-content: center; }
+  .why-label { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 10px; margin-bottom: 13px; }
+  .why-dim { font-size: .8rem; line-height: 1.2; }
+  .why-sub { margin: 0; font-size: .58rem; letter-spacing: .12em; }
+  .why-num { margin-bottom: 5px; font-size: 10.4vw; font-size: min(10.4vw, 5.6svh); }
+  .why-from { margin-bottom: 3px; font-size: .7rem; }
+  .why-bar { height: 3px; }
+  .why-note { margin-top: 8px; font-size: .68rem; line-height: 1.35; }
+  .why-go { bottom: 0; padding-top: 6px; padding-bottom: 6px; gap: 5px; }
+  .why-go::after { height: 14px; }
   .split-t { font-size: 12vw; }
-  .split-p { margin-top: 14px; font-size: 1rem; }
+  #split-2.apart .split-media { transform: translate3d(0, 100%, 0); }    /* mobitel: papir je gore, video dolje, pa se otvore prema van */
+  #split-2.apart .split-paper { transform: translate3d(0, -100%, 0); }
   .cards.in .cards-go { left: 50%; transform: translateX(-50%); padding: 8px 14px 8px calc(14px + .28em); color: #F4F3EF; text-shadow: 0 1px 12px rgba(0, 0, 0, .6); }   /* mobitel: dolje je video */
   :root { --bar-h: 48px; }
   .bar { padding: 0 16px; }
@@ -447,9 +480,11 @@ html.dark { background: #0A0A0A; }   /* traka za scrollbar uz crnu sekciju (js/r
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .why { margin-top: 0; }                                           /* bez razdvajanja: #why stoji ispod ekrana 3, sve odmah vidljivo */
-  .why-row { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .why-bar b { transform: scaleX(var(--f, 0)) !important; transition: none !important; }
+  #split-2 { margin-top: 0; }
+  #split-2 .split-paper, #split-2 .split-media { transform: none !important; transition: none !important; }
+  .why { margin-top: 0; visibility: visible; }                      /* bez razdvajanja: #why stoji ispod ekrana WHO WE ARE?, sve odmah vidljivo */
+  .why-row, .why-note { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .why-bar b { transform: none !important; transition: none !important; }
   .card, .card-t > span, .sum .split-t, .sum .split-v { transition: none !important; }
   .bar { transition: none; }
   .caret::after { animation: none; }

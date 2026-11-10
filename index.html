@@ -39,8 +39,8 @@
         </defs>
         <rect id="cover-rect" class="cover-rect" x="0" y="0" fill="url(#paper)" mask="url(#holes)"/>
       </svg>
-      <!-- DRUGI SLIDE (Kristian, 19. 10. 2026.): nakon zuma u slovo D tri videa se dižu jedan za drugim i slažu kao karte.
-           Prvi preko cijelog ekrana s rečenicom u gornjoj trećini, drugi stane od druge trećine, treći u donjoj trećini.
+      <!-- DRUGI SLIDE (Kristian, 19. 10. i 10. 11. 2026.): nakon zuma u slovo D jedan pokret pokrene tri trake, svaku u svojoj trećini ekrana:
+           gornja ulazi s lijeve strane, srednja s desne, donja s lijeve (js/main.js, Bands).
            PRIVREMENI VIDEI: zamijeni video/cards/card-1.mp4, card-2.mp4 i card-3.mp4 (i .jpg) pravim videima istog imena. -->
       <div class="cards" id="cards">
         <!-- ZAKLJUČAK (Kristian, 21. 10. 2026.): na prvi pokret prema dolje nakon treće karte rečenice na kartama nestanu, a trake odu svaka na svoju stranu
@@ -50,9 +50,9 @@
           <div class="split-paper"><p class="split-t">Where <span class="r">Art</span><br>Meets<br>Intelligence<span class="r">.</span></p></div>
           <div class="split-media"><video class="split-v" src="video/sum.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
         </div>
-        <div class="card c1"><video class="card-v" src="video/cards/card-1.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
-        <div class="card c2"><video class="card-v" src="video/cards/card-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
-        <div class="card c3"><video class="card-v" src="video/cards/card-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p></div>
+        <div class="card c1"><video class="card-v" src="video/cards/card-1.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
+        <div class="card c2"><video class="card-v" src="video/cards/card-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
+        <div class="card c3"><video class="card-v" src="video/cards/card-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p></div>
         <!-- SCROLL: na trećoj karti nakon sekunde mira, pa na zaključku 1,5 s nakon rečenice (js/main.js, Flow, klasa ready na .cards) -->
         <p class="cards-go" id="cards-go" aria-hidden="true">SCROLL</p>
       </div>
@@ -73,24 +73,18 @@
     </div>
   </section>
 
-  <!-- EKRANI 2 i 3 (Kristian, 27. 10. 2026.): puni ekrani iza bloka WHERE ART, isti izgled kao on (zajednička klasa .split, css/style.css).
+  <!-- WHO WE ARE? (Kristian, 27. 10. i 10. 11. 2026.): leži točno preko bloka WHERE ART; polovice ulaze same (video odozdo, papir odozgo; js/main.js, Who). Isti izgled kao WHERE ART (zajednička klasa .split, css/style.css).
        .split--text-right: video lijevo, papir s tekstom desno; .split--text-left: papir lijevo, video desno. Na mobitelu je papir gore, video dolje.
-       Tijek: jedan pokret = jedan ekran (js/main.js, Flow). PRIVREMENO: video/split-2.mp4 i split-3.mp4 (kopije card-2 i card-3), tekst ekrana 3. -->
+       Tijek: jedan pokret = jedan ekran (js/main.js, Flow). PRIVREMENO: video/split-2.mp4 (kopija card-2). -->
   <section class="split split--text-right split-screen" id="split-2" aria-labelledby="split-2-title">
     <div class="split-paper"><h2 class="split-t" id="split-2-title">Who<br>We<br>Are<span class="r">?</span></h2></div>
-    <div class="split-media"><video class="split-v" src="video/split-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video></div>
+    <div class="split-media"><video class="split-v" src="video/split-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
   </section>
-  <section class="split split--text-left split-screen" id="split-3" aria-labelledby="split-3-title">
-    <div class="split-paper"><h2 class="split-t" id="split-3-title">Headline goes here</h2><p class="split-p">Paragraph goes here.</p></div>
-    <div class="split-media"><video class="split-v" src="video/split-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video></div>
-  </section>
-
-  <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. 2026.; tablica 29. 10.): leži točno ispod ekrana 3. Pokret dolje razdvoji ekran 3 (papir lijevo,
-       video desno) i otkrije zaglavlje; svaki sljedeći pokret dovede jedan red (js/main.js, Why).
-       SAV TEKST I BROJKE SU PRIVREMENI (nisu tvrdnje). U svakom redu: naziv dimenzije (.why-dim), brojka klasične produkcije i naša brojka
-       (data-value na .why-val: cijeli broj, isti broj znamenki ostaje i dok se odbrojava; upiši ga i u sam element), jedinica uz našu brojku
-       (.why-unit, npr. %, X, DAYS) i data-max na redu (vrijednost koja ispuni cijelu traku; prazno = veća od dvije brojke). -->
+  <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. i 10. 11. 2026.): leži točno ispod ekrana WHO WE ARE?. Pokret dolje razdvoji taj ekran (video gore, papir dolje)
+       i otkrije tablicu; redovi dođu sami, jedan za drugim (js/main.js, Why).
+       Brojke i tekstovi mijenjaju se SAMO u js/why-data.js. Ovdje stoje iste konačne vrijednosti, da se vide i bez JavaScripta. -->
   <section class="why" id="why" aria-labelledby="why-title">
+    <noscript><style>#split-2, .why { margin-top: 0; } #split-2 .split-paper, #split-2 .split-media { transform: none; } .why { visibility: visible; } .why-row, .why-note { opacity: 1; transform: none; } .why-bar { display: none; }</style></noscript>
     <div class="why-in">
       <p class="why-tag" id="why-title">Why AI production</p>
       <div class="why-table" role="table" aria-labelledby="why-title">
@@ -99,27 +93,28 @@
           <span class="why-h why-h--trad" role="columnheader">Traditional<span class="why-h-x"> shoot</span></span>
           <span class="why-h why-h--am" role="columnheader">Artificial Media</span>
         </div>
-      <div class="why-row" role="row" data-max="">
-        <p class="why-dim" role="rowheader">Days to delivery</p>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Days to delivery</p><p class="why-sub">Lower is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">42</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">07</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
       </div>
-      <div class="why-row" role="row" data-max="">
-        <p class="why-dim" role="rowheader">Cost</p>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Cost</p><p class="why-sub">Lower is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">25.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from">From</span><span class="why-val">3.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
       </div>
-      <div class="why-row" role="row" data-max="">
-        <p class="why-dim" role="rowheader">Formats from one master</p>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Formats from one master</p><p class="why-sub">Higher is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">01</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">05</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
       </div>
-      <div class="why-row" role="row" data-max="">
-        <p class="why-dim" role="rowheader">Rounds of revisions</p>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-val" data-value="00">00</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Rounds of revisions</p><p class="why-sub">Higher is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">02</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">04</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
       </div>
       </div>
+      <p class="why-note" id="why-note">Traditional figures are typical published ranges for a professionally produced 30-second commercial: 4–8 weeks from concept to delivery and $5K–$100K in production cost depending on tier, usually framed for a single format. We use 6 weeks and $25K as a mid-point. Source: <a href="https://c-istudios.com/30-second-commercial-cost/" target="_blank" rel="noopener">C&amp;I Studios, "30-Second Commercial Cost"</a>. Artificial Media pricing starts at $3K; final quotes depend on scope.</p>
     </div>
     <p class="why-go" id="why-go" aria-hidden="true">SCROLL</p>
   </section>
@@ -186,6 +181,7 @@
 
 <script src="js/logo-data.js"></script>
 <!-- <script src="js/typewriter-sounds.js"></script>  zvuk pisaćeg stroja: samo uz slide sa scenarijem -->
+<script src="js/why-data.js"></script>
 <script src="js/main.js"></script>
 <script src="js/reels-data.js"></script>
 <script src="js/reels.js"></script>
