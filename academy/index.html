@@ -22,47 +22,72 @@
 
 <main>
 <section class="ac-hero">
-  <span class="tag">ART.ME ACADEMY · Opens 18 March 2027 · Croatian and English</span>
+  <span class="tag">ART.ME ACADEMY · Opens 18 March 2027 · 100 founding seats</span>
   <h1>This school doesn't end with a video. It ends with a client<span class="r">.</span></h1>
   <p class="lead">A school of AI video production in four stages, from your first prompt to your own films. You learn the whole pipeline, you get the skills and tools we built for our own studio, and you pass CREATOR only when you have finished a job for a real client.</p>
-  <!-- STRIPE_LINK_ACADEMY -->
-  <a class="btn btn--fit" href="mailto:kristian@artificialmediastudio.com?subject=ART.ME%20ACADEMY%20reservation">Reserve your seat<span class="btn-price"><span class="sr-only"> · </span>€50</span></a>
-  <span class="small">€50 incl. VAT. Full refund until 18 April 2027. No questions.</span>
+  <!-- cijena kao "ulaznica" (brand/29, C): klikati se može samo gumb; € je uvijek u Interu (AM Puni ga nema) -->
+  <div class="ticket">
+    <div class="ticket-top">
+      <div class="ticket-a">
+        <p class="ticket-k"><i class="ticket-dot" aria-hidden="true"></i>FOUNDING PRICE</p>
+        <p class="ticket-p"><span class="eur">€</span><span class="ticket-n">50</span></p>
+        <p class="ticket-k">A MONTH · 100 SEATS</p>
+      </div>
+      <div class="ticket-b">
+        <p class="ticket-k">PUBLIC PRICE FROM 18 MARCH 2027</p>
+        <p class="ticket-p ticket-p--old"><span class="eur">€</span><span class="ticket-n">250</span><i class="ticket-x" aria-hidden="true"></i></p>
+        <p class="ticket-k">A MONTH</p>
+      </div>
+    </div>
+    <!-- STRIPE_LINK_ACADEMY -->
+    <a class="btn" href="mailto:kristian@artificialmediastudio.com?subject=ART.ME%20ACADEMY%20reservation">Reserve your seat</a>
+  </div>
+  <p class="ticket-note">€50 a month for as long as you stay a member.</p>
+  <p class="ticket-small">€50 today, VAT included, covers your first month. Full refund until 18 April 2027. No questions.</p>
 </section>
 
 <section class="sec honest">
   <h2>Before you read on</h2>
   <p>This is not a 30-day shortcut. CREATOR can be completed in under two months. ARTIST takes at least four to six. The pace is yours.</p>
-  <p>We don't promise income. We give you the pipeline, the tools and our help, and we grade what you do with them.</p>
+  <p>We don't promise income. We give you the pipeline, our skills, our help and CLIENT FINDER, the tool we use to find our own clients. Then we grade what you do with them.</p>
 </section>
 
 <section class="sec">
   <h2>Four stages. You pass each one.</h2>
+  <!-- razine: redovi s crnom glavom (brand/29, B); od 1040 px tri stupca, ispod složeno okomito -->
   <div class="stages">
+    <p class="stages-head" aria-hidden="true"><span>STAGE</span><span>WHAT YOU LEARN</span><span>HOW IT ENDS</span></p>
     <article class="stage">
-      <span class="stage-n">00</span>
-      <h3>BASIC</h3>
-      <span class="tag">required, starts from zero</span>
-      <p>What a prompt, a system prompt and a meta prompt are, and how to write and use them. Which models make images, which make video, which LLMs and skills do the rest, and in what order they work together. How to turn general AI models into one specialised setup that does your job.</p>
-      <p class="stage-end">If you already have experience, you will move through it quickly.</p>
+      <div class="stage-head">
+        <i class="stage-clap" aria-hidden="true"></i>
+        <div class="stage-id"><span class="stage-n">00</span><div><h3>BASIC</h3><p class="stage-k">REQUIRED, STARTS FROM ZERO</p></div></div>
+      </div>
+      <p class="stage-text">What a prompt, a system prompt and a meta prompt are, and how to write and use them. Which image model to use for what, since each is best at something different. Which video model we use for most work, and when we reach for another. Which LLMs and skills do the rest, and in what order they work together. How to turn general AI models into one specialised setup that does your job.</p>
+      <div class="stage-out"><p class="stage-out-k">GOOD TO KNOW</p><p class="stage-out-t">If you already have experience, you will move through it quickly.</p></div>
     </article>
     <article class="stage">
-      <span class="stage-n">01</span>
-      <h3>CREATOR</h3>
-      <p>Short ads, UGC content and motion design. This is where you unlock CLIENT FINDER.</p>
-      <p class="stage-end stage-end--pass">To pass: you land and deliver your first client job.</p>
+      <div class="stage-head">
+        <i class="stage-clap" aria-hidden="true"></i>
+        <div class="stage-id"><span class="stage-n">01</span><div><h3>CREATOR</h3><p class="stage-k">CLIENT FINDER UNLOCKS HERE</p></div></div>
+      </div>
+      <p class="stage-text">Short ads, UGC-style content and motion design that look filmed, not generated. Getting there takes practice, so this stage is mostly hands-on work. This is where you unlock CLIENT FINDER.</p>
+      <div class="stage-out stage-out--pass"><p class="stage-out-k"><i aria-hidden="true"></i>TO PASS</p><p class="stage-out-t">You land and deliver your first client job.</p></div>
     </article>
     <article class="stage">
-      <span class="stage-n">02</span>
-      <h3>DIRECTOR</h3>
-      <p>Ads for any kind of brand.</p>
-      <p class="stage-end">You leave with: your own portfolio.</p>
+      <div class="stage-head">
+        <i class="stage-clap" aria-hidden="true"></i>
+        <div class="stage-id"><span class="stage-n">02</span><div><h3>DIRECTOR</h3><p class="stage-k">LONGER ADS, ANY BRAND</p></div></div>
+      </div>
+      <p class="stage-text">The real fundamentals of cinematography and mid-level video production. You move from short clips into ads for any kind of brand, including ones that run for several minutes.</p>
+      <div class="stage-out"><p class="stage-out-k">YOU LEAVE WITH</p><p class="stage-out-t">Your own portfolio.</p></div>
     </article>
     <article class="stage">
-      <span class="stage-n">03</span>
-      <h3>ARTIST</h3>
-      <p>Everything before it, plus cinematography and art in depth: the craft that takes work to its highest quality and makes it your own. Our skills and tools carry knowledge that otherwise takes years on set to collect.</p>
-      <p class="stage-end">You leave with: a portfolio and the ability to make your own films.</p>
+      <div class="stage-head">
+        <i class="stage-clap" aria-hidden="true"></i>
+        <div class="stage-id"><span class="stage-n">03</span><div><h3>ARTIST</h3><p class="stage-k">YOUR OWN FILMS</p></div></div>
+      </div>
+      <p class="stage-text">Video production and cinematography in full: light, composition, depth, and the camera angles that make a viewer feel something. This is the craft that takes work to its highest quality and makes it your own. Our skills and tools carry knowledge that otherwise takes years on set to collect.</p>
+      <div class="stage-out"><p class="stage-out-k">YOU LEAVE WITH</p><p class="stage-out-t">A portfolio and the ability to make your own films.</p></div>
     </article>
   </div>
 </section>
@@ -101,7 +126,7 @@
     <li><strong>Skills.</strong> They turn Claude into a specialised AI for this production pipeline. Built in-house for our own studio work, not sold separately. You receive them stage by stage.</li>
     <li><strong>CLIENT FINDER.</strong> The way we find our own clients, packed into one tool. Unlocked in CREATOR, after you pass BASIC.</li>
     <li><strong>One live session a month in a group of up to 25.</strong> We run one group every week.</li>
-    <li><strong>Grading by the founder.</strong> Kristian Vajda grades every stage. Members who have already passed it comment on your work.</li>
+    <li><strong>Graded by the studio.</strong> Every stage is graded by hand at Artificial Media, led by Kristian Vajda. Members who have already passed it comment on your work.</li>
     <li><strong>A certificate</strong> for every stage you pass.</li>
     <li><strong>Founding members:</strong> our help with landing your first client.</li>
   </ul>
@@ -109,7 +134,7 @@
 
 <section class="sec">
   <h2>What you need (not included)</h2>
-  <p>A Claude subscription, a Higgsfield subscription, Adobe Premiere Pro, Adobe After Effects, and cloud storage such as iCloud or Google Drive. These are paid separately to their providers. ART.ME ACADEMY is not affiliated with them.</p>
+  <p>A Claude subscription, a Higgsfield subscription, Adobe Premiere Pro, Adobe After Effects, and cloud storage such as iCloud or Google Drive. These are paid separately to their providers. From DIRECTOR on you also use Blender, which is free. You don't need any experience with it. ART.ME ACADEMY is not affiliated with them.</p>
 </section>
 
 <section class="sec">
@@ -135,7 +160,8 @@
     <dt>Is this another AI course?</dt><dd>It's a school with exams. You pass each stage, and CREATOR ends with a real client job.</dd>
     <dt>I've never done this. Can I join?</dt><dd>Yes. BASIC starts from zero.</dd>
     <dt>What if I can't find a client?</dt><dd>That's what CLIENT FINDER is for, and founding members get our help with the first one. We don't promise income; you pass CREATOR when the job is done.</dd>
-    <dt>What else do I pay for?</dt><dd>Claude, Higgsfield, Premiere Pro, After Effects and cloud storage, paid to their providers.</dd>
+    <dt>What else do I pay for?</dt><dd>Claude, Higgsfield, Premiere Pro, After Effects and cloud storage, paid to their providers. Blender, used from DIRECTOR on, is free.</dd>
+    <dt>What language is it taught in?</dt><dd>English.</dd>
     <dt>Why €50 if the public price is €250?</dt><dd>Founding members help us shape the first class. In return your price stays €50 for as long as you're a member.</dd>
     <dt>Why only 100 seats?</dt><dd>Live sessions run in groups of 25 and every stage is graded by hand.</dd>
     <dt>Can I get my money back?</dt><dd>Yes, in full, until 18 April 2027. No questions.</dd>
@@ -143,7 +169,7 @@
 </section>
 
 <section class="sec ac-end">
-  <h2>100 seats. Opens 18 March 2027. Your price stays €50.</h2>
+  <h2>100 seats. Opens 18 March 2027. Your price stays <span class="eur">€</span>50.</h2>
   <!-- STRIPE_LINK_ACADEMY -->
   <a class="btn" href="mailto:kristian@artificialmediastudio.com?subject=ART.ME%20ACADEMY%20reservation">Reserve your seat</a>
   <p class="small">One payment of €50 today, VAT included. Monthly billing starts on 18 April 2027 only after you confirm it at opening. Members must be 18 or older, or have a parent or legal guardian make the purchase.</p>

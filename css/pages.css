@@ -35,12 +35,10 @@
 .dots li { position: relative; padding-left: 20px; margin-bottom: 10px; }
 .dots li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
 
-/* gumb: smjer B "REC" na papiru (brand/28, I.4): tinta, crvena REC točka, natpis u AM Puni; crveno na hover i pritisak. Cijena desno (.btn-price), u Courier Prime */
+/* gumb: smjer B "REC" na papiru (brand/28, I.4): tinta, crvena REC točka, natpis u AM Puni; crveno na hover i pritisak. */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 2px 20px 0; border-radius: 3px; background: var(--ink); color: var(--bg) !important; font: 400 26px/1 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; white-space: nowrap; text-decoration: none; transition: background-color .12s ease, color .12s ease; }
 .btn::before { content: ""; flex: none; width: 14px; height: 14px; margin-top: -2px; border-radius: 50%; background: var(--red); transition: background-color .12s ease; }
-.btn-price { margin-left: 12px; font: 700 12px/1 var(--script); letter-spacing: .16em; }
 /* natpis uvijek u jednom retku (I.4): gdje 26 px ne stane, natpis se smanjuje s ekranom, najmanje do 20 px */
-.btn--fit { font-size: clamp(20px, calc((100vw - 152px) / 10), 26px); }             /* academy: "Reserve your seat · €50" (na 390 px: 24 px) */
 .prod .btn { font-size: clamp(20px, calc((100vw - 140px) / 10.6), 26px); }          /* shop, mobitel: "See ART.ME ACADEMY" u kartici (na 390 px: 23,6 px) */
 @media (min-width: 760px) { .prod .btn { font-size: clamp(20px, calc((100vw - 298px) / 21.2), 26px); } }   /* dvije kartice u retku */
 @media (hover: hover) { .btn:hover { background: var(--red); color: #0A0A0A !important; } .btn:hover::before { background: #0A0A0A; } }
@@ -91,15 +89,47 @@
 
 /* ---------- akademija ---------- */
 .ac-hero h1 { font-size: clamp(44px, 9.4vw, 112px); }
-.ac-hero .btn { margin-top: 10px; }
 .honest p { max-width: 34em; font-size: 21px; line-height: 1.4; }
-.stages { display: grid; gap: 14px; }
-.stage { padding: 20px; border: 1px solid var(--ink); }
-.stage-n { display: block; font: 84px/.9 "AM Puni", "Arial Black", Impact, sans-serif; }
-.stage h3 { margin: 10px 0 2px; font-size: 32px; }
-.stage .tag { margin-bottom: 12px; }
-.stage-end { margin: 14px 0 0 !important; font-style: italic; }
-.stage-end--pass { color: #C22F24; font-weight: 600; }   /* REC crvena, malo tamnija da se čita na papiru */
+.eur { font-family: var(--ui); font-weight: 700; }                     /* AM Puni nema znak €: uvijek Inter (brand/29) */
+.ac-end h2 .eur { font-size: .8em; }
+
+/* cijena kao "ulaznica" iznad gumba (brand/29, C; mockup brand/academy-mockup, stupac 3). Mobitel prvi, od 641 px desktop mjere */
+.ticket { margin-top: 10px; }
+.ticket-top { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); border: 1.5px solid var(--ink); border-bottom: 0; border-radius: 3px 3px 0 0; }
+.ticket-a { display: flex; flex-direction: column; gap: 10px; padding: 16px; }
+.ticket-b { display: flex; flex-direction: column; gap: 10px; padding: 16px 14px; border-left: 1.5px dashed var(--ink); color: #5C574E; }
+.pg .ticket-k { display: flex; align-items: center; gap: 8px; margin: 0; font: 700 10px/1.3 var(--script); letter-spacing: .16em; }
+.pg .ticket-b .ticket-k:first-child { line-height: 1.35; letter-spacing: .12em; }
+.ticket-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+.pg .ticket-p { display: block; margin: 0; white-space: nowrap; }                    /* € i znamenke u istom retku, po osnovnoj liniji; čita se "€50" */
+.ticket-p .eur { font-size: 36px; line-height: 1; }
+.ticket-n { font: 400 64px/.86 "AM Puni", "Arial Black", Impact, sans-serif; }
+.pg .ticket-p--old { position: relative; align-self: flex-start; margin-top: auto; color: #6E6A62; }   /* precrtano crvenom crtom; nije <s>, čita se kao cijena */
+.ticket-p--old .eur { font-size: 20px; }
+.ticket-p--old .ticket-n { font-size: 36px; line-height: .9; }
+.ticket-x { position: absolute; left: -5px; right: -5px; top: 42%; height: 4px; background: var(--red); transform: rotate(-7deg); }
+.ticket .btn { display: flex; width: 100%; min-height: 60px; border-radius: 0 0 3px 3px; font-size: 24px; }
+.pg .ticket-note { margin: 18px 0 0; font-size: 15px; line-height: 1.5; }
+.pg .ticket-small { margin: 0; font-size: 14px; line-height: 1.5; color: #5C574E; }
+
+/* razine: redovi s crnom glavom (brand/29, B). Ispod 1040 px složeno okomito, od 1040 px tri stupca 300px | 1fr | 260px */
+.stages { display: grid; gap: 12px; }
+.stages-head { display: none; }
+.stage { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--ink); border-radius: 3px; }
+.stage-head { background: #0A0A0A; color: #F4F3EF; }
+.stage-clap { display: block; height: 12px; background: repeating-linear-gradient(-55deg, #F4F3EF 0 12px, #0A0A0A 12px 24px); }
+.stage-id { display: flex; align-items: flex-end; gap: 14px; padding: 16px 18px 18px; }
+.stage-id > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding-bottom: 2px; }
+.stage-n { flex: none; font: 400 60px/.86 "AM Puni", "Arial Black", Impact, sans-serif; }
+.pg .stage h3 { margin: 0; font-size: 28px; line-height: .92; }
+.pg .stage-k { margin: 0; font: 700 10px/1.35 var(--script); letter-spacing: .16em; color: #B8B4AB; }
+.pg .stage-text { margin: 0; padding: 16px 18px 18px; font-size: 16px; line-height: 1.55; }
+.stage-out { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px 16px; border-top: 1px solid var(--ink); }
+.pg .stage-out-k { display: flex; align-items: center; gap: 8px; margin: 0; font: 700 11px/1 var(--script); letter-spacing: .2em; color: #5C574E; }
+.pg .stage-out-t { margin: 0; font: 600 16px/1.35 var(--ui); }
+.stage-out--pass { border-top: 0; background: var(--red); color: #0A0A0A; }   /* CREATOR: cijelo polje crveno */
+.pg .stage-out--pass .stage-out-k { color: #0A0A0A; }
+.stage-out--pass .stage-out-k i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #0A0A0A; }
 
 /* CLIENT FINDER: crni slate, kao THE WORK */
 .slate { margin-top: 56px; padding: 44px 0; background: #0A0A0A; box-shadow: 0 0 0 100vmax #0A0A0A; clip-path: inset(0 -100vmax); color: var(--bg); }   /* crno do rubova ekrana, bez vodoravnog scrolla */
@@ -120,12 +150,36 @@
   .foot { padding: 44px 32px 48px; }
   .shop, .cols { grid-template-columns: 1fr 1fr; }
   .prod { padding: 30px 28px; }
-  .stages { grid-template-columns: 1fr 1fr; }
   .slate { padding: 64px 0; }
   .slate-steps { grid-template-columns: 1.5fr 1fr 1fr; gap: 36px; }
 }
+@media (min-width: 641px) {
+  .ticket { max-width: 420px; }
+  .ticket-top { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+  .ticket-a { padding: 18px 20px; }
+  .ticket-b { padding: 18px; }
+  .pg .ticket-k { font-size: 11px; letter-spacing: .18em; }
+  .pg .ticket-b .ticket-k:first-child { letter-spacing: .14em; }
+  .ticket-p .eur { font-size: 42px; }
+  .ticket-n { font-size: 76px; }
+  .ticket-p--old .eur { font-size: 24px; }
+  .ticket-p--old .ticket-n { font-size: 44px; }
+  .ticket .btn { min-height: 64px; }
+}
 @media (min-width: 1040px) {
-  .stages { grid-template-columns: repeat(4, 1fr); }
+  .stages-head { display: grid; grid-template-columns: 300px minmax(0, 1fr) 260px; margin: 0; padding: 0 1px; font: 700 11px/1 var(--script); letter-spacing: .22em; color: #5C574E; }   /* zaglavlja su ukras, ne naslovi */
+  .stages-head span + span { padding-left: 28px; }
+  .stages-head span:last-child { padding-left: 22px; }
+  .stage { display: grid; grid-template-columns: 300px minmax(0, 1fr) 260px; }
+  .stage-id { gap: 16px; padding: 20px 20px 22px; }
+  .stage-id > div { gap: 8px; padding-bottom: 3px; }
+  .stage-n { font-size: 76px; }
+  .pg .stage h3 { font-size: 30px; }
+  .pg .stage-k { line-height: 1.4; }
+  .pg .stage-text { padding: 22px 28px 24px; font-size: 17px; }
+  .stage-out { padding: 24px 22px; border-top: 0; border-left: 1px solid var(--ink); }
+  .stage-out--pass { border-left: 0; }
+  .pg .stage-out-t { font-size: 17px; }
 }
 @media (max-width: 640px) {
   .pg-logo { font-size: 21px; }
