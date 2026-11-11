@@ -12,6 +12,8 @@
   }
   function json(body) { return { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }; }
   function fail(el, text) { el.textContent = text; el.hidden = false; }
+  function media(f) { return !f || /^(https?:)?\//.test(f) ? f : cfg.api + "/gallery/" + f; }   // datoteka iz R2 servisa (js/funswap-data.js)
+  list.forEach(function (v) { v.src = media(v.src); v.poster = media(v.poster); });
   function setThumb(el, v) { el.style.backgroundImage = v && v.poster ? "url('" + v.poster + "')" : ""; }
 
   /* ---------- 1. galerija ---------- */
