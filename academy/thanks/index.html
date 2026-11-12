@@ -3,33 +3,73 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Thank you · ART.ME ACADEMY · Artificial Media</title>
+<title>You're in · ART.ME ACADEMY · Artificial Media</title>
 <meta name="description" content="Your seat in ART.ME ACADEMY is reserved. What happens next.">
-<meta name="theme-color" content="#ECE8DF">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0A0A0A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../css/ampuni-font.css">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/pages.css">
 </head>
-<body class="pg">
+<body class="pg ath-pg">
 
 <header class="bar">
   <a class="bar-logo pg-logo" href="../../#next" aria-label="Artificial Media, home"><span class="r">ART·ME</span></a>
   <nav class="bar-nav" aria-label="Main"><a href="../../shop/">Shop</a><a href="../../contact/">Contact</a></nav>
 </header>
 
-<main>
-<h1>Thank you<span class="r">.</span></h1>
-<p class="lead">Your seat in ART.ME ACADEMY is reserved. Here is what happens next.</p>
-<section class="sec">
-  <ol class="steps">
-    <li><span>You get a confirmation by email.</span></li>
-    <li><span>When the academy opens on 18 March 2027, you get your access and the monthly plan to confirm.</span></li>
-    <li><span>You can get a full refund until 18 April 2027. Write to <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a>.</span></li>
-  </ol>
-</section>
+<!-- zahvala nakon plaćanja, smjer B "klapa" (brand/33, C; mockup brand/academy-mockup/zahvala-odabrano-desktop i -zahvala-mobitel, stupac B).
+     Podaci dolaze sa servisa preko potpisane poveznice (?r=…&s=…); u adresi nema imena ni e-maila. Ime i e-mail se upisuju kao tekst. -->
+<i class="ath-slate" aria-hidden="true"></i>
+<main class="ath" data-academy="thanks" data-state="confirming">
+
+  <section class="ath-view ath-view--wait" aria-live="polite">
+    <p class="ath-msg">Confirming your payment…</p>
+    <p class="ath-slow" hidden>This is taking longer than usual. You can close this page. Your confirmation arrives by email once the payment goes through.</p>
+  </section>
+
+  <section class="ath-view ath-view--missing">
+    <p class="ath-msg">We couldn't find this reservation.</p>
+    <a class="ath-btn" href="../reserve/">RESERVE YOUR SEAT</a>
+  </section>
+
+  <section class="ath-view ath-view--paid">
+    <div class="ath-head">
+      <div>
+        <p class="ath-eye"><i class="ticket-dot" aria-hidden="true"></i>ART.ME ACADEMY · SEAT RESERVED</p>
+        <h1>YOU'RE IN.</h1>
+      </div>
+      <p class="ath-lead">Your founding seat is reserved. A confirmation is on its way to <span data-email></span>.</p>
+    </div>
+
+    <dl class="ath-data">
+      <div class="ath-d ath-d--name"><dt>NAME</dt><dd class="ath-big" data-name></dd></div>
+      <div class="ath-d ath-d--email"><dt>EMAIL</dt><dd class="ath-mail" data-email></dd></div>
+      <div class="ath-d ath-d--opens"><dt>OPENS</dt><dd class="ath-big">18 MARCH 2027</dd></div>
+      <div class="ath-d ath-d--paid"><dt>PAID TODAY, VAT INCLUDED</dt><dd class="ath-big"><span class="eur">€</span>50</dd></div>
+    </dl>
+
+    <div class="ath-body">
+      <div class="ath-next">
+        <h2 class="ath-k">WHAT HAPPENS NEXT</h2>
+        <ol>
+          <li><span class="ath-n">01</span><p>Check your inbox. Your confirmation and receipt are sent to the email you gave us.</p></li>
+          <li><span class="ath-n">02</span><p>Your invitation to the academy arrives at the same address. The academy opens on 18 March 2027.</p></li>
+        </ol>
+      </div>
+      <div class="ath-keep">
+        <p class="ath-keep-k"><i aria-hidden="true"></i>KEEP THESE</p>
+        <p class="ath-keep-t">YOUR NAME AND EMAIL ARE HOW YOU GET IN.</p>
+      </div>
+      <div class="ath-act">
+        <a class="ath-btn" href="../">BACK TO THE ACADEMY</a>
+        <p>Full refund until 18 April 2027. No conditions, no questions. <a href="../../refund-policy/">How refunds work</a></p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="foot">
@@ -38,5 +78,7 @@
   <p class="foot-pay">Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIAL MEDIA.</p>
 </footer>
 
+<script src="../../js/start-config.js"></script>
+<script src="../../js/academy.js"></script>
 </body>
 </html>
