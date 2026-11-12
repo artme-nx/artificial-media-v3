@@ -78,53 +78,15 @@
        .split--text-right: video lijevo, papir s tekstom desno; .split--text-left: papir lijevo, video desno. Na mobitelu je papir gore, video dolje.
        Tijek: jedan pokret = jedan ekran (js/main.js, Flow). PRIVREMENO: video/split-2.mp4 (kopija card-2). -->
   <section class="split split--text-right split-screen" id="split-2" aria-labelledby="split-2-title">
-    <div class="split-paper"><h2 class="split-t" id="split-2-title">Who<br>We<br>Are<span class="r">?</span></h2><p class="who-sub">AI-native production studio<span class="r">.</span></p></div>
+    <div class="split-paper"><h2 class="split-t" id="split-2-title">Who<br>We<br>Are<span class="r">?</span></h2></div>
     <p class="who-go" id="who-go" aria-hidden="true">SCROLL</p>
     <div class="split-media"><video class="split-v" src="video/split-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
   </section>
-  <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. i 10. 11. 2026.): leži točno ispod ekrana WHO WE ARE?. Pokret dolje razdvoji taj ekran (video gore, papir dolje)
-       i otkrije tablicu; redovi dođu sami, jedan za drugim (js/main.js, Why).
-       Brojke i tekstovi mijenjaju se SAMO u js/why-data.js. Ovdje stoje iste konačne vrijednosti, da se vide i bez JavaScripta. -->
-  <section class="why" id="why" aria-labelledby="why-title">
-    <noscript><style>#split-2, .why { margin-top: 0; } #split-2 .split-paper, #split-2 .split-media { transform: none; } .why { visibility: visible; } .why-row, .why-note { opacity: 1; transform: none; } .why-bar { display: none; }</style></noscript>
-    <div class="why-in">
-      <p class="why-tag" id="why-title">Why AI production</p>
-      <div class="why-table" role="table" aria-labelledby="why-title">
-        <div class="why-head" role="row">
-          <span class="why-h why-h--dim" role="columnheader"></span>
-          <span class="why-h why-h--trad" role="columnheader">Traditional<span class="why-h-x"> shoot</span></span>
-          <span class="why-h why-h--am" role="columnheader">Artificial Media</span>
-        </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Days to delivery</p><p class="why-sub">Lower is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">42</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">07</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Cost</p><p class="why-sub">Lower is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">25.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from">From</span><span class="why-val">3.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Formats from one master</p><p class="why-sub">Higher is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">01</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">05</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Rounds of revisions</p><p class="why-sub">Higher is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">02</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">04</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      </div>
-      <p class="why-note" id="why-note">Traditional figures are typical published ranges for a professionally produced 30-second commercial: 4–8 weeks from concept to delivery and $5K–$100K in production cost depending on tier, usually framed for a single format. We use 6 weeks and $25K as a mid-point. Source: <a href="https://c-istudios.com/30-second-commercial-cost/" target="_blank" rel="noopener">C&amp;I Studios, "30-Second Commercial Cost"</a>. Artificial Media pricing starts at $3K; final quotes depend on scope.</p>
-    </div>
-    <p class="why-go" id="why-go" aria-hidden="true">SCROLL</p>
-  </section>
-
   <!-- THE WORK (Kristian, 29. 10. 2026.; mockup brand/14-the-work-mockup-desktop.pdf): monitor lijevo, ispod ploča s projektima
        (PREV, kartica po projektu, NEXT), desno kartica projekta. Projekt se mijenja samo klikom (ili Enter / razmak), nikad scrollom.
        Monitor mijenja oblik po formatu klipa (16:9, 9:16, 21:9). Projekti i klipovi su u js/reels-data.js, ponašanje u js/reels.js.
-       Tijek: jedan pokret s #why dovede ovu sekciju, sljedeći ide dalje na #next (js/main.js, Flow). -->
+       Tijek (brand/35 F, 13. 11.): leži točno ispod ekrana WHO WE ARE?; pokret dolje razdvoji taj ekran (video gore, papir dolje) i otkrije ovu sekciju,
+       sljedeći ide dalje na #why (js/main.js, Flow i Door). -->
   <section class="work" id="work" aria-labelledby="work-title">
     <header class="wk-head">
       <h2 class="wk-title" id="work-title"><span class="wk-tw"><span>THE WORK<span class="r">.</span></span></span><span class="wk-n" id="wk-count" aria-hidden="true"></span></h2>
@@ -169,6 +131,45 @@
       </aside>
     </div>
     <p class="wk-go" id="wk-go" aria-hidden="true">SCROLL</p>
+  </section>
+
+  <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. i 10. 11. 2026.; iza THE WORK od 13. 11., brand/35 F): jedan pokret s THE WORK doveze ovaj ekran,
+       a redovi tablice dođu sami, jedan za drugim (js/main.js, Why).
+       Brojke i tekstovi mijenjaju se SAMO u js/why-data.js. Ovdje stoje iste konačne vrijednosti, da se vide i bez JavaScripta. -->
+  <section class="why" id="why" aria-labelledby="why-title">
+    <noscript><style>#split-2, .work { margin-top: 0; } #split-2 .split-paper, #split-2 .split-media { transform: none; } .work { visibility: visible; } .why-row, .why-note { opacity: 1; transform: none; } .why-bar { display: none; }</style></noscript>
+    <div class="why-in">
+      <p class="why-tag" id="why-title">Why AI production</p>
+      <div class="why-table" role="table" aria-labelledby="why-title">
+        <div class="why-head" role="row">
+          <span class="why-h why-h--dim" role="columnheader"></span>
+          <span class="why-h why-h--trad" role="columnheader">Traditional<span class="why-h-x"> shoot</span></span>
+          <span class="why-h why-h--am" role="columnheader">Artificial Media</span>
+        </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Days to delivery</p><p class="why-sub">Lower is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">42</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">07</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Cost</p><p class="why-sub">Lower is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">25.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from">From</span><span class="why-val">3.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Formats from one master</p><p class="why-sub">Higher is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">01</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">05</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Rounds of revisions</p><p class="why-sub">Higher is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">02</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">04</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      </div>
+      <p class="why-note" id="why-note">Traditional figures are typical published ranges for a professionally produced 30-second commercial: 4–8 weeks from concept to delivery and $5K–$100K in production cost depending on tier, usually framed for a single format. We use 6 weeks and $25K as a mid-point. Source: <a href="https://c-istudios.com/30-second-commercial-cost/" target="_blank" rel="noopener">C&amp;I Studios, "30-Second Commercial Cost"</a>. Artificial Media pricing starts at $3K; final quotes depend on scope.</p>
+    </div>
+    <p class="why-go" id="why-go" aria-hidden="true">SCROLL</p>
   </section>
 
   <!-- ZAVRŠNI EKRAN (Kristian, 10. 11. 2026.; brand/23): tri pločice-linka. SAV TEKST je ovdje: end-label (oznaka), end-t (naslov), end-line (redak).

@@ -24,7 +24,7 @@
   var svg = $("#cover"), letters = $("#letters"), maskRect = $("#mask-rect"), coverRect = $("#cover-rect");
   var hero = $(".hero"), hint = $("#hint"), bar = $("#bar");
   var next = $("#next");                                               // završni ekran (tri pločice) ispod THE WORK
-  var work = $("#work");                                               // THE WORK (29. 10. 2026.): zadnje zaustavljanje tijeka, iza #why
+  var work = $("#work"), why = $("#why");                             // THE WORK ispod ekrana WHO WE ARE?, iza njega #why (brand/35 F)
   // osvježavanje početne uvijek kreće od heroja, i s #next u adresi (brand/28, J); dolazak linkom s #next ostaje na pločicama
   // Natrag i Naprijed (brand/28, K): u povijesti preglednika stoji je li posjetitelj bio na pločicama ili ispod njih (history.state.end); povratak strelicom to vrati
   var NAV = window.performance && performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null, RELOAD = !!NAV && NAV.type === "reload";
@@ -108,7 +108,7 @@
     buildLetters(vw / vh >= 0.8 ? LINES2 : vw <= 640 ? LINES4 : LINES3);
     svg.setAttribute("viewBox", "0 0 " + vw + " " + vh);
     [maskRect, coverRect].forEach(function (r) { r.setAttribute("width", vw); r.setAttribute("height", vh); });
-    if (CARDS) hero.style.height = (Math.floor((ZOOM_VH + 3) * vh) + vh) + "px";   // kraj heroja na cijelom pikselu: WHO WE ARE? i #why leže točno preko pozornice
+    if (CARDS) hero.style.height = (Math.floor((ZOOM_VH + 3) * vh) + vh) + "px";   // kraj heroja na cijelom pikselu: WHO WE ARE? i #work leže točno preko pozornice
     var cb = $("#cards"), bh = Math.round(vh / 3);                // visine traka na cijelom pikselu, da tekst nakon sjedanja bude oštar
     if (cb) { cb.style.setProperty("--band-h", bh + "px"); cb.style.setProperty("--band-h3", (vh - 2 * bh) + "px"); }
     var mask = $("#holes"); mask.setAttribute("width", vw); mask.setAttribute("height", vh);
@@ -253,13 +253,13 @@
     return { enter: enter, leave: leave, instant: instant, covered: function () { return covered; }, entered: function () { return entered; } };
   })();
   /* WHO WE ARE? (Kristian, 10. 11. 2026.; brand/22): ekran leži preko bloka WHERE ART i ulazi u dvije polovice (video odozdo, papir odozgo), bez vožnje stranice.
-     Kretanje je u CSS-u (klasa in na #split-2). Dok ekran stoji, ispod njega se smije vidjeti #why (klasa under). */
+     Kretanje je u CSS-u (klasa in na #split-2). Dok ekran stoji, ispod njega se smije vidjeti #work (klasa under; brand/35 F). */
   var Who = (function () {
     var T = {
       IN: SLIDE.WHO,     // polovice uđu ili izađu
       HOLD: 500          // od kraja ulaska do SCROLL-a (isto kao na bloku WHERE ART, Sum; brand/35 E)
     };
-    var el = $("#split-2"), v = el && el.querySelector(".split-v"), why = $("#why"), state = "off", hintT = 0;
+    var el = $("#split-2"), v = el && el.querySelector(".split-v"), under = work, state = "off", hintT = 0;
     if (el) { el.style.setProperty("--who-in", T.IN + "ms"); el.style.setProperty("--who-ease", SLIDE.EASE); }
     function set(s) { state = s; onScroll(); }
     function hint(on) { clearTimeout(hintT); el.classList.toggle("ready", on); }   // SCROLL (pokret dalje ne ovisi o njemu)
@@ -267,17 +267,17 @@
       set("coming"); el.classList.add("moving");
       requestAnimationFrame(function () { requestAnimationFrame(function () {
         el.classList.add("in");
-        setTimeout(function () { el.classList.remove("moving"); set("in"); playV(v); if (why) why.classList.add("under"); hintT = setTimeout(function () { hint(true); }, T.HOLD); if (done) done(); }, T.IN);
+        setTimeout(function () { el.classList.remove("moving"); set("in"); playV(v); if (under) under.classList.add("under"); hintT = setTimeout(function () { hint(true); }, T.HOLD); if (done) done(); }, T.IN);
       }); });
     }
     function leave(done) {
-      set("going"); hint(false); if (v) v.pause(); if (why) why.classList.remove("under"); el.classList.add("moving");
+      set("going"); hint(false); if (v) v.pause(); if (under) under.classList.remove("under"); el.classList.add("moving");
       requestAnimationFrame(function () { requestAnimationFrame(function () {
         el.classList.remove("in");
         setTimeout(function () { el.classList.remove("moving"); set("off"); if (done) done(); }, T.IN);
       }); });
     }
-    function instant() { if (!el) return; el.classList.add("in"); state = "in"; if (why) why.classList.add("under"); }   // #next: polovice već stoje
+    function instant() { if (!el) return; el.classList.add("in"); state = "in"; if (under) under.classList.add("under"); }   // #next: polovice već stoje
     return { enter: enter, leave: leave, hint: hint, instant: instant, covers: function () { return state === "in"; } };
   })();
   function renderCards(q, inView) {
@@ -296,9 +296,9 @@
     if (heroVideo && covered !== heroCovered) { heroCovered = covered; if (covered) heroVideo.pause(); else playV(heroVideo); }
   }
 
-  // crna traka (Kristian, 10. 11. 2026.): tek kad se otvori tablica WHY i dalje; ekrani prije nemaju traku
+  // crna traka (Kristian, 10. 11. 2026.): tek kad se otvori THE WORK (brand/35 F) i dalje; ekrani prije nemaju traku
   function renderBar() {
-    var on = reduce ? $("#why").getBoundingClientRect().top <= 1 : hero.getBoundingClientRect().bottom < vh - 1 || (Why && Why.isOpen());
+    var on = reduce ? work.getBoundingClientRect().top <= 1 : hero.getBoundingClientRect().bottom < vh - 1 || (Door && Door.isOpen());
     bar.classList.toggle("on", on);
   }
 
@@ -571,10 +571,11 @@
      Jedan pokret prema gore: trake izađu i zum se odvrti natrag do heroja.
      Nakon treće trake (Kristian, 19. 10. 2026.: "neka se zaključa na 3-4 sekunde da stigne pogledati i pročitati")
      prema dolje se ništa ne miče 0,6 s (SEAT_HOLD). Onda SCROLL, i novi pokret prema dolje pošalje trake (Sum); dok odlaze i rečenica
-     ulazi, sve se upija, a 1,5 s nakon rečenice opet SCROLL. Prvi pokret prema dolje (ili klik na SCROLL) tada dovede ekran WHO WE ARE? u dvije polovice (Who),
-     sljedeći ga razdvoji i otkrije #why (razdvajanje i četiri reda, Why), pa jedan pokret
-     glatko doveze THE WORK (#work, 29. 10. 2026.), sljedeći završni ekran (#next); tamo sljedeći otključa stranicu prema footeru (na mobitelu se otključa već s #work).
-     Prema gore ekran po ekran; iz slobodnog scrolla natrag iznad #work tijek se opet zaključa na #work.
+     ulazi, sve se upija, a 0,5 s nakon rečenice opet SCROLL. Prvi pokret prema dolje (ili klik na SCROLL) tada dovede ekran WHO WE ARE? u dvije polovice (Who),
+     sljedeći ga razdvoji i otkrije THE WORK (#work, Door; redoslijed od 13. 11., brand/35 F), pa jedan pokret
+     glatko doveze #why (četiri reda dođu sama, Why), sljedeći završni ekran (#next); tamo sljedeći otključa stranicu prema footeru.
+     Na mobitelu je #work viši od ekrana: otključa se već s #work, a #why i #next su običan scroll (redovi #why krenu kad se ekran vidi).
+     Prema gore ekran po ekran; iz slobodnog scrolla natrag iznad zadnjeg zaustavljanja tijek se opet zaključa na njemu.
      Vodoravni pokreti (trackpad, prst po ploči s projektima) ne broje se kao korak.
      Jedan pokret = jedan korak u cijelom tijeku; rep inercije trackpada se ne broji (wheelNew).
      Uz scenarij (SCREENPLAY) jedino zaustavljanje je naslov, a otključa se kad se tekst otipka i marker dovrši.
@@ -585,13 +586,13 @@
     var idx = 0, arrived = 0, lastWheel = 0, tweenEnd = 0, tweening = false;
     var T = {
       ZOOM: 1800,        // zum u slovo D odvrti se sam (naprijed i natrag)
-      TWEEN: 900,        // vožnja stranice na #work i natrag
+      TWEEN: 900,        // vožnja stranice na #why, #next i natrag
       SEAT_HOLD: 600     // tri trake sjele: mir do SCROLL-a
     };
     var GAP = 250, holdT = 0, recent = [];
     var C3 = 3;                                                          // zaustavljanje s tri trake (i bloka WHERE ART); iza njega WHO WE ARE?
     var screens = [].slice.call(document.querySelectorAll(".split-screen"));
-    var W3 = C3 + screens.length;                                        // WHO WE ARE? (vrata #why, isti položaj kao C3); iza njega #work, ako postoji
+    var W3 = C3 + screens.length;                                        // WHO WE ARE? (vrata #work, isti položaj kao C3); iza njega #why i #next, ako stanu u ekran
     var cardsEl = document.getElementById("cards"), goEl = document.getElementById("cards-go"), whoGoEl = document.getElementById("who-go");
     var canStep = false;                                                 // smije li pokret dolje dalje (ne ovisi o tome vidi li se SCROLL)
     function setReady(v) { canStep = v; if (cardsEl) cardsEl.classList.toggle("ready", v); }   // isti trenutak: korak dozvoljen + SCROLL
@@ -645,19 +646,22 @@
       phase = "free"; setLock(false);
       var atEnd = next && Math.abs(window.scrollY - next.offsetTop) < 2;
       var to = next && !atEnd ? next.offsetTop : document.documentElement.scrollHeight;   // sa završnog ekrana: do footera
-      if (work && idx === stops().length - 1 && work.offsetHeight > vh + 1) to = Math.min(to, window.scrollY + vh * 0.6);   // mobitel: #work je viši od ekrana, dalje se lista
+      if (work && idx === W3 && work.offsetHeight > vh + 1) to = Math.min(to, window.scrollY + vh * 0.6);   // mobitel: #work je viši od ekrana, dalje se lista
       window.scrollTo({ top: to, behavior: "smooth" });
     }
-    function fromWhy() {                                                 // #why gotov (SCROLL): na #work, ili otpuštanje ako ga nema
-      if (work && idx === W3) tweenTo(W3 + 1); else leave();
+    function fromWork() {                                                // THE WORK otvoren (SCROLL): na #why, ili otpuštanje (mobitel)
+      if (idx === W3 && stops().length - 1 > W3) tweenTo(W3 + 1); else leave();
     }
+    function atWhy(i) { return Why && i === W3 + 1 && stops().length - 1 > W3; }   // #why kao zaustavljanje (desktop)
     function setLock(v) { locked = v; root.classList.toggle("locked", v); }
     function stops() {
       if (!CARDS) return [loop.offsetTop];
       var t = hero.offsetTop, S = [t + ZOOM_VH * vh, t + (ZOOM_VH + 1) * vh, t + (ZOOM_VH + 2) * vh, Math.floor(t + (ZOOM_VH + 3) * vh)];   // C3 na cijelom pikselu: pozornica stoji točno na vrhu, pa je tekst oštar
       screens.forEach(function () { S.push(S[C3]); });                   // WHO WE ARE? leži na istom položaju kao C3
-      if (work) S.push(work.offsetTop);                                  // THE WORK (29. 10. 2026.): cijela pozornica ispod crne trake
-      if (work && next && work.offsetHeight <= vh + 1) S.push(next.offsetTop);   // završni ekran; na mobitelu (#work viši od ekrana) je običan scroll
+      if (work && work.offsetHeight <= vh + 1) {                          // THE WORK leži ispod WHO WE ARE? (W3); na mobitelu je viši od ekrana, pa je dalje običan scroll
+        if (why) S.push(why.offsetTop);                                  // #why (brand/35 F)
+        if (next) S.push(next.offsetTop);                                // završni ekran
+      }
       return S;
     }
     function ease(t) { return 1 - Math.pow(1 - t, 3); }                  // odmah krene, mekano stane
@@ -672,6 +676,7 @@
         else {
           tweening = false; tweenEnd = arrived = performance.now();
           if (i === C3) { if (Sum.busy()) setReady(true); else seatHold(); }   // treća karta sjela: 0,6 s mira, pa SCROLL; natrag s ekrana 2: odmah
+          if (atWhy(i)) Why.enter();                                      // #why: redovi dođu sami (s #next natrag: već stoje)
         }
       })(t0);
     }
@@ -706,8 +711,12 @@
         if (dy > 0) {
           if (!isNew) return;                                             // jedan pokret = jedan korak
           if (idx === C3) { if (canStep) fromC3(); return; }              // blok WHERE ART, pa WHO WE ARE? (dok trake odlaze i rečenica ulazi: upija se)
-          if (idx === W3) { if (Why) Why.down(fromWhy); else fromWhy(); }   // #why (redovi tablice), pa #work
-          else if (idx < S.length - 1) tweenTo(idx + 1);                  // s #work na završni ekran
+          if (idx === W3) {                                               // WHO WE ARE? se razdvoji i otkrije #work, pa dalje na #why
+            if (!Door) fromWork(); else if (Door.busy()) return; else if (!Door.isOpen()) Door.open(); else fromWork();
+            return;
+          }
+          if (atWhy(idx) && !Why.ready()) return;                         // redovi #why još dolaze: upije se
+          if (idx < S.length - 1) tweenTo(idx + 1);                       // s #why na završni ekran
           else leave();                                                   // zadnje zaustavljanje: otpuštanje (footer; na mobitelu dalje s #work)
           return;
         }
@@ -718,8 +727,10 @@
             return;
           }
           if (idx === C3) { bandsOut(); return; }                         // trake izađu, ostane video heroja
-          if (idx === W3 && Why && Why.up()) return;                      // #why: redovi nestanu, WHO WE ARE? se sastavi (s #work natrag: svi redovi stoje)
+          if (idx === W3 && Door && Door.busy()) return;                  // razdvajanje ili sastavljanje još traje: upije se
+          if (idx === W3 && Door && Door.isOpen()) { Door.close(); return; }   // #work: WHO WE ARE? se sastavi
           if (idx === W3) { whoOut(); return; }                           // polovice izađu, ostane blok WHERE ART
+          if (atWhy(idx) && !Why.ready()) return;                         // redovi #why još dolaze: upije se (i prema gore)
           tweenTo(idx - 1); return;                                       // karta se spusti / ekran natrag
         }
         arrived = 0;                                                      // s prve zaustavne točke natrag u zum
@@ -762,7 +773,7 @@
     }, { passive: false });
     if (hint) hint.addEventListener("click", function () { push(vh, 1e9); });
     if (whoGoEl) whoGoEl.addEventListener("click", function () {
-      if (phase === "hero" && idx === W3 && !tweening && Why) Why.down(fromWhy);
+      if (phase === "hero" && idx === W3 && !tweening && Door && !Door.busy() && !Door.isOpen()) Door.open();
     });
     if (goEl) goEl.addEventListener("click", function () {
       if (atC3() && isReady()) fromC3();
@@ -782,7 +793,7 @@
     }
     function toEnd() {                                                   // #next: kao da su prođeni svi ekrani; gore se ide ekran po ekran, kao inače
       if (reduce || !CARDS) { window.scrollTo(0, next.offsetTop); return; }
-      Bands.instant(true); Sum.instant(); if (screens.length) Who.instant(); if (Why) Why.instant();
+      Bands.instant(true); Sum.instant(); if (screens.length) Who.instant(); if (Door) Door.instant(); if (Why) Why.instant();
       var S = stops(), L = S.length - 1;
       tweening = false; setReady(false); clearTimeout(holdT); tweenEnd = arrived = performance.now();
       if (Math.abs(S[L] - next.offsetTop) < 1) { phase = "hero"; idx = L; cur = target = S[L]; setLock(true); }   // desktop: završni ekran je zadnje zaustavljanje
@@ -793,38 +804,62 @@
       toEnd: toEnd,
       scriptDone: function (ms) { setTimeout(function () { phase = "free"; setLock(false); }, (ms || 0) + 250); },
       free: function () { return phase === "free"; },
-      release: function () { if (phase !== "hero") return; if (idx === W3) fromWhy(); else if (idx < stops().length - 1) tweenTo(idx + 1); else leave(); },   // klik na SCROLL u #why (→ #work) i u #work (→ #next)
+      release: function () {                                             // klik na SCROLL u #work (→ #why) i u #why (→ #next)
+        if (phase !== "hero" || tweening) return;
+        if (idx === W3) { if (!Door || Door.isOpen()) fromWork(); return; }
+        if (atWhy(idx) && !Why.ready()) return;
+        if (idx < stops().length - 1) tweenTo(idx + 1); else leave();
+      },
       state: function () { return phase + ":" + idx + ":" + Math.round(cur); },
       held: function () { return arrived ? Math.round(performance.now() - arrived) : -1; }
     };
   })();
   window.AM_FLOW = Flow;                                              // za provjeru u testovima
 
-  /* ---------- zašto AI produkcija (#why, Kristian, 29. 10. 2026.) ----------
-     #why leži ispod ekrana WHO WE ARE?. Jedan pokret (Flow) razdvoji taj ekran i otkrije zaglavlje tablice; kad zaglavlje stoji, redovi 1–4 dođu
-     SAMI, jedan za drugim (Kristian, 29. 10. 2026.: posjetitelj više ne scrolla red po red). Red: fade s pomakom, a brojke se odbroje
-     od 0 do vrijednosti i trake narastu do svoje širine, u istom trajanju. Novi red krene ROW_GAP nakon prethodnog (preklapaju se).
-     Footnote dođe sa zadnjim redom.
-     Od razdvajanja do SCROLL-a svi pokreti se upiju (i prema gore). Zatim jedan pokret dolje vodi na #work.
-     Prema gore (kad je sve prikazano): WHO WE ARE? se sastavi, a redovi zajedno nestanu. Povratak s #work: sve već stoji, SCROLL odmah.
-     Nazivi, brojke, oznake i footnote su u js/why-data.js (10. 11. 2026.). */
+  /* ---------- vrata: WHO WE ARE? se razdvoji i otkrije THE WORK (brand/35 F, 13. 11. 2026.; prije je otkrivao #why) ----------
+     Jedan pokret (Flow) razdvoji ekran (video gore, papir dolje; CSS, klasa apart) i otkrije #work, koji leži ispod njega.
+     Dok se razdvaja ili sastavlja, pokreti se upiju. Pokret gore na #work: WHO WE ARE? se sastavi. #work zna da se vidi po klasi revealed (js/reels.js). */
+  var Door = (function () {
+    var door = $("#split-2");
+    if (!door || !work || !CARDS) return null;
+    var SPLIT = 900;                                                     // razdvajanje i sastavljanje (cubic-bezier(0.65, 0, 0.35, 1), u CSS-u)
+    door.style.setProperty("--why-split", SPLIT + "ms");
+    var open = false, busyUntil = 0, t = 0;
+    function reveal(v) { work.classList.toggle("revealed", v); work.dispatchEvent(new Event("am:reveal")); }
+    function move() { clearTimeout(t); door.classList.add("moving"); t = setTimeout(function () { door.classList.remove("moving"); }, SPLIT); busyUntil = performance.now() + SPLIT; }
+    function doOpen() {
+      open = true; Who.hint(false); door.classList.add("apart"); move(); reveal(true); onScroll();
+    }
+    function close() {                                                   // #work natrag pod vrata; #why se vrati na početak (redovi opet dođu sami)
+      open = false; reveal(false); door.classList.remove("apart"); move(); onScroll();
+      if (Why) Why.reset();
+      setTimeout(function () { if (!open) Who.hint(true); }, SPLIT);
+    }
+    function instant() { open = true; door.classList.add("apart"); reveal(true); }   // #next: WHO WE ARE? razdvojen, #work otkriven
+    return { open: doOpen, close: close, instant: instant, isOpen: function () { return open; }, busy: function () { return performance.now() < busyUntil; } };
+  })();
+  window.AM_DOOR = Door;
+
+  /* ---------- zašto AI produkcija (#why, Kristian, 29. 10. 2026.; iza THE WORK od 13. 11., brand/35 F) ----------
+     Jedan pokret s #work doveze #why (Flow); kad stoji, redovi 1–4 dođu SAMI, jedan za drugim (Kristian, 29. 10. 2026.: posjetitelj više ne scrolla red po red).
+     Red: fade s pomakom, a brojke se odbroje od 0 do vrijednosti i trake narastu do svoje širine, u istom trajanju. Novi red krene ROW_GAP nakon prethodnog (preklapaju se).
+     Footnote dođe sa zadnjim redom. Dok redovi dolaze, svi pokreti se upiju (i prema gore). Zatim SCROLL i jedan pokret dolje vodi na #next.
+     Povratak s #next ili s #work: sve već stoji. Kad se WHO WE ARE? sastavi (Door), redovi se vrate na početak.
+     Na mobitelu (slobodan scroll iza #work) redovi krenu kad se ekran vidi. Nazivi, brojke, oznake i footnote su u js/why-data.js (10. 11. 2026.). */
   var Why = (function () {
-    var sec = $("#why"), door = $("#split-2"), D = window.AM_WHY_DATA;
-    if (!sec || !door || !CARDS || !D) return null;
+    var sec = why, D = window.AM_WHY_DATA;
+    if (!sec || !CARDS || !D) return null;
     var T = {
-      SPLIT: 900,        // WHO WE ARE? se razdvoji (cubic-bezier(0.65, 0, 0.35, 1), u CSS-u); tada krene red 1
       ROW_GAP: 350,      // novi red krene toliko nakon što je prethodni krenuo
       IN: 400,           // red uđe (fade, pomak 16 px)
       COUNT: 600,        // brojke se odbroje i trake iscrtaju (ease-out)
       COUNT_SLOW: 1100,  // isto, za redove sa slow: true u js/why-data.js (veliki iznosi)
-      OUT: 300,          // natrag: svi redovi zajedno nestanu (dok se WHO WE ARE? sastavlja); trajanje je u CSS-u (.why-row)
+      OUT: 300,          // natrag na početak: svi redovi zajedno nestanu; trajanje je u CSS-u (.why-row)
       HOLD: 600          // od kraja zadnjeg reda do SCROLL-a
     };
-    [["--why-split", T.SPLIT], ["--why-in", T.IN], ["--why-count", T.COUNT]].forEach(function (d) {
-      sec.style.setProperty(d[0], d[1] + "ms"); door.style.setProperty(d[0], d[1] + "ms");
-    });
+    [["--why-in", T.IN], ["--why-count", T.COUNT]].forEach(function (d) { sec.style.setProperty(d[0], d[1] + "ms"); });
     var rows = [].slice.call(sec.querySelectorAll(".why-row")), go = $("#why-go"), note = $("#why-note");
-    var open = false, busyUntil = 0, timers = [], ready = false;      // open: WHO WE ARE? razdvojen (redovi dolaze ili stoje)
+    var shown = false, busyUntil = 0, timers = [], ready = false;     // shown: redovi su krenuli (dolaze ili stoje)
     function show(v, cell) {                                             // dvije znamenke; iznos: točka za tisuće, od 0.000 naviše
       var s = String(v), min = cell.money ? 4 : 2;
       while (s.length < min) s = "0" + s;
@@ -859,37 +894,36 @@
       })(t0);
     }
     function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
-    function hold(ms) { busyUntil = performance.now() + ms; }
     function setReady(v) { ready = v; sec.classList.toggle("ready", v); }
-    function down(go) {                                                  // pokret dolje na ekranu 3
-      if (performance.now() < busyUntil) return;                         // razdvajanje i redovi još traju: upije se
-      if (!open) {                                                       // razdvajanje, pa redovi sami, pa SCROLL
-        open = true; Who.hint(false); onScroll(); door.classList.add("moving", "apart"); later(function () { door.classList.remove("moving"); }, T.SPLIT);
-        var end = T.SPLIT + (rows.length - 1) * T.ROW_GAP + Math.max(T.IN, T.COUNT) + T.HOLD;
-        rows.forEach(function (row, k) { later(function () { row.classList.add("on"); count(row, D.rows[k]); if (k === rows.length - 1) note.classList.add("on"); }, T.SPLIT + k * T.ROW_GAP); });
-        later(function () { setReady(true); }, end);
-        hold(end); return;
-      }
-      if (ready) go();                                                   // nakon SCROLL-a: na #work
+    function enter() {                                                   // #why stoji: redovi sami, pa SCROLL (ako su već došli, ništa)
+      if (shown) return;
+      shown = true;
+      var end = (rows.length - 1) * T.ROW_GAP + Math.max(T.IN, T.COUNT) + T.HOLD;
+      rows.forEach(function (row, k) { later(function () { row.classList.add("on"); count(row, D.rows[k]); if (k === rows.length - 1) note.classList.add("on"); }, k * T.ROW_GAP); });
+      later(function () { setReady(true); }, end);
+      busyUntil = performance.now() + end;
     }
-    function up() {                                                      // pokret gore; false = #why je zatvoren, Flow ide ekran natrag
-      if (performance.now() < busyUntil) return true;                    // redovi još dolaze: upije se
-      if (!open) return false;
-      timers.forEach(clearTimeout); timers = []; setReady(false);
-      rows.forEach(function (row) { row.classList.remove("on"); });       // redovi zajedno nestanu (T.OUT)
+    function reset() {                                                   // WHO WE ARE? se sastavio: redovi zajedno nestanu (T.OUT)
+      if (reduce) return;
+      timers.forEach(clearTimeout); timers = []; setReady(false); shown = false; busyUntil = 0;
+      rows.forEach(function (row) { row.classList.remove("on"); });
       note.classList.remove("on");
-      door.classList.remove("apart"); open = false; hold(T.SPLIT);        // WHO WE ARE? se sastavi
-      onScroll(); later(function () { Who.hint(true); }, T.SPLIT);
-      return true;
     }
-    if (reduce) { rows.forEach(function (row) { row.classList.add("on"); }); note.classList.add("on"); setReady(true); }   // smanjeni pokret: sve odmah, bez odbrojavanja i crtanja, SCROLL odmah
-    if (go) go.addEventListener("click", function () { if (ready) Flow.release(); });
-    function instant() {                                                 // #next: WHO WE ARE? razdvojen, svi redovi stoje, SCROLL
-      open = true; door.classList.add("apart"); note.classList.add("on");
+    if (reduce) { shown = true; rows.forEach(function (row) { row.classList.add("on"); }); note.classList.add("on"); setReady(true); }   // smanjeni pokret: sve odmah, bez odbrojavanja i crtanja, SCROLL odmah
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) {   // slobodan scroll (mobitel): redovi krenu kad se ekran vidi
+      if (es[0].intersectionRatio >= 0.5 && Flow.free()) enter();
+    }, { threshold: [0, 0.5] }).observe(sec);
+    if (go) go.addEventListener("click", function () {
+      if (!ready) return;
+      if (Flow.free() && next) window.scrollTo({ top: next.offsetTop, behavior: "smooth" }); else Flow.release();
+    });
+    function instant() {                                                 // #next: svi redovi stoje, SCROLL
+      timers.forEach(clearTimeout); timers = []; shown = true; busyUntil = 0; note.classList.add("on");
       rows.forEach(function (row, k) { row.classList.add("on"); count(row, D.rows[k]); });
       setReady(true);
     }
-    return { down: down, up: up, instant: instant, isOpen: function () { return open; }, state: function () { return (open ? sec.querySelectorAll(".why-row.on").length : "zatvoren") + (ready ? "+SCROLL" : ""); } };
+    return { enter: enter, reset: reset, instant: instant, ready: function () { return ready && performance.now() >= busyUntil; }, busy: function () { return performance.now() < busyUntil; },
+      state: function () { return (shown ? sec.querySelectorAll(".why-row.on").length : "zatvoren") + (ready ? "+SCROLL" : ""); } };
   })();
   window.AM_WHY = Why;
 

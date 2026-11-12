@@ -181,23 +181,27 @@
   function startTick() { if (!raf) raf = requestAnimationFrame(tick); }
 
   // ulazak: naslov izroni, ploča i kartica uđu; monitor se otvori iz sredine tek kad je na ekranu
-  var entered = false;
+  // Sekcija leži ispod ekrana WHO WE ARE? (brand/35 F): vidi se tek kad ga js/main.js (Door) razdvoji (klasa revealed, događaj am:reveal)
+  var entered = false, secSeen = false, monRatio = 0;
   function onEnter() { if (entered) return; entered = true; loadDurations(); section.classList.add("in"); }
+  function shown() { return reduce || section.classList.contains("revealed"); }
+  function syncView() {
+    if (secSeen && shown()) onEnter();
+    var r = shown() ? monRatio : 0;
+    inView = r > 0.3;
+    if (r > 0.15) monitor.classList.add("open");
+    if (inView) { if (wantPlay) play(); startTick(); } else pause();
+  }
   if ("IntersectionObserver" in window) {
-    new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) onEnter(); }); }, { rootMargin: "0px 0px -30% 0px" }).observe(section);
-    new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        inView = e.intersectionRatio > 0.3;
-        if (e.intersectionRatio > 0.15) monitor.classList.add("open");
-        if (inView) { if (wantPlay) play(); startTick(); } else pause();
-      });
-    }, { threshold: [0, 0.15, 0.3, 0.6, 1] }).observe(monitor);
+    new IntersectionObserver(function (es) { es.forEach(function (e) { secSeen = e.isIntersecting; }); syncView(); }, { rootMargin: "0px 0px -30% 0px" }).observe(section);
+    new IntersectionObserver(function (es) { es.forEach(function (e) { monRatio = e.intersectionRatio; }); syncView(); }, { threshold: [0, 0.15, 0.3, 0.6, 1] }).observe(monitor);
+    section.addEventListener("am:reveal", function () { syncView(); onScroll(); });
   } else { onEnter(); inView = true; monitor.classList.add("open"); }
 
   // crna pozadina iza stranice (scrollbar, rub kod povlačenja) dok je sekcija na sredini ekrana
   function onScroll() {
     var r = section.getBoundingClientRect(), vh = window.innerHeight;
-    document.documentElement.classList.toggle("dark", r.top < vh * 0.5 && r.bottom > vh * 0.5);
+    document.documentElement.classList.toggle("dark", shown() && r.top < vh * 0.5 && r.bottom > vh * 0.5);
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", function () { onScroll(); layout(); });
