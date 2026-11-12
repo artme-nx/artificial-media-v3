@@ -103,6 +103,7 @@ html.cards-dark { background: #0A0A0A; }
 }
 .split-t { margin: 0; font: 400 5.6vw/.86 "AM Puni", "Arial Black", Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; color: var(--ink); text-wrap: balance; }
 .split-t .r { color: var(--red); }
+.who-sub { margin: 1.1em 0 0; font: 500 clamp(15px, 1.35vw, 22px)/1.3 var(--ui); color: var(--ink); white-space: nowrap; }   /* rečenica ispod WHO WE ARE? (brand/35 E); ulazi s papirom */
 .split-media { position: relative; overflow: hidden; background: #0A0A0A; }
 .split-v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .split--text-right .split-media { order: -1; }

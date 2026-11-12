@@ -14,12 +14,14 @@
   function fail(el, text) { el.textContent = text; el.hidden = false; }
   function media(f) { return !f || /^(https?:)?\//.test(f) ? f : cfg.api + "/gallery/" + f; }   // datoteka iz R2 servisa (js/funswap-data.js)
   list.forEach(function (v) { v.src = media(v.src); v.poster = media(v.poster); });
-  function setThumb(el, v) { el.style.backgroundImage = v && v.poster ? "url('" + v.poster + "')" : ""; }
+  function setThumb(el, v) { el.style.backgroundImage = v && v.poster ? "url('" + v.poster + "')" : ""; el.classList.toggle("fs-thumb--wide", !!(v && v.wide)); }   // vodoravan video: vodoravna sličica (brand/35 A)
 
   /* ---------- 1. galerija ---------- */
   function gallery() {
     var grid = $("#fs-grid"), chips = $("#fs-chips"), more = $("#fs-more"), err = $("#fs-err"), wide = window.matchMedia("(min-width: 1024px)");
     var state = read(), filter = "", shown = [], rendered = 0, sel = null, tiles = {};
+    var stage = $("#fs-stage"), fine = window.matchMedia("(hover: hover) and (pointer: fine)"), still = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var hov = null, hovT = 0, back = false, backPlay = false;           // hov: pločica povećana mišem; back: odabrani video se vraća u veliki prikaz kad miš ode
     var player = document.createElement("video");                        // jedan video za cijelu galeriju: nikad se ne vrte dva
     player.muted = true; player.loop = true; player.playsInline = true; player.setAttribute("playsinline", ""); player.preload = "none"; player.className = "fs-player";
     $("#fs-count").textContent = "FUNSWAP · €15 incl. VAT · " + list.length + (list.length === 1 ? " video" : " videos");
@@ -40,7 +42,7 @@
     function stop() { player.pause(); player.removeAttribute("src"); player.load(); if (player.parentNode) player.parentNode.removeChild(player); [].forEach.call(grid.children, function (t) { t.classList.remove("playing"); }); }
     function tile(v) {
       var b = document.createElement("button");
-      b.type = "button"; b.className = "fs-tile"; b.setAttribute("aria-label", "Video " + v.number + (v.name ? ", " + v.name : "")); b.setAttribute("aria-pressed", "false");
+      b.type = "button"; b.className = "fs-tile" + (v.wide ? " fs-tile--wide" : ""); b.setAttribute("aria-label", "Video " + v.number + (v.name ? ", " + v.name : "")); b.setAttribute("aria-pressed", "false");
       var html = v.poster ? '<img loading="lazy" alt="" src="' + v.poster + '">' : "";
       html += '<span class="fs-tile-n">' + v.number + '</span><span class="fs-badge" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#0A0A0A" stroke-width="2"><path d="m2 6.5 2.6 2.6L10 3.4"/></svg></span>';
       html += '<span class="fs-play" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="#F4F3EF"><path d="M3 1.5v9l7.5-4.5z"/></svg></span>';
@@ -48,6 +50,11 @@
       b.innerHTML = html;
       b.querySelector(".fs-tile-b span").textContent = v.name || "";
       b.addEventListener("click", function () { choose(v, b); });
+      b.addEventListener("pointerenter", function (e) {                   // samo miš; dodir i tipkovnica ostaju kakvi jesu (brand/35 B)
+        if (e.pointerType !== "mouse" || !fine.matches || still.matches) return;
+        clearTimeout(hovT); hovT = setTimeout(function () { zoomIn(v, b); }, 150);   // odgoda: pločice ne trepere dok miš prelazi preko mreže
+      });
+      b.addEventListener("pointerleave", function () { clearTimeout(hovT); if (hov === b) zoomOut(); });
       tiles[v.id] = b;
       return b;
     }
@@ -63,19 +70,47 @@
       shown = list.filter(function (v) { return !filter || v.category === filter; });
       fill();
     }
+    /* povećanje na prelazak mišem: transformacija na mjestu (raspored se ne pomiče), uz rubove prema unutra; video bez zvuka u istom playeru */
+    function shift(start, size, lo, hi) { return hi - lo < size ? (lo + hi - size) / 2 - start : Math.min(Math.max(start, lo), hi - size) - start; }
+    function zoomIn(v, t) {
+      zoomOut();
+      var r = t.getBoundingClientRect(), m = 8, bar = document.querySelector(".bar"), low = document.querySelector(".fs-bar");
+      var top = Math.max(0, bar ? bar.getBoundingClientRect().bottom : 0) + m, bottom = (low && low.offsetParent ? low.getBoundingClientRect().top : window.innerHeight) - m;
+      var dx = shift(r.left - r.width / 2, r.width * 2, m, document.documentElement.clientWidth - m), dy = shift(r.top - r.height / 2, r.height * 2, top, bottom);
+      hov = t; t.classList.add("zoom", "lift"); t.style.transform = "translate(" + dx + "px, " + dy + "px) scale(2)";
+      back = !!(sel && player.parentNode === stage); backPlay = back && !player.paused;
+      stop(); player.src = v.src; if (v.poster) player.poster = v.poster; else player.removeAttribute("poster");
+      t.appendChild(player); t.classList.add("playing");
+      var pr = player.play(); if (pr && pr.catch) pr.catch(function () {});
+    }
+    function zoomOut() {
+      if (!hov) return;
+      var t = hov; hov = null;
+      t.classList.remove("zoom"); t.style.transform = ""; setTimeout(function () { if (hov !== t) t.classList.remove("lift"); }, 220);   // iznad susjeda dok se smanjuje
+      stop();
+      if (back && sel && wide.matches) {                                  // odabrani video ponovno u velikom prikazu, kao prije prelaska
+        player.src = sel.src; if (sel.poster) player.poster = sel.poster; else player.removeAttribute("poster");
+        stage.appendChild(player);
+        if (backPlay) { var pr = player.play(); if (pr && pr.catch) pr.catch(function () {}); }
+      }
+      back = backPlay = false;
+    }
+    window.addEventListener("scroll", function () { clearTimeout(hovT); zoomOut(); }, { passive: true });
     function mark(t) { [].forEach.call(grid.children, function (x) { x.classList.toggle("on", x === t); x.setAttribute("aria-pressed", String(x === t)); }); }
     function show(v) {
       sel = v;
       $("#fs-bar-n").innerHTML = 'No<span class="r">.</span> ' + v.number; setThumb($("#fs-bar-thumb"), v);
       $("#fs-go").disabled = false; $("#fs-use").disabled = false;
       $("#fs-use-t").textContent = "Use video No. " + v.number; $("#fs-stage-n").textContent = v.number;
+      stage.classList.toggle("fs-stage--wide", !!v.wide);
     }
     function choose(v, t) {
+      if (hov === t) { show(v); mark(t); back = backPlay = true; return; }   // klik na povećanu pločicu: odabir; video se vrti dalje, a u veliki prikaz ide kad miš ode
       var same = sel && sel.id === v.id;
       if (same && !player.paused) { player.pause(); t.classList.remove("playing"); return; }
       show(v); mark(t);
       if (!same || !player.getAttribute("src")) { stop(); player.src = v.src; if (v.poster) player.poster = v.poster; else player.removeAttribute("poster"); }
-      var host = wide.matches ? $("#fs-stage") : t;
+      var host = wide.matches ? stage : t;
       if (player.parentNode !== host) host.appendChild(player);
       t.classList.add("playing");
       var pr = player.play(); if (pr && pr.catch) pr.catch(function () {});
@@ -84,7 +119,7 @@
       if (!sel) return;
       err.hidden = true; $("#fs-go").disabled = $("#fs-use").disabled = true;
       api("/orders", json({ video: sel.id, number: sel.number })).then(function (j) {
-        write({ o: j.id, id: sel.id, number: sel.number, poster: sel.poster || "", uploaded: {} });
+        write({ o: j.id, id: sel.id, number: sel.number, poster: sel.poster || "", wide: !!sel.wide, uploaded: {} });
         location.href = "photos/?o=" + encodeURIComponent(j.id);
       }).catch(function () {
         fail(err, "Something went wrong. Please try again."); $("#fs-go").disabled = $("#fs-use").disabled = false;
@@ -93,7 +128,7 @@
     $("#fs-go").addEventListener("click", go); $("#fs-use").addEventListener("click", go);
     reset();
     if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { if (es[0].isIntersecting && rendered < shown.length) fill(); }, { rootMargin: "300px" }).observe(more);
-    wide.addEventListener("change", stop);
+    wide.addEventListener("change", function () { zoomOut(); stop(); });
     if (state.id) { var was = list.filter(function (v) { return v.id === state.id; })[0]; if (was) { show(was); while (!tiles[was.id] && rendered < shown.length) fill(); if (tiles[was.id]) mark(tiles[was.id]); } }
   }
 

@@ -162,7 +162,7 @@
       IN_DELAY: 300,      // od odlaska zadnje trake do rečenice
       IN: 600,            // rečenica uđe (ease-out)
       RISE: 20,           // pomak rečenice prema gore, px
-      HOLD: 1500,         // od kraja ulaska rečenice do SCROLL-a
+      HOLD: 500,          // od kraja ulaska rečenice do SCROLL-a (Kristian, 12. 11.: s 1500 na 500; brand/35 E)
       BACK: 900           // jedna traka se vraća (isti STEP, obrnutim redom)
     };
     var box = $("#cards"), el = $("#sum"), v = el && el.querySelector(".split-v"), state = "idle", gone = false, timers = [], seen = true;
@@ -257,7 +257,7 @@
   var Who = (function () {
     var T = {
       IN: SLIDE.WHO,     // polovice uđu ili izađu
-      HOLD: 1500         // od kraja ulaska do SCROLL-a (isto kao na bloku WHERE ART, Sum)
+      HOLD: 500          // od kraja ulaska do SCROLL-a (isto kao na bloku WHERE ART, Sum; brand/35 E)
     };
     var el = $("#split-2"), v = el && el.querySelector(".split-v"), why = $("#why"), state = "off", hintT = 0;
     if (el) { el.style.setProperty("--who-in", T.IN + "ms"); el.style.setProperty("--who-ease", SLIDE.EASE); }
