@@ -42,7 +42,8 @@
       </svg>
       <!-- DRUGI SLIDE (Kristian, 19. 10. i 10. 11. 2026.): nakon zuma u slovo D jedan pokret pokrene tri trake, svaku u svojoj trećini ekrana:
            gornja ulazi s lijeve strane, srednja s desne, donja s lijeve (js/main.js, Bands).
-           PRIVREMENI VIDEI: zamijeni video/cards/card-1.mp4, card-2.mp4 i card-3.mp4 (i .jpg) pravim videima istog imena. -->
+           Videi (brand/37, 13. 11. 2026.): računalo card-N.mp4 (21:9), mobitel do 640 px card-N-m.mp4 i card-N-m.jpg (4:3); js/main.js pri učitavanju postavi samo jednu (data-src).
+           PRIVREMENI VIDEI: izrezani iz starih 16:9 card-1…3; zamijeni ih pravima istog imena. card-N.jpg (16:9) je poster i blokova WHERE ART i WHO WE ARE?. -->
       <div class="cards" id="cards">
         <!-- ZAKLJUČAK (Kristian, 21. 10. 2026.): na prvi pokret prema dolje nakon treće karte rečenice na kartama nestanu, a trake odu svaka na svoju stranu
              (gornja lijevo, srednja desno, donja lijevo) i otkriju ovaj blok ispod njih: lijevo papir s rečenicom, desno video (js/main.js, Sum).
@@ -51,9 +52,9 @@
           <div class="split-paper"><p class="split-t">Where <span class="r">Art</span><br>Meets<br>Intelligence<span class="r">.</span></p></div>
           <div class="split-media"><video class="split-v" src="video/sum.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
         </div>
-        <div class="card c1"><video class="card-v" src="video/cards/card-1.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
-        <div class="card c2"><video class="card-v" src="video/cards/card-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
-        <div class="card c3"><video class="card-v" src="video/cards/card-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p></div>
+        <div class="card c1"><video class="card-v" data-src="video/cards/card-1" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
+        <div class="card c2"><video class="card-v" data-src="video/cards/card-2" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
+        <div class="card c3"><video class="card-v" data-src="video/cards/card-3" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p></div>
         <!-- SCROLL: na trećoj karti nakon sekunde mira, pa na zaključku 1,5 s nakon rečenice (js/main.js, Flow, klasa ready na .cards) -->
         <p class="cards-go" id="cards-go" aria-hidden="true">SCROLL</p>
       </div>

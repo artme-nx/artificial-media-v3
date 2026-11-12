@@ -67,9 +67,7 @@ html.cards-dark { background: #0A0A0A; }
 .card.c2 { transform: translate3d(calc(100% + 90px), 0, 0); }
 .card.seat { transform: none; }                                      /* sjela: bez vlastitog sloja, tekst je oštar */
 .cards.bands .card { transition: transform var(--band-in, 1050ms) var(--band-ease, cubic-bezier(.16, 1, .3, 1)); will-change: transform; }   /* sloj samo dok se traka miče (Bands) */
-.card-v { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
-.card.c1 .card-v { top: -100%; height: 300%; }                       /* u trećini ostane sredina kadra */
-.card.c2 .card-v { top: -50%; height: 200%; }
+.card-v { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }   /* svaka traka svoj video, sredina kadra (brand/37) */
 .card::before {                                                      /* blago zatamnjenje iza rečenice */
   content: ""; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 100%;
   background: linear-gradient(180deg, rgba(8, 8, 8, .5) 0%, rgba(8, 8, 8, .22) 75%, rgba(8, 8, 8, 0) 100%);

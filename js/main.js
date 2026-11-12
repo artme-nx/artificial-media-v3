@@ -140,8 +140,14 @@
   }
 
   /* ---------- drugi slide: tri trake ----------
-     Karta k stoji na k/3 visine ekrana. Video je viši od karte i pomaknut, da u trećini ostane sredina kadra (CSS).
+     Karta k stoji na k/3 visine ekrana. Svaka karta ima svoj video, s object-fit: cover u sredini (CSS; brand/37).
      Trake ulaze na vrijeme (Bands, dolje), a ne na scroll. q (0–3) služi još samo za slobodan scroll (smanjeni pokret) i zaključak. */
+  // video trake (brand/37): do 640 px card-N-m (4:3) i njegov poster, inače card-N (21:9) s posterom card-N.jpg; bira se jednom, pri učitavanju, pa se učita samo jedna
+  var bandM = window.matchMedia("(max-width: 640px)").matches;
+  [].forEach.call(document.querySelectorAll(".card-v[data-src]"), function (v) {
+    var b = v.getAttribute("data-src") + (bandM ? "-m" : "");
+    v.poster = b + ".jpg"; v.src = b + ".mp4";
+  });
   var cards = [].slice.call(document.querySelectorAll(".card")).map(function (el) {
     return { el: el, v: el.querySelector(".card-v"), on: false, playing: false };
   });
