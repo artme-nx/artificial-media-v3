@@ -1,4 +1,4 @@
-/* FUNSWAP: put kupca (brand/26): galerija (funswap/), tri fotografije (funswap/photos/), status narudžbe (funswap/thanks/).
+/* FUNSWAP: put kupca (brand/26): galerija (funswap/), fotografije, sprijeda i po želji profil (funswap/photos/), status narudžbe (funswap/thanks/).
    Plaćanje je na Stripeovoj stranici; podaci o kartici ne prolaze kroz ovu stranicu. Odabir i ID narudžbe čuvaju se u sessionStorage i u adresi (?o=). */
 (function () {
   "use strict";
@@ -22,7 +22,7 @@
     var state = read(), filter = "", shown = [], rendered = 0, sel = null, tiles = {};
     var player = document.createElement("video");                        // jedan video za cijelu galeriju: nikad se ne vrte dva
     player.muted = true; player.loop = true; player.playsInline = true; player.setAttribute("playsinline", ""); player.preload = "none"; player.className = "fs-player";
-    $("#fs-count").textContent = "FUNSWAP · €25 incl. VAT · " + list.length + (list.length === 1 ? " video" : " videos");
+    $("#fs-count").textContent = "FUNSWAP · €15 incl. VAT · " + list.length + (list.length === 1 ? " video" : " videos");
     var cats = list.map(function (v) { return v.category; }).filter(function (c, i, a) { return c && a.indexOf(c) === i; });
     if (cats.length >= 2) {
       chips.hidden = false;
@@ -97,7 +97,7 @@
     if (state.id) { var was = list.filter(function (v) { return v.id === state.id; })[0]; if (was) { show(was); while (!tiles[was.id] && rendered < shown.length) fill(); if (tiles[was.id]) mark(tiles[was.id]); } }
   }
 
-  /* ---------- 2. tri fotografije ---------- */
+  /* ---------- 2. fotografije: sprijeda obavezna, profil preporučen (brand/34 A) ---------- */
   function photos() {
     var q = new URLSearchParams(location.search), state = read(), o = q.get("o") || state.o;
     if (!o) { location.replace("../"); return; }
@@ -105,11 +105,10 @@
     state.uploaded = state.uploaded || {}; state.thumbs = state.thumbs || {}; write(state);   // thumbs: male sličice poslanih fotografija, samo u ovoj kartici (brand/28, L.2)
     var slots = [].slice.call(document.querySelectorAll(".fs-slot")), checks = [].slice.call(document.querySelectorAll("[data-fs-checks] input")), err = $("#fs-photo-err"), payErr = $("#fs-pay-err"), pay = $("#fs-pay"), missing = $("#fs-missing"), busy = 0;
     if (state.number) { $("#fs-card-n").innerHTML = 'No<span class="r">.</span> ' + state.number; setThumb($("#fs-card-thumb"), state); }
-    function count() { return slots.filter(function (s) { return state.uploaded[s.dataset.slot]; }).length; }
-    function sync() {
-      var n = count(), ticks = checks.every(function (c) { return c.checked; }), ok = n === 3 && ticks && !busy;
+    function sync() {                                                     // profil nikad ne blokira
+      var front = !!state.uploaded.front, ticks = checks.every(function (c) { return c.checked; }), ok = front && ticks && !busy;
       pay.hidden = !ok; missing.hidden = ok;
-      if (!ok) missing.textContent = busy ? "Uploading your photo…" : n < 3 ? "Add " + (3 - n) + (3 - n === 1 ? " more photo" : " more photos") + " to continue" : "Tick all four boxes to continue";
+      if (!ok) missing.textContent = busy ? "Uploading your photo…" : !front ? "Add your front photo to continue" : "Tick all four boxes to continue";
     }
     function paint(slot, on, label) { slot.classList.toggle("on", on); slot.querySelector(".fs-slot-a").textContent = label; }
     function toJpeg(f) {                                                  // svaka fotografija, i HEIC, prolazi kroz canvas: najviše maxSide, uspravno, JPEG (Higgsfield ne prima HEIC)
