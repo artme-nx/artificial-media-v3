@@ -126,7 +126,7 @@
         "</form>" +
         '<div class="st-legal"><p>' + esc(T.contact.reply) + "</p><p>" + T.contact.privacy + "</p></div>" +
         '<div class="st-act">' + nextBtn(T.contact.send, "st-btn--send") + backBtn() + "</div>" +
-        '<p class="st-error" id="st-error" role="alert" hidden></p>';
+        '<div class="st-ts"></div><p class="st-error" id="st-error" role="alert" hidden></p>';
     } else if (step === "sent") {
       h = sentScreen();
     }
@@ -320,6 +320,14 @@
   }
 
   /* ---------- slanje ---------- */
+  function human() {                                                       // Cloudflare Turnstile, nevidljivi: token za servis; izazov se pokaže samo kad treba
+    return new Promise(function (ok, no) {
+      var ts = window.turnstile, key = window.AM_START_TURNSTILE, box = form.querySelector(".st-ts"), id;
+      if (!ts || !key || !box) return no(new Error("no turnstile"));
+      function done(f, v) { try { ts.remove(id); } catch (e) {} f(v); }
+      id = ts.render(box, { sitekey: key, appearance: "interaction-only", callback: function (t) { done(ok, t); }, "error-callback": function () { done(no, new Error("turnstile")); }, "timeout-callback": function () { done(no, new Error("turnstile")); } });
+    });
+  }
   function send() {
     var btn = form.querySelector(".st-btn--send"), err = form.querySelector("#st-error"), p = path();
     var body = {
@@ -333,7 +341,8 @@
     };
     var sum = { name: S.name, rows: rows(), note: body.note };
     btn.disabled = true; btn.setAttribute("aria-busy", "true"); err.hidden = true;
-    (API ? fetch(API + "/briefs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) : Promise.reject(new Error("no api")))
+    (API ? human() : Promise.reject(new Error("no api")))
+      .then(function (token) { body.turnstile = token; return fetch(API + "/briefs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); })
       .then(function () {
         clear(); S = blank(); S.step = "sent";
