@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reserve your seat · ART.ME ACADEMY · Artificial Media</title>
+<meta name="description" content="Reserve your founding seat in ART.ME ACADEMY. One payment of €50 today, VAT included.">
+<meta name="theme-color" content="#ECE8DF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/ampuni-font.css?v=2026-11-13-2">
+<link rel="stylesheet" href="../../css/style.css?v=2026-11-13-2">
+<link rel="stylesheet" href="../../css/pages.css?v=2026-11-13-2">
+</head>
+<body class="pg">
+
+<header class="bar">
+  <a class="bar-logo pg-logo" href="../../#next" aria-label="Artificial Media, home"><span class="r">ART·ME</span></a>
+  <nav class="bar-nav" aria-label="Main"><a href="../../shop/">Shop</a><a href="../../contact/">Contact</a></nav>
+</header>
+
+<!-- rezervacija mjesta (brand/33, B; mockup brand/academy-mockup/rezervacija-odabrano-desktop i -zahvala-mobitel, prvi stupac). Tekst doslovno iz dokumenta 33. -->
+<main class="ar" data-academy="reserve">
+  <form class="ar-form" novalidate>
+    <p class="ar-eye"><i class="ticket-dot" aria-hidden="true"></i>ART.ME ACADEMY · FOUNDING SEAT</p>
+    <h1>RESERVE YOUR SEAT.</h1>
+    <p class="ar-sub">Two details and one payment. That is all we need.</p>
+
+    <div class="ar-field">
+      <label for="ar-name">THE NAME YOU'LL USE IN THE ACADEMY</label>
+      <input id="ar-name" name="name" type="text" autocomplete="nickname" maxlength="60" spellcheck="false" aria-describedby="ar-name-help ar-name-err">
+      <p class="ar-help" id="ar-name-help">It doesn't have to be your full name.</p>
+      <p class="ar-err" id="ar-name-err" hidden></p>
+    </div>
+
+    <div class="ar-pair">
+      <div class="ar-field">
+        <label for="ar-email">EMAIL</label>
+        <input id="ar-email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="254" aria-describedby="ar-email-help ar-email-err">
+        <p class="ar-help" id="ar-email-help">Your invitation is sent here.</p>
+        <p class="ar-err" id="ar-email-err" hidden></p>
+      </div>
+      <div class="ar-field">
+        <label for="ar-email2">CONFIRM YOUR EMAIL</label>
+        <input id="ar-email2" name="email2" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="254" aria-describedby="ar-email2-help ar-email2-err">
+        <p class="ar-help" id="ar-email2-help">So a typo doesn't lock you out.</p>
+        <p class="ar-err" id="ar-email2-err" hidden></p>
+      </div>
+    </div>
+
+    <p class="ar-keep">Keep this name and email. They are how you get into the academy.</p>
+
+    <div class="ar-checks" aria-describedby="ar-boxes-err">
+      <label class="ar-check"><input id="ar-terms" type="checkbox" name="terms"><span>I agree to the <a href="../../terms/">Terms</a> and the <a href="../../refund-policy/">Refund &amp; Cancellation Policy</a>.</span></label>
+      <label class="ar-check"><input id="ar-adult" type="checkbox" name="adult"><span>I am 18 or older, or a parent or legal guardian is making this purchase.</span></label>
+      <p class="ar-err" id="ar-boxes-err" hidden></p>
+    </div>
+
+    <div class="st-hp" aria-hidden="true"><label>Fax<input id="ar-fax" type="text" name="fax" tabindex="-1" autocomplete="off"></label></div>
+    <div class="ar-ts"></div>
+
+    <button class="ar-pay" type="submit" aria-disabled="true"><span class="ar-pay-l"><i aria-hidden="true"></i><span>PAY AND RESERVE</span></span><span class="ar-pay-p"><span class="eur">€</span><span class="ar-pay-n">50</span></span></button>
+    <p class="ar-err ar-err--send" id="ar-send-err" role="alert" hidden></p>
+    <p class="ar-fine">One payment of €50 today, VAT included. Monthly billing starts on 18 April 2027 only after you confirm it at opening. Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIAL MEDIA.</p>
+    <p class="ar-fine ar-fine--mob">Full refund until 18 April 2027. No conditions, no questions.</p>
+  </form>
+
+  <aside class="ar-side" aria-label="Founding price">
+    <!-- ulaznica kao na /academy/, bez gumba -->
+    <div class="ticket-top ticket-top--solo">
+      <div class="ticket-a">
+        <p class="ticket-k"><i class="ticket-dot" aria-hidden="true"></i>FOUNDING PRICE</p>
+        <p class="ticket-p"><span class="eur">€</span><span class="ticket-n">50</span></p>
+        <p class="ticket-k">A MONTH · 100 SEATS</p>
+      </div>
+      <div class="ticket-b">
+        <p class="ticket-k">PUBLIC PRICE FROM 18 MARCH 2027</p>
+        <p class="ticket-p ticket-p--old"><span class="eur">€</span><span class="ticket-n">250</span><i class="ticket-x" aria-hidden="true"></i></p>
+        <p class="ticket-k">A MONTH</p>
+      </div>
+    </div>
+    <div class="ar-covers">
+      <p class="ar-covers-h">WHAT €50 COVERS</p>
+      <p>It reserves your seat and covers your first month, 18 March – 17 April 2027.</p>
+      <p>From 18 April 2027: €50 a month for as long as you stay a member. Your price does not go up.</p>
+      <p>Full refund until 18 April 2027. No conditions, no questions.</p>
+    </div>
+  </aside>
+</main>
+
+<footer class="foot">
+  <p class="foot-id">© 2026 Artificial Media LLC · Sheridan, Wyoming, USA · <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a></p>
+  <nav class="foot-nav" aria-label="Footer"><a href="../../shop/">Shop</a><a href="../../terms/">Terms</a><a href="../../privacy/">Privacy</a><a href="../../refund-policy/">Refund &amp; Cancellation</a><a href="../../contact/">Contact</a></nav>
+  <p class="foot-pay">Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIAL MEDIA.</p>
+</footer>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<script src="../../js/start-config.js?v=2026-11-13-2"></script>
+<script src="../../js/academy.js?v=2026-11-13-2"></script>
+</body>
+</html>

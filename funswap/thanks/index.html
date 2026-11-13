@@ -3,47 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Thank you · FUNSWAP · Artificial Media</title>
-<meta name="description" content="Thank you for ordering FUNSWAP. What happens next.">
-<meta name="theme-color" content="#ECE8DF">
+<title>Your video · FUNSWAP · Artificial Media</title>
+<meta name="description" content="The status of your FUNSWAP video.">
+<meta name="theme-color" content="#0A0A0A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/ampuni-font.css">
-<link rel="stylesheet" href="../../css/style.css">
-<link rel="stylesheet" href="../../css/pages.css">
+<link rel="stylesheet" href="../../css/ampuni-font.css?v=2026-11-13-2">
+<link rel="stylesheet" href="../../css/style.css?v=2026-11-13-2">
+<link rel="stylesheet" href="../../css/pages.css?v=2026-11-13-2">
 </head>
-<body class="pg">
+<body class="pg fs" data-fs="thanks">
 
 <header class="bar">
-  <a class="bar-logo pg-logo" href="../../" aria-label="Artificial Media, home"><span class="r">ART·ME</span></a>
-  <nav class="bar-nav" aria-label="Main"><a href="../../shop/">Shop</a><a href="../../contact/">Contact</a></nav>
+  <a class="bar-logo fs-logo" href="../../#next" aria-label="Artificial Media, home"><span class="r">ART</span>IFICIAL <span class="r">ME</span>DIA</a>
+  <span class="fs-step" id="fs-step"></span>
+  <nav class="bar-nav fs-nav" aria-label="Main"><a href="../../shop/">Shop</a><a href="../../contact/">Contact</a></nav>
 </header>
 
-<main>
-<h1>Thank you<span class="r">.</span></h1>
-<p class="lead">Your FUNSWAP order is paid. Here is what happens next.</p>
-<section class="sec cols">
-  <div>
-    <h2>At our stand</h2>
-    <p>We take the three photos for you.</p>
+<main class="fs-status">
+  <noscript><style>.fs-wait { display: none; }</style><p class="fs-nojs">To see the status of your order, turn on JavaScript. We also email you the video. Questions: <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a></p></noscript>
+
+  <div class="fs-wait" id="fs-wait" role="status" aria-live="polite">
+    <span class="fs-ring" aria-hidden="true"></span>
+    <p class="fs-wait-l" id="fs-wait-l">CONFIRMING PAYMENT</p>
+    <p class="fs-wait-t" id="fs-wait-t" hidden></p>
+    <p class="fs-note fs-wait-c" id="fs-wait-c" hidden>You can close this page. We'll email you the video.</p>
   </div>
-  <div>
-    <h2>Online</h2>
-    <p>Send your three photos (front, side, back) and the trend you chose to <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a>, from the email address you paid with.</p>
+
+  <div class="fs-done" id="fs-ready" hidden>
+    <p class="fs-eyebrow" id="fs-ready-n">FUNSWAP</p>
+    <h1>Your video is ready<span class="r">.</span></h1>
+    <video class="fs-final" id="fs-video" controls playsinline preload="metadata"></video>
+    <a class="fs-cta fs-cta--ink fs-cta--wide fs-download" id="fs-download" download="funswap.mp4">Download</a>
+    <p class="fs-note" id="fs-sent"></p>
+    <p class="fs-note">Your photos and your video are deleted 30 days after delivery. Questions: <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a></p>
+    <a class="fs-academy" href="../../academy/">
+      <span><span class="fs-mini">Want to make these yourself?</span><strong>ART<span class="r">.</span>ME Academy</strong><small>The video you just ordered is made with the pipeline we teach.</small></span>
+      <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="#E23B2E" stroke-width="1.8" aria-hidden="true"><path d="M1 8h19M13.5 1.5 20 8l-6.5 6.5"/></svg>
+    </a>
   </div>
-</section>
-<section class="sec">
-  <h2>Your video</h2>
-  <p>The link to your video arrives by email within 24 hours.</p>
-</section>
+
+  <div class="fs-done" id="fs-refunded" hidden>
+    <h1>We couldn't make this one<span class="r">.</span></h1>
+    <p class="fs-lead">Your €15 has been refunded in full. Your bank may take a few days to show it. Your photos are deleted.</p>
+    <a class="fs-cta fs-cta--ink fs-cta--wide fs-download" href="../">Try another video</a>
+  </div>
+
+  <div class="fs-done" id="fs-gone" hidden>
+    <h1>We can't find this order<span class="r">.</span></h1>
+    <p class="fs-lead">If you paid and need help, write to <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a></p>
+  </div>
 </main>
 
 <footer class="foot">
   <p class="foot-id">© 2026 Artificial Media LLC · Sheridan, Wyoming, USA · <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a></p>
   <nav class="foot-nav" aria-label="Footer"><a href="../../shop/">Shop</a><a href="../../terms/">Terms</a><a href="../../privacy/">Privacy</a><a href="../../refund-policy/">Refund &amp; Cancellation</a><a href="../../contact/">Contact</a></nav>
-  <p class="foot-pay">Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIALMEDIASTUDIO.</p>
+  <p class="foot-pay">Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIAL MEDIA.</p>
 </footer>
-
+<script src="../../js/funswap-config.js?v=2026-11-13-2"></script>
+<script src="../../js/funswap-data.js?v=2026-11-13-2"></script>
+<script src="../../js/funswap.js?v=2026-11-13-2"></script>
 </body>
 </html>

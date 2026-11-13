@@ -9,22 +9,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/ampuni-font.css">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/ampuni-font.css?v=2026-11-13-2">
+<link rel="stylesheet" href="css/style.css?v=2026-11-13-2">
+<link rel="stylesheet" href="css/pages.css?v=2026-11-13-2">
 </head>
 <body>
 
 <!-- Crna traka: pojavi se tek kad se dođe do reelova. ART i ME crveno, ostalo bijelo. -->
 <header class="bar" id="bar">
-  <a class="bar-logo" href="#top" aria-label="Artificial Media, back to top"><span class="r">ART</span>IFICIAL <span class="r">ME</span>DIA</a>
+  <a class="bar-logo" href="#next" aria-label="Artificial Media, home"><span class="r">ART</span>IFICIAL <span class="r">ME</span>DIA</a>
 </header>
 
 <main>
   <!-- HERO: video se vidi samo kroz slova ARTIFICIAL / MEDIA. Na scroll slova rastu (zum u puno slovo D) dok video ne ispuni ekran. -->
   <section class="hero has-cards" id="top" aria-label="Artificial Media">
     <div class="hero-stage">
-      <!-- PRIVREMENI VIDEO: zamijeni video/hero.mp4 (i video/hero-poster.jpg) pravim videom istog imena. -->
+      <!-- video/hero.mp4: montaža iz postojećih kadrova (brand/37, B1, 13. 11. 2026.); poster je prva sličica. Konačni kadrovi: brand/38. -->
       <video class="hero-video" src="video/hero.mp4" poster="video/hero-poster.jpg" autoplay muted loop playsinline preload="auto"></video>
       <svg class="cover" id="cover" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid slice">
         <defs>
@@ -42,18 +42,19 @@
       </svg>
       <!-- DRUGI SLIDE (Kristian, 19. 10. i 10. 11. 2026.): nakon zuma u slovo D jedan pokret pokrene tri trake, svaku u svojoj trećini ekrana:
            gornja ulazi s lijeve strane, srednja s desne, donja s lijeve (js/main.js, Bands).
-           PRIVREMENI VIDEI: zamijeni video/cards/card-1.mp4, card-2.mp4 i card-3.mp4 (i .jpg) pravim videima istog imena. -->
+           Videi (brand/37, 13. 11. 2026.): računalo card-N.mp4 (21:9), mobitel do 640 px card-N-m.mp4 i card-N-m.jpg (4:3); js/main.js pri učitavanju postavi samo jednu (data-src).
+           Kadrovi iz postojećih materijala (brand/37, B1, 13. 11. 2026.); poster je prva sličica svakog videa. -->
       <div class="cards" id="cards">
         <!-- ZAKLJUČAK (Kristian, 21. 10. 2026.): na prvi pokret prema dolje nakon treće karte rečenice na kartama nestanu, a trake odu svaka na svoju stranu
              (gornja lijevo, srednja desno, donja lijevo) i otkriju ovaj blok ispod njih: lijevo papir s rečenicom, desno video (js/main.js, Sum).
-             Tekst se mijenja ovdje. PRIVREMENI VIDEO: zamijeni video/sum.mp4 pravim videom istog imena. -->
+             Tekst se mijenja ovdje. Video: video/sum.mp4 i poster video/sum.jpg (brand/37, B1). -->
         <div class="sum split split--text-left" id="sum">
           <div class="split-paper"><p class="split-t">Where <span class="r">Art</span><br>Meets<br>Intelligence<span class="r">.</span></p></div>
-          <div class="split-media"><video class="split-v" src="video/sum.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
+          <div class="split-media"><video class="split-v" src="video/sum.mp4" poster="video/sum.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
         </div>
-        <div class="card c1"><video class="card-v" src="video/cards/card-1.mp4" poster="video/cards/card-1.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
-        <div class="card c2"><video class="card-v" src="video/cards/card-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
-        <div class="card c3"><video class="card-v" src="video/cards/card-3.mp4" poster="video/cards/card-3.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p></div>
+        <div class="card c1"><video class="card-v" data-src="video/cards/card-1" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Defined by emotion<span class="dot">.</span></span></p></div>
+        <div class="card c2"><video class="card-v" data-src="video/cards/card-2" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Boundless imagination<span class="dot">.</span></span></p></div>
+        <div class="card c3"><video class="card-v" data-src="video/cards/card-3" muted loop playsinline preload="auto" aria-hidden="true"></video><p class="card-t"><span>Beyond what any camera could reach<span class="dot">.</span></span></p></div>
         <!-- SCROLL: na trećoj karti nakon sekunde mira, pa na zaključku 1,5 s nakon rečenice (js/main.js, Flow, klasa ready na .cards) -->
         <p class="cards-go" id="cards-go" aria-hidden="true">SCROLL</p>
       </div>
@@ -76,54 +77,17 @@
 
   <!-- WHO WE ARE? (Kristian, 27. 10. i 10. 11. 2026.): leži točno preko bloka WHERE ART; polovice ulaze same (video odozdo, papir odozgo; js/main.js, Who). Isti izgled kao WHERE ART (zajednička klasa .split, css/style.css).
        .split--text-right: video lijevo, papir s tekstom desno; .split--text-left: papir lijevo, video desno. Na mobitelu je papir gore, video dolje.
-       Tijek: jedan pokret = jedan ekran (js/main.js, Flow). PRIVREMENO: video/split-2.mp4 (kopija card-2). -->
+       Tijek: jedan pokret = jedan ekran (js/main.js, Flow). Video: video/split-2.mp4 i poster video/split-2.jpg (brand/37, B1). -->
   <section class="split split--text-right split-screen" id="split-2" aria-labelledby="split-2-title">
     <div class="split-paper"><h2 class="split-t" id="split-2-title">Who<br>We<br>Are<span class="r">?</span></h2></div>
-    <div class="split-media"><video class="split-v" src="video/split-2.mp4" poster="video/cards/card-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
+    <p class="who-go" id="who-go" aria-hidden="true">SCROLL</p>
+    <div class="split-media"><video class="split-v" src="video/split-2.mp4" poster="video/split-2.jpg" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
   </section>
-  <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. i 10. 11. 2026.): leži točno ispod ekrana WHO WE ARE?. Pokret dolje razdvoji taj ekran (video gore, papir dolje)
-       i otkrije tablicu; redovi dođu sami, jedan za drugim (js/main.js, Why).
-       Brojke i tekstovi mijenjaju se SAMO u js/why-data.js. Ovdje stoje iste konačne vrijednosti, da se vide i bez JavaScripta. -->
-  <section class="why" id="why" aria-labelledby="why-title">
-    <noscript><style>#split-2, .why { margin-top: 0; } #split-2 .split-paper, #split-2 .split-media { transform: none; } .why { visibility: visible; } .why-row, .why-note { opacity: 1; transform: none; } .why-bar { display: none; }</style></noscript>
-    <div class="why-in">
-      <p class="why-tag" id="why-title">Why AI production</p>
-      <div class="why-table" role="table" aria-labelledby="why-title">
-        <div class="why-head" role="row">
-          <span class="why-h why-h--dim" role="columnheader"></span>
-          <span class="why-h why-h--trad" role="columnheader">Traditional<span class="why-h-x"> shoot</span></span>
-          <span class="why-h why-h--am" role="columnheader">Artificial Media</span>
-        </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Days to delivery</p><p class="why-sub">Lower is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">42</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">07</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Cost</p><p class="why-sub">Lower is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">25.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from">From</span><span class="why-val">3.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Formats from one master</p><p class="why-sub">Higher is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">01</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">05</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      <div class="why-row" role="row">
-        <div class="why-label" role="rowheader"><p class="why-dim">Rounds of revisions</p><p class="why-sub">Higher is better</p></div>
-        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">02</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">04</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
-      </div>
-      </div>
-      <p class="why-note" id="why-note">Traditional figures are typical published ranges for a professionally produced 30-second commercial: 4–8 weeks from concept to delivery and $5K–$100K in production cost depending on tier, usually framed for a single format. We use 6 weeks and $25K as a mid-point. Source: <a href="https://c-istudios.com/30-second-commercial-cost/" target="_blank" rel="noopener">C&amp;I Studios, "30-Second Commercial Cost"</a>. Artificial Media pricing starts at $3K; final quotes depend on scope.</p>
-    </div>
-    <p class="why-go" id="why-go" aria-hidden="true">SCROLL</p>
-  </section>
-
   <!-- THE WORK (Kristian, 29. 10. 2026.; mockup brand/14-the-work-mockup-desktop.pdf): monitor lijevo, ispod ploča s projektima
        (PREV, kartica po projektu, NEXT), desno kartica projekta. Projekt se mijenja samo klikom (ili Enter / razmak), nikad scrollom.
        Monitor mijenja oblik po formatu klipa (16:9, 9:16, 21:9). Projekti i klipovi su u js/reels-data.js, ponašanje u js/reels.js.
-       Tijek: jedan pokret s #why dovede ovu sekciju, sljedeći ide dalje na #next (js/main.js, Flow). -->
+       Tijek (brand/35 F, 13. 11.): leži točno ispod ekrana WHO WE ARE?; pokret dolje razdvoji taj ekran (video gore, papir dolje) i otkrije ovu sekciju,
+       sljedeći ide dalje na #why (js/main.js, Flow i Door). -->
   <section class="work" id="work" aria-labelledby="work-title">
     <header class="wk-head">
       <h2 class="wk-title" id="work-title"><span class="wk-tw"><span>THE WORK<span class="r">.</span></span></span><span class="wk-n" id="wk-count" aria-hidden="true"></span></h2>
@@ -170,13 +134,67 @@
     <p class="wk-go" id="wk-go" aria-hidden="true">SCROLL</p>
   </section>
 
-  <!-- SLJEDEĆE (privremeno): prazan papir od 50vh, da se vidi da stranica ide dalje. Ovdje se grade sljedeće sekcije.
-       -->
-  <section class="next" id="next" aria-label="Next"></section>
+  <!-- ZAŠTO AI PRODUKCIJA (Kristian, 29. 10. i 10. 11. 2026.; iza THE WORK od 13. 11., brand/35 F): jedan pokret s THE WORK doveze ovaj ekran,
+       a redovi tablice dođu sami, jedan za drugim (js/main.js, Why).
+       Brojke i tekstovi mijenjaju se SAMO u js/why-data.js. Ovdje stoje iste konačne vrijednosti, da se vide i bez JavaScripta. -->
+  <section class="why" id="why" aria-labelledby="why-title">
+    <noscript><style>#split-2, .work { margin-top: 0; } #split-2 .split-paper, #split-2 .split-media { transform: none; } .work { visibility: visible; } .why-row, .why-note { opacity: 1; transform: none; } .why-bar { display: none; }</style></noscript>
+    <div class="why-in">
+      <p class="why-tag" id="why-title">Why AI production</p>
+      <div class="why-table" role="table" aria-labelledby="why-title">
+        <div class="why-head" role="row">
+          <span class="why-h why-h--dim" role="columnheader"></span>
+          <span class="why-h why-h--trad" role="columnheader">Traditional<span class="why-h-x"> shoot</span></span>
+          <span class="why-h why-h--am" role="columnheader">Artificial Media</span>
+        </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Days to delivery</p><p class="why-sub">Lower is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">42</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">07</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Cost</p><p class="why-sub">Lower is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">25.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from">From</span><span class="why-val">3.000</span><span class="why-unit">$</span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Formats from one master</p><p class="why-sub">Higher is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">01</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">05</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      <div class="why-row" role="row">
+        <div class="why-label" role="rowheader"><p class="why-dim">Rounds of revisions</p><p class="why-sub">Higher is better</p></div>
+        <div class="why-cell why-cell--trad" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">02</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+        <div class="why-cell why-cell--am" role="cell"><p class="why-num"><span class="why-from"></span><span class="why-val">04</span><span class="why-unit"></span></p><i class="why-bar"><b></b></i></div>
+      </div>
+      </div>
+      <p class="why-note" id="why-note">Traditional figures are typical published ranges for a professionally produced 30-second commercial: 4–8 weeks from concept to delivery and $5K–$100K in production cost depending on tier, usually framed for a single format. We use 6 weeks and $25K as a mid-point. Source: <a href="https://c-istudios.com/30-second-commercial-cost/" target="_blank" rel="noopener">C&amp;I Studios, "30-Second Commercial Cost"</a>. Artificial Media pricing starts at $3K; final quotes depend on scope.</p>
+    </div>
+    <p class="why-go" id="why-go" aria-hidden="true">SCROLL</p>
+  </section>
+
+  <!-- ZAVRŠNI EKRAN (Kristian, 10. 11. 2026.; brand/23): tri pločice-linka. SAV TEKST je ovdje: end-label (oznaka), end-t (naslov), end-line (redak).
+       Naslov velike pločice je radni (kandidati: MAKE YOUR COMMERCIAL. / CONTACT US.). Pozadina: video/tiles/work|academy|funswap (.mp4 i/ili .jpg); kad datoteka postoji, pojavi se sama (js/main.js). -->
+  <section class="end" id="next" aria-label="Next steps">
+    <div class="end-grid">
+      <a class="end-tile end-tile--big" href="start/">
+        <span class="end-media" data-media="video/tiles/work"></span>
+        <span class="end-text"><span class="end-label">Contact</span><span class="end-body"><span class="end-t">Work with us<span class="r">.</span></span><span class="end-line">AI video ads from $3K. Websites priced per project. One fixed price, agreed before we start.</span><span class="end-cta">60-second brief · Reply within one business day</span></span></span><svg class="end-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M8 6h10v10"/></svg>
+      </a>
+      <a class="end-tile" href="academy/">
+        <span class="end-media" data-media="video/tiles/academy"></span>
+        <span class="end-text"><span class="end-label">Opens 18 March 2027</span><span class="end-body"><span class="end-t"><span class="r">ART.ME</span> Academy</span><span class="end-line">This school doesn't end with a video. It ends with a client.</span></span></span><svg class="end-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M8 6h10v10"/></svg>
+      </a>
+      <a class="end-tile" href="funswap/">
+        <span class="end-media" data-media="video/tiles/funswap"></span>
+        <span class="end-text"><span class="end-label">€15</span><span class="end-body"><span class="end-t">FUNSWAP</span><span class="end-line">Give us a photo of yourself and get the viral video you chose, with you in it.</span></span></span><svg class="end-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M8 6h10v10"/></svg>
+      </a>
+    </div>
+  </section>
   <footer class="foot">
     <p class="foot-id">© 2026 Artificial Media LLC · Sheridan, Wyoming, USA · <a href="mailto:kristian@artificialmediastudio.com">kristian@artificialmediastudio.com</a></p>
     <nav class="foot-nav" aria-label="Footer"><a href="shop/">Shop</a><a href="terms/">Terms</a><a href="privacy/">Privacy</a><a href="refund-policy/">Refund &amp; Cancellation</a><a href="contact/">Contact</a></nav>
-    <p class="foot-pay">Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIALMEDIASTUDIO.</p>
+    <p class="foot-pay">Payments are processed securely by Stripe. Charges appear on your statement as ARTIFICIAL MEDIA.</p>
   </footer>
 </main>
 
@@ -185,11 +203,11 @@
 <button class="sound" id="sound" hidden type="button" aria-pressed="false" aria-label="Sound">SOUND <span>OFF</span></button>
 
 
-<script src="js/logo-data.js"></script>
-<!-- <script src="js/typewriter-sounds.js"></script>  zvuk pisaćeg stroja: samo uz slide sa scenarijem -->
-<script src="js/why-data.js"></script>
-<script src="js/main.js"></script>
-<script src="js/reels-data.js"></script>
-<script src="js/reels.js"></script>
+<script src="js/logo-data.js?v=2026-11-13-2"></script>
+<!-- <script src="js/typewriter-sounds.js?v=2026-11-13-2"></script>  zvuk pisaćeg stroja: samo uz slide sa scenarijem -->
+<script src="js/why-data.js?v=2026-11-13-2"></script>
+<script src="js/main.js?v=2026-11-13-2"></script>
+<script src="js/reels-data.js?v=2026-11-13-2"></script>
+<script src="js/reels.js?v=2026-11-13-2"></script>
 </body>
 </html>
