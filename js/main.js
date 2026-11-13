@@ -17,7 +17,7 @@
      Izmjereno u Chromeu (kadrovi u 2,7 s ulaska, 160 = glatko): video trake od ulaska 86, uz zaustavljen hero 108, video tek kad sve sjednu 160. */
   var BAND_VIDEO_ON_ENTER = true;    // true: video trake krene čim ta traka počne ulaziti; false: staro, videi krenu kad sve tri sjednu
   var HERO_STOP_ON_BANDS = false;    // true: video heroja stane čim trake počnu ulaziti; pali se samo na Kristianov zahtjev
-  var AUTO_ADVANCE = true;           // true: kad video heroja, traka, WHERE ART ili WHO WE ARE? odvrti krug, stranica sama napravi korak dolje (brand/45 E2); false: kao prije, videi u petlji
+  var AUTO_ADVANCE = true;           // true: pred kraj videa heroja, traka, WHERE ART ili WHO WE ARE? stranica sama napravi korak dolje, toliko ranije koliko traje odlazak ekrana (brand/45 E2, F1); false: kao prije
   var L = window.AM_LOGO;
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $ = function (s) { return document.querySelector(s); };
@@ -199,7 +199,9 @@
     function back(done) {                                               // trake se vraćaju (donja, srednja, gornja)
       if (state !== "out") return; state = "back";
       timers.forEach(clearTimeout); timers = []; box.classList.remove("ready");
-      cards.forEach(function (c) { fromStart(c.v); });                 // trake se vraćaju: njihovi videi kreću ispočetka
+      cards.forEach(function (c, k) {                                  // trake se vraćaju: videi krenu zajedno, svaki od točke s koje završe zajedno (brand/45 F2)
+        if (AUTO) { try { c.v.currentTime = (cards.length - 1 - k) * Bands.step / 1000; } catch (e) {} }
+      });
       set("in", false); setGone(false);
       function seated() { set("out", false); set("fade", false); set("open", false); if (v) v.pause(); state = "idle"; if (done) done(); onScroll(); }
       if (reduce) { seated(); return; }
@@ -214,7 +216,8 @@
       if (!el) return; state = "out"; ["fade", "open", "out", "in"].forEach(function (c) { set(c, true); }); gone = true;
     }
     return {
-      start: start, back: back, view: view, instant: instant,
+      restart: function () { fromStart(v); },                           // povratak na blok WHERE ART (s WHO WE ARE?): video ispočetka
+      start: start, back: back, view: view, instant: instant, outMs: T.FADE + 2 * T.STEP + T.OUT,   // odlazak traka (ms): sam korak (Flow)
       busy: function () { return state !== "idle"; },                  // trake vani ili se vraćaju
       out: function () { return state === "out"; },
       gone: function () { return gone; }
@@ -266,7 +269,8 @@
       cards.forEach(function (c) { show(c, on); c.on = on; });
       covered = on; entered = on ? cards.length : 0;
     }
-    return { enter: enter, leave: leave, instant: instant, covered: function () { return covered; }, entered: function () { return entered; } };
+    return { enter: enter, leave: leave, instant: instant, covered: function () { return covered; }, entered: function () { return entered; },
+      inMs: END, step: T.STEP };                                        // ulazak sve tri (ms) i razmak između traka: sam korak (Flow) i povratak traka (Sum.back)
   })();
   /* WHO WE ARE? (Kristian, 10. 11. 2026.; brand/22): ekran leži preko bloka WHERE ART i ulazi u dvije polovice (video odozdo, papir odozgo), bez vožnje stranice.
      Kretanje je u CSS-u (klasa in na #split-2). Dok ekran stoji, ispod njega se smije vidjeti #work (klasa under; brand/35 F). */
@@ -294,7 +298,7 @@
       }); });
     }
     function instant() { if (!el) return; el.classList.add("in"); state = "in"; if (under) under.classList.add("under"); }   // #next: polovice već stoje
-    return { enter: enter, leave: leave, hint: hint, instant: instant, covers: function () { return state === "in"; } };
+    return { enter: enter, leave: leave, hint: hint, instant: instant, covers: function () { return state === "in"; }, inMs: T.IN };
   })();
   function renderCards(q, inView) {
     if (!CARDS) return;
@@ -650,7 +654,7 @@
       Who.enter(function () { tweening = false; tweenEnd = arrived = performance.now(); });
     }
     function whoOut() {                                                  // natrag na blok WHERE ART: polovice izađu putem kojim su došle
-      tweening = true;
+      tweening = true; Sum.restart();
       Who.leave(function () { idx = C3; tweening = false; tweenEnd = arrived = performance.now(); setReady(true); });
     }
     function fromC3() {                                                  // korak dolje s tri trake: prvo blok WHERE ART, zatim WHO WE ARE?
@@ -832,7 +836,29 @@
       if (!stepOk(autoWant)) { autoT = setTimeout(autoTry, 150); return; }
       autoWant = ""; push(vh, 1e9, true);
     }
-    function autoEnded(s) { if (AUTO && screenNow() === s) { autoWant = s; autoTry(); } }
+    /* korak kreće toliko prije kraja videa koliko traje odlazak ekrana (+100 ms), pa se video vrti dok se ekran miče (brand/45 F1).
+       Vremena se računaju iz konstanti modula. Ako korak ne smije odmah, video ide dalje u petlji, a korak krene čim smije (autoTry). */
+    function leadMs(s) {
+      if (s === "hero") return T.ZOOM + Bands.inMs + 100;                 // zum i ulazak sve tri trake
+      if (s === "bands") return Sum.outMs + 100;                          // trake odu
+      if (s === "sum") return Who.inMs + 100;                             // WHO WE ARE? uđe
+      if (s === "who") return (Door ? Door.splitMs : 0) + 100;            // vrata se razdvoje
+      return 0;
+    }
+    function left(vs) {                                                  // koliko videu (najduljem, za trake) ostaje do kraja kruga, s; -1 = ne vrti se
+      var m = -1, any = false;
+      vs.forEach(function (v) { if (!v || !v.duration) return; if (!v.paused) any = true; m = Math.max(m, v.duration - v.currentTime); });
+      return any ? m : -1;
+    }
+    var armed = "";
+    function autoCheck(vids) {
+      var s = screenNow();
+      if (s !== armed) { armed = s; autoFired = false; }                 // novi ekran (ili povratak): pravilo vrijedi ponovno
+      if (!AUTO || autoFired || !vids[s]) return;
+      var r = left(vids[s]);
+      if (r >= 0 && r * 1000 <= leadMs(s)) { autoFired = true; autoWant = s; autoTry(); }
+    }
+    var autoFired = false;
     document.addEventListener("visibilitychange", autoTry);
     function toEnd() {                                                   // #next: kao da su prođeni svi ekrani; gore se ide ekran po ekran, kao inače
       if (reduce || !CARDS) { window.scrollTo(0, next.offsetTop); return; }
@@ -854,20 +880,14 @@
         if (idx < stops().length - 1) tweenTo(idx + 1); else leave();
       },
       state: function () { return phase + ":" + idx + ":" + Math.round(cur); },
-      screen: screenNow, autoEnded: autoEnded,
+      screen: screenNow, autoCheck: autoCheck, lead: leadMs,
       held: function () { return arrived ? Math.round(performance.now() - arrived) : -1; }
     };
   })();
   window.AM_FLOW = Flow;                                              // za provjeru u testovima
-  if (AUTO && CARDS) {                                                  // videi četiri ekrana idu jednom (bez petlje) i stoje na zadnjoj sličici; kraj = sam korak
-    var sumV = $("#sum .split-v"), whoV = $("#split-2 .split-v");
-    [heroVideo, sumV, whoV].concat(cards.map(function (c) { return c.v; })).forEach(function (v) { if (v) v.loop = false; });
-    if (heroVideo) heroVideo.addEventListener("ended", function () { Flow.autoEnded("hero"); });
-    cards.forEach(function (c) { c.v.addEventListener("ended", function () {   // trake: čeka se najdulji video, kraći stoje na zadnjoj sličici
-      if (cards.every(function (k) { return k.v.ended; })) Flow.autoEnded("bands");
-    }); });
-    if (sumV) sumV.addEventListener("ended", function () { Flow.autoEnded("sum"); });
-    if (whoV) whoV.addEventListener("ended", function () { Flow.autoEnded("who"); });
+  if (AUTO && CARDS) {                                                  // pred kraj videa ekrana: sam korak (Flow.autoCheck); videi ostaju u petlji
+    var autoVids = { hero: [heroVideo], bands: cards.map(function (c) { return c.v; }), sum: [$("#sum .split-v")], who: [$("#split-2 .split-v")] };
+    (function autoLoop() { Flow.autoCheck(autoVids); requestAnimationFrame(autoLoop); })();   // svaki kadar; u skrivenoj kartici preglednik ga sam uspava
   }
 
   /* ---------- vrata: WHO WE ARE? se razdvoji i otkrije THE WORK (brand/35 F, 13. 11. 2026.; prije je otkrivao #why) ----------
@@ -885,12 +905,13 @@
       open = true; Who.hint(false); door.classList.add("apart"); move(); reveal(true); onScroll();
     }
     function close() {                                                   // #work natrag pod vrata; #why se vrati na početak (redovi opet dođu sami)
+      fromStart(door.querySelector(".split-v"));                        // povratak na WHO WE ARE?: video ispočetka (sam korak opet tek pred kraj)
       open = false; reveal(false); door.classList.remove("apart"); move(); onScroll();
       if (Why) Why.reset();
       setTimeout(function () { if (!open) Who.hint(true); }, SPLIT);
     }
     function instant() { open = true; door.classList.add("apart"); reveal(true); }   // #next: WHO WE ARE? razdvojen, #work otkriven
-    return { open: doOpen, close: close, instant: instant, isOpen: function () { return open; }, busy: function () { return performance.now() < busyUntil; } };
+    return { open: doOpen, close: close, instant: instant, isOpen: function () { return open; }, busy: function () { return performance.now() < busyUntil; }, splitMs: SPLIT };
   })();
   window.AM_DOOR = Door;
 
