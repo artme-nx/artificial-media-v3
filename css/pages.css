@@ -242,7 +242,15 @@
 .fs-thumb.fs-thumb--wide { width: 60px; height: 34px; }
 .fs-card .fs-thumb.fs-thumb--wide { width: 53px; height: 30px; }
 .fs-card .fs-bar-t strong { font-size: 22px; }
-.fs-change { display: flex; align-items: center; min-height: 44px; font: 600 13px/1 var(--ui); color: #F4F3EF; }
+.fs-change {                                                           /* povratak na galeriju (brand/45 B): gumb s obrubom, ne lomi se */
+  flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-left: auto; padding: 0 14px;
+  border: 1px solid rgba(244, 243, 239, .75); border-radius: 2px; white-space: nowrap;
+  font: 700 14px/1 var(--ui); letter-spacing: .1em; text-transform: uppercase; color: #F4F3EF; text-decoration: none;
+}
+.fs-change:hover { background: #F4F3EF; color: #0A0A0A; }
+.fs-change:focus-visible, .fs-card a.fs-thumb:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.fs-card a.fs-thumb { flex: none; display: block; }
+.fs-card .fs-bar-t { min-width: 0; }
 .fs-photos h1 { margin-top: 24px; }
 .fs-photos .fs-lead { margin-top: 10px !important; }
 .fs-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 172px)); gap: 8px; margin-top: 16px; }   /* dva polja jedno do drugog; ne rastežu se, omjer kao dosadašnja polja */
