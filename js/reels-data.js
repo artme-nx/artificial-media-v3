@@ -20,8 +20,8 @@ window.AM_WORK = [
     client: "EVCharge.hr", year: "2026", format: "16:9 Commercial",
     description: "A B2B film for an EV charging payment system, made for location owners. English and Croatian versions.",
     clips: [
-      { title: "B2B film · English", file: "video/work/evcharge-01.mp4", poster: "video/work/evcharge-01.jpg", format: "16:9", sound: true },
-      { title: "B2B film · Croatian", file: "video/work/evcharge-02.mp4", poster: "video/work/evcharge-02.jpg", format: "16:9", sound: true }
+      { title: "B2B film · English", file: "video/work/evcharge-01.mp4", poster: "video/work/evcharge-01.jpg", format: "16:9" },
+      { title: "B2B film · Croatian", file: "video/work/evcharge-02.mp4", poster: "video/work/evcharge-02.jpg", format: "16:9" }   // oba filma su bez zvučnog zapisa (izvornici, 13. 11.)
     ]
   },
   {
