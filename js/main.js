@@ -13,6 +13,10 @@
    Boje: pozadina je papir za scenarij (boja + zrno iz img/paper.png), crvena je REC crvena. */
 (function () {
   "use strict";
+  /* Prekidači za tri trake (brand/45 D2, Kristian, 13. 11. 2026.). Vraćanje na staro: jedna riječ u jednom retku.
+     Izmjereno u Chromeu (kadrovi u 2,7 s ulaska, 160 = glatko): video trake od ulaska 86, uz zaustavljen hero 108, video tek kad sve sjednu 160. */
+  var BAND_VIDEO_ON_ENTER = true;    // true: video trake krene čim ta traka počne ulaziti; false: staro, videi krenu kad sve tri sjednu
+  var HERO_STOP_ON_BANDS = false;    // true: video heroja stane čim trake počnu ulaziti; pali se samo na Kristianov zahtjev
   var L = window.AM_LOGO;
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $ = function (s) { return document.querySelector(s); };
@@ -215,8 +219,8 @@
   /* tri trake ulaze same (Kristian, 10. 11. 2026.; brand/21): jedan pokret nakon zuma pokrene sve tri, vodoravno, jednu za drugom:
      gornja s lijeve strane, srednja s desne, donja s lijeve. Prema gore izlaze obrnutim redom, svaka na stranu s koje je došla.
      Kretanje je u CSS-u (klasa seat na .card, tranzicija dok je klasa bands na .cards); ovdje su samo redoslijed i vremena.
-     Mjereno u Chromeu (10. 11. 2026.): dok se na ekranu vrti više od jednog videa, kadrovi padnu sa 60 na 30 u sekundi. Zato tijekom pokreta stoje na već
-     dekodiranom prvom kadru (primeVideo), a krenu kad sve tri sjednu. */
+     Prvi kadar svake trake je unaprijed dekodiran (primeVideo), pa nema crnog polja ni skoka s postera. Kada video krene, određuje BAND_VIDEO_ON_ENTER
+     (na vrhu): s ulaskom trake ili kad sve tri sjednu. Više videa u pokretu ruši kadrove ulaska (mjerenja uz prekidače). */
   var SLIDE = { IN: 1050, WHO: 1050, EASE: "cubic-bezier(.16, 1, .3, 1)" };   // ulazak traka i polovica WHO WE ARE?: trajanje (ms) i krivulja (Kristian, 10. 11. 2026.)
   function primeVideo(v) {                                              // prvi kadar unaprijed dekodiran, bez zamjene postera tijekom ulaska
     if (!v || reduce) return;
@@ -234,10 +238,11 @@
     function show(c, on) { c.el.classList.toggle("seat", on); }
     function finish(done) { box.classList.remove("bands"); onScroll(); if (done) done(); }
     function ready(fn) { requestAnimationFrame(function () { requestAnimationFrame(fn); }); }   // slojevi (will-change) gotovi prije prvog pomaka
-    function enter(done) {                                              // 1, 2, 3; kad sve sjednu, krenu njihovi videi, a video heroja stane
+    function enter(done) {                                              // 1, 2, 3; video trake krene s njom ili kad sve sjednu (BAND_VIDEO_ON_ENTER); kad sve sjednu, hero stane
       box.classList.add("bands");
+      if (HERO_STOP_ON_BANDS && heroVideo) heroVideo.pause();
       ready(function () {
-        cards.forEach(function (c, k) { later(function () { show(c, true); entered = k + 1; onScroll(); }, k * T.STEP); });
+        cards.forEach(function (c, k) { later(function () { if (BAND_VIDEO_ON_ENTER) c.on = true; show(c, true); entered = k + 1; onScroll(); }, k * T.STEP); });
         later(function () { cards.forEach(function (c) { c.on = true; }); covered = true; finish(done); }, END);
       });
     }

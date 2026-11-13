@@ -103,7 +103,7 @@ Dolje desno je gumb **SOUND**. Preglednici ne puštaju zvuk dok posjetitelj jedn
 
 ## Video
 
-`video/hero.mp4` (1920×1080, 11,2 s, bez zvuka) je montaža postojećih kadrova s tvrdim rezovima (`brand/37`, B1, 13. 11. 2026.): avion iz `spot_b` jednom, jedan neprekinuti kadar od 0,46 s (duljeg u materijalu nema; `brand/45` A1), silueta pred farovima, val u gradu (2,9 s), stubište odozgo, tanker i žar. `video/hero-poster.jpg` je prva sličica i prikazuje se dok video ne krene. Novi video ide pod istim imenom.
+`video/hero.mp4` (1920×1080, 14,5 s, bez zvuka) je montaža postojećih kadrova s tvrdim rezovima (`brand/45` D1, 13. 11. 2026.): avion (`spot_b`, jedan kadar 0,46 s), silueta pred farovima, Sofia lice izbliza noću i oči krajnje izbliza, žuti auto u prolazu (sva tri iz spota Sofia), tanker među tornjevima, srebrni auto u ružičastom dimu i žar. `video/hero-poster.jpg` je prva sličica (avion) i prikazuje se dok video ne krene. Novi video ide pod istim imenom.
 
 **Pločice završnog ekrana** (Kristian, 10. 11. 2026.): pozadina se stavlja u `video/tiles/` pod imenima `work`, `academy` i `funswap` (`.mp4` i/ili `.jpg`). Što postoji, to se samo prikaže; bez datoteka pločica ostaje tamna. Format: MP4 H.264, bez zvuka, petlja 6–10 s, 1920×1080 za veliku pločicu (`work`) i 1280×720 za manje, do oko 3 MB; JPG poster iste rezolucije. Jačina tamnog sloja iza teksta je `--end-shade` u `css/style.css`.
 
@@ -148,6 +148,6 @@ Bez argumenta oznaka je današnji datum s rednim brojem (isti dan ponovno: `-2`,
 
 FUNSWAP je na `/funswap/` (od 13. 11. 2026., `brand/36` A; stara stranica i mapa `funswap-new/` su uklonjene). Adresa servisa: `js/funswap-config.js` (na domeni objavljeni servis, na `localhost:8767` lokalni) i `js/start-config.js`.
 
-**Video traka za vrijeme ulaska** (`brand/45` A2, izmjereno 13. 11. 2026. u Chromeu, 1440×900 i 390×844, kadrovi kompozitora u 2,7 s ulaska): ako se video svake trake vrti od trenutka kad traka počne ulaziti, ulazak padne sa 60 na 30 kadrova u sekundi (86 umjesto 160 kadrova). Sa zaustavljenim herojem 108 do 110; s jednim videom u pokretu 159 (glatko); s dva ili tri videa 109 do 110, i na 1920 i na 2560 px širine i kad videi krenu prije ulaska. Zato trake i dalje ulaze na prvom kadru, a videi krenu kad sve tri sjednu; odluka čeka Kristiana.
+**Video traka za vrijeme ulaska** (`brand/45` A2 i D2, Kristian, 13. 11. 2026.): video svake trake krene čim ta traka počne ulaziti. Prekidači su na vrhu `js/main.js`: `BAND_VIDEO_ON_ENTER` (uključen; `false` vraća staro, videi krenu kad sve tri sjednu) i `HERO_STOP_ON_BANDS` (isključen; hero stane dok trake ulaze). Izmjereno u Chromeu (1440×900 i 390×844, kadrovi kompozitora u 2,7 s ulaska): s videom od ulaska 85 do 87 kadrova (oko 30 u sekundi), sa zaustavljenim herojem 108, staro ponašanje 160 (glatko). Razlučivost videa ne mijenja ništa; odlučuje broj videa koji se istodobno vrte.
 
 FUNSWAP, stranica fotografija: traka s odabranim videom ima gumb **← CHANGE VIDEO** (obrub, 14 px, visina 44 px, ne lomi se), a i sličica vodi na galeriju; galerija označi trenutni video (`brand/45` B).
