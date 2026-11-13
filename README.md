@@ -26,7 +26,7 @@ Put: **hero (zum u D) → tri trake → WHERE ART MEETS INTELLIGENCE → WHO WE 
 
    Rečenice putuju s trakama (pismo AM Puni, točka u REC crvenoj). Jedna traka ulazi 1,05 s (`cubic-bezier(.16, 1, .3, 1)`), a sljedeća kreće 0,25 s prije nego prethodna sjedne; ulazak traje oko 2,65 s. Vremena: `js/main.js`, `SLIDE` i `Bands`, objekt `T`. Na mobitelu je isto, tri trake po trećinu visine.
 
-   **Videi tijekom pokreta:** izmjereno u Chromeu 10. 11. 2026.: dok se vrti više od jednog videa, kadrovi padnu sa 60 na 30 u sekundi. Zato trake ulaze na već dekodiranom prvom kadru (`primeVideo`), a videi krenu kad sve tri sjednu; tada stane video heroja. Isto vrijedi za polovice WHO WE ARE?. Svaka traka ima svoj video s `object-fit: cover` u sredini (`brand/37`, 13. 11. 2026.): na računalu `video/cards/card-N.mp4` (21:9, poster `card-N.jpg`), do 640 px `card-N-m.mp4` (4:3, poster `card-N-m.jpg`). `js/main.js` pri učitavanju postavi samo jednu od dvije (`data-src` u `index.html`). Videi su bez zvuka i **privremeni**: izrezani ffmpegom iz starih 16:9 placeholdera (`tools/make_card_placeholders.sh`); pravi idu pod istim imenima, prema tablici u `brand/37`. `card-1.jpg` i `card-2.jpg` (16:9) su zasad i posteri blokova WHERE ART i WHO WE ARE?.
+   **Videi tijekom pokreta:** izmjereno u Chromeu 10. 11. 2026.: dok se vrti više od jednog videa, kadrovi padnu sa 60 na 30 u sekundi. Zato trake ulaze na već dekodiranom prvom kadru (`primeVideo`), a videi krenu kad sve tri sjednu; tada stane video heroja. Isto vrijedi za polovice WHO WE ARE?. Svaka traka ima svoj video s `object-fit: cover` u sredini (`brand/37`, 13. 11. 2026.): na računalu `video/cards/card-N.mp4` (21:9, poster `card-N.jpg`), do 640 px `card-N-m.mp4` (4:3, poster `card-N-m.jpg`). `js/main.js` pri učitavanju postavi samo jednu od dvije (`data-src` u `index.html`). Videi su bez zvuka, 24 sličice u sekundi, poster je prva sličica (JPG istog imena). Kadrovi su iz postojećih materijala (`brand/37`, dio B1, 13. 11. 2026.; izrezi i petlje po tablici u 37): traka 3 je val nad marinom (k01), WHERE ART dvije siluete pred robotima (k13), WHO WE ARE? oko sa suzom (k05); ta dva bloka imaju svoje postere (`video/sum.jpg`, `video/split-2.jpg`). Trake 1 i 2 (i njihove `-m` inačice) su još privremeni izrezi iz starih placeholdera i čekaju `favoriti/emotions.mp4` i `bimagination.mp4`. Konačni kadrovi: `brand/38`.
 
    **Zaključak: WHERE ART MEETS INTELLIGENCE.** (Kristian, 21. 10. 2026.). Kad se tri pruge pogledaju, sljedeći pokret prema dolje pošalje ih svaku na svoju stranu (gornja lijevo, srednja desno, donja lijevo), jednu za drugom. Ispod njih se otkrije blok u dva stupca: lijevo papir s rečenicom **WHERE ART MEETS INTELLIGENCE.** (ART i točka crveno), desno video. Na mobitelu su to dva reda: gore papir s rečenicom, dolje video. Tekst rečenice je u `index.html` (blok `#sum`), a video je **privremen** (`video/sum.mp4`, kopija `card-1.mp4`). Sva vremena (izlazak traka, ulazak rečenice, SCROLL) su na jednom mjestu: `js/main.js`, dio `Sum`, objekt `T`. Izgled bloka je zajednička klasa `.split` (`css/style.css`), ista kao na ekranu WHO WE ARE?.
 
@@ -38,12 +38,12 @@ Put: **hero (zum u D) → tri trake → WHERE ART MEETS INTELLIGENCE → WHO WE 
    - **Red COST** ima `slow: true` i `money: true`: odvrti se dulje (1,1 s, od `0.000`), s točkom za tisuće. Ostali redovi prikazuju dvije znamenke i traju 0,6 s; brojač i traka imaju isto trajanje i krivulju.
    - **Vremena** su u `js/main.js`, dio `Why`, objekt `T` (`SPLIT`, `ROW_GAP`, `IN`, `COUNT`, `COUNT_SLOW`, `OUT`, `HOLD`).
 
-   **THE WORK (`#work`)** (Kristian, 29. 10. 2026.; mockup `brand/14-the-work-mockup-desktop.pdf`; korak 1 od 2): crni ekran koji leži točno ispod ekrana WHO WE ARE? (od 13. 11. 2026.). Pokret dolje nastavi kretanje polovica (video gore, papir dolje, 0,9 s; na mobitelu se otvore prema van: papir gore, video dolje) i otkrije ga (`js/main.js`, `Door`). Gore lijevo **THE WORK.** (točka crvena) i broj projekata (npr. (03), broje se samo projekti koji nisu ugašeni), gore desno "Client work and spec work, always labeled." Lijevo je **monitor** (otvori se iz sredine, REC, vremenski kod, kutne oznake, crvena traka napretka), a oblik mijenja glatko po formatu klipa (16:9 vodoravno, 9:16 uspravno, 21:9 široko). Ispod monitora je **ploča kao na kameri**: tipka PREV, kartica za svaki projekt (sličica, broj, naziv, oznaka CLIENT / ORIGINAL / SPEC; aktivna ima crvenu lampicu i crvenu crtu napretka) i tipka NEXT. Zadnja kartica, NEXT CLIENT · COMING SOON, ugašena je i ne može se izabrati. Desno je **kartica projekta**: PROJECT 01 / 03, naziv s oznakom, redovi CLIENT, YEAR, FORMAT, DELIVERED IN, MADE WITH, rečenica opisa, popis klipova (s trajanjem iz videa) i WATCH WITH SOUND.
+   **THE WORK (`#work`)** (Kristian, 29. 10. 2026.; mockup `brand/14-the-work-mockup-desktop.pdf`; korak 1 od 2): crni ekran koji leži točno ispod ekrana WHO WE ARE? (od 13. 11. 2026.). Pokret dolje nastavi kretanje polovica (video gore, papir dolje, 0,9 s; na mobitelu se otvore prema van: papir gore, video dolje) i otkrije ga (`js/main.js`, `Door`). Gore lijevo **THE WORK.** (točka crvena) i broj projekata (npr. (03), broje se samo projekti koji nisu ugašeni), gore desno "Client work and spec work, always labeled." Lijevo je **monitor** (otvori se iz sredine, REC, vremenski kod, kutne oznake, crvena traka napretka), a oblik mijenja glatko po formatu klipa (16:9 vodoravno, 9:16 uspravno, 21:9 široko). Ispod monitora je **ploča kao na kameri**: tipka PREV, kartica za svaki projekt (sličica, broj, naziv, oznaka CLIENT / ORIGINAL / SPEC; aktivna ima crvenu lampicu i crvenu crtu napretka) i tipka NEXT. Zadnja kartica, NEXT CLIENT · COMING SOON, ugašena je i ne može se izabrati. Desno je **kartica projekta**: PROJECT 01 / 03, naziv s oznakom, redovi CLIENT, YEAR, FORMAT, DELIVERED IN, MADE WITH (red bez podatka se ne prikazuje), rečenica opisa, popis klipova (s trajanjem iz videa) i WATCH WITH SOUND.
    - **Projekt se mijenja samo klikom** na karticu, PREV ili NEXT (i Enter / razmak na njima). PREV i NEXT idu u krug i preskaču ugašenu karticu. Scroll, strelice ← → i swipe nikad ne mijenjaju projekt ni klip.
-   - Korak 1: klip se vrti u petlji, bez zvuka (SOUND je skriven). Popis klipova i WATCH WITH SOUND zasad su samo prikaz (korak 2: lanac klipova, showreel, player). Klik na monitor zasad ne radi ništa.
+   - Klip se vrti u petlji, bez zvuka. Ako projekt ima više klipova, klik (ili Enter / razmak) na klip u popisu ga pusti. WATCH WITH SOUND, a na mobitelu dodir na monitor ("Tap to watch with sound"), pali zvuk i pusti klip od početka; ponovni klik ga gasi, a gasi se i kad monitor ode s ekrana ili se promijeni projekt. Klip bez zvuka (polje `sound` u `reels-data.js`) nema ni gumb ni natpis (`brand/44` A, 13. 11. 2026.). Korak 2 (lanac klipova, showreel, player) još nije napravljen.
    - Na desktopu cijela pozornica stane u ekran ispod crne trake (ako ne stane, manji je monitor, ne tekst). Na mobitelu: naslov, monitor preko širine (9:16 visok koliko stane), "Tap to watch with sound", ploča koja se lista prstom vodoravno (bez PREV / NEXT), kartica projekta, SCROLL; sekcija je tamo viša od ekrana.
-   - **Podaci projekata** (naziv, oznaka, klijent, godina, format, dani, alati, opis, klipovi) su u `js/reels-data.js`. Što ne znamo, piše doslovno u uglatoj zagradi ([X] days, [TOOLS], [YEAR], [FORMAT], [DESCRIPTION], [CLIP TITLE], [CLIP 1–3]).
-   - **Videi:** `video/work/evcharge-01.mp4`, `evcharge-02.mp4`, `gidra-01.mp4`, `sofia-01.mp4`, `sofia-02.mp4`, `sofia-03.mp4` (uz istoimene `.jpg` postere). Zasad su to kopije placeholdera iz `video/reels/`; pravi idu pod istim imenima, točno u omjeru formata klipa (polje `format` u `reels-data.js`).
+   - **Podaci projekata** (naziv, oznaka, klijent, godina, format, dani, alati, opis, klipovi) su u `js/reels-data.js`. Što ne znamo, ne upisuje se, a prazan red se ne prikazuje; nikad izmišljen podatak. Sadašnji radovi (13. 11. 2026., `brand/44` A): 01 EVCHARGE (klijent EVCharge.hr, engleska i hrvatska inačica), 02 NOOTROPIK (Private buyer, kratka reklama bez zvuka), 03 SOFIA (vlastiti lik, spot), 04 NEXT CLIENT ugašen.
+   - **Videi:** `video/work/evcharge-01.mp4`, `evcharge-02.mp4`, `nootropik-01.mp4`, `sofia-01.mp4` (uz istoimene `.jpg` postere, sličica s druge sekunde), 1280×720, H.264, zvuk AAC gdje ga ima. Izvori su u `brand/44` A.3; dok izvornici s Desktopa ne stignu, `evcharge-*` i `sofia-01` su stari placeholderi, a `nootropik-01` nedostaje.
    - Ponašanje: `js/reels.js`; izgled: `css/style.css`, dio THE WORK.
 3. **Crna traka:** pojavi se gore kad se WHO WE ARE? razdvoji i otkrije THE WORK, i ostane dalje (do 26. 10. 2026. palili su je reelovi). U njoj piše ARTIFICIAL MEDIA, s ART i ME crveno (REC crvena), a ostatak je bijel.
 4. **Slide sa scenarijem (isključen 19. 10. 2026.):** zamijenile su ga tri karte. Kod je ostao; povratak: u `js/main.js` stavi `SCREENPLAY = true`, u `index.html` makni klasu `has-cards` s heroja i `hidden` sa sekcije `#loop`, i vrati `js/typewriter-sounds.js`. Kako je radio: nad tekstom je veliko ime ARTIFICIAL MEDIA, a ispod se sam tipka tekst kao filmski scenarij, čim sekcija dođe na ekran. Ritam je ljudski i nepravilan, s predahom na zarezu i točki; izvan ekrana zastane. Nazivi ME, ART, AI i ARTIFICIAL MEDIA nisu u tekstu. Dok se tipka, u imenu se redom pale ME, ART, AI (drugo A iz ARTIFICIAL i I iz MEDIA) i na kraju cijelo ime.
@@ -60,8 +60,7 @@ Put: **hero (zum u D) → tri trake → WHERE ART MEETS INTELLIGENCE → WHO WE 
 ### Što je još privremeno (placeholder)
 
 - izvor za footnote u `#why`: C&I Studios potvrđuje 4–8 tjedana; raspon $5K–$100K, "mid-point" i "single format" Kristian još treba potvrditi [TREBA POTVRDU];
-- sva polja u uglatim zagradama u `js/reels-data.js`; smije li se rad pokazati s imenom klijenta (EVCharge, Gidra) [TREBA POTVRDU];
-- svi videi: `video/hero.mp4`, `video/cards/`, `video/sum.mp4`, `video/split-2.mp4` i `video/work/`.
+- videi: `video/hero.mp4`, trake 1 i 2 (`video/cards/card-1*`, `card-2*`) i klipovi u `video/work/` čekaju izvornike s Desktopa (`brand/37` B1 i `brand/44` A.3); `nootropik-01.mp4` još ne postoji.
 
 Tekst scenarija je Kristianov (13. 10. 2026.), a ispravljeni su samo pravopis i gramatika engleskog. Nalazi se u `js/main.js`, u nizu `SCRIPT`.
 
@@ -117,15 +116,16 @@ Dolje desno je gumb **SOUND**. Preglednici ne puštaju zvuk dok posjetitelj jedn
 | `css/ampuni-font.css` | Pismo AM Puni, ugrađeno (generirano) |
 | `js/main.js` | Scroll: zum, tri trake (`Bands`), zaključak WHERE ART (`Sum`), WHO WE ARE? (`Who`), tijek (`Flow`), tablica `#why` (`Why`), traka, zvuk (i isključeni scenarij) |
 | `js/why-data.js` | **Brojke i tekstovi tablice `#why`** (ovdje se mijenjaju) |
-| `video/cards/` | Privremeni videi za tri trake (`tools/make_card_placeholders.sh`) |
-| `video/sum.mp4` | Privremeni video za blok WHERE ART MEETS INTELLIGENCE |
-| `video/split-2.mp4` | Privremeni video za ekran WHO WE ARE? (`video/split-3.mp4` se više ne koristi) |
+| `video/cards/` | Videi tri trake: `card-N.mp4` (21:9) i `card-N-m.mp4` (4:3) s posterima (`brand/37`) |
+| `video/sum.mp4`, `video/sum.jpg` | Video i poster bloka WHERE ART MEETS INTELLIGENCE |
+| `video/split-2.mp4`, `video/split-2.jpg` | Video i poster ekrana WHO WE ARE? (`video/split-3.mp4` se više ne koristi) |
 | `js/reels.js` | THE WORK: monitor (oblik po formatu klipa), ploča s projektima, kartica projekta |
 | `js/reels-data.js` | **Projekti za THE WORK** (ovdje se upisuju pravi radovi i klipovi) |
-| `video/work/` | Privremeni videi i posteri projekata (kopije iz `video/reels/`; pravi idu pod istim imenima) |
+| `video/work/` | Klipovi i posteri projekata THE WORK (`brand/44` A.3) |
 | `video/reels/` | Stari privremeni reelovi (ne koriste se; `tools/make_reel_placeholders.sh`) |
 | `js/logo-data.js` | Obrisi slova za masku u heroju (generirano) |
 | `js/typewriter-sounds.js` | Zvukovi pisaćeg stroja (generirano, `tools/make_typewriter_sounds.py`) |
+| `tools/set_version.py` | Oznaka verzije `?v=` na lokalnim CSS i JS poveznicama (vidi *Objava* ispod) |
 | `tools/build_logo_data.py` | Ponovno generira `logo-data.js` i `ampuni-font.css` kad se pismo promijeni |
 | `fonts/` | AM Puni (.ttf i .woff), kopija iz `brand/05-logo/runda9-font/out/` |
 | `img/paper.png` | Zrno papira za pozadinu (`tools/make_paper.py`) |
@@ -135,3 +135,15 @@ Kad se pismo promijeni, kopiraj novi `AMPuni-Regular.ttf` u `fonts/` i u mapi `a
 ```
 python3 tools/build_logo_data.py ../brand/05-logo/runda9-font/out/glyphs.json
 ```
+
+## Objava: oznaka verzije
+
+Sve lokalne poveznice na CSS i JS u HTML stranicama nose `?v=<oznaka>` (npr. `css/style.css?v=2026-11-13-1`), da preglednici nakon objave ne drže stari CSS i JS (`brand/44` C). Pri svakoj objavi, u mapi `artificial-media-v3`:
+
+```
+python3 tools/set_version.py
+```
+
+Bez argumenta oznaka je današnji datum s rednim brojem (isti dan ponovno: `-2`, `-3` …); može se zadati i točna oznaka (`python3 tools/set_version.py 2026-11-13-5`). Vanjske poveznice (Google Fonts, Stripe, Turnstile) se ne diraju, a `qa/` se preskače.
+
+FUNSWAP je na `/funswap/` (od 13. 11. 2026., `brand/36` A; stara stranica i mapa `funswap-new/` su uklonjene). Adresa servisa: `js/funswap-config.js` (na domeni objavljeni servis, na `localhost:8767` lokalni) i `js/start-config.js`.

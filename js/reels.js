@@ -7,7 +7,9 @@
      monitora i kartica desno se promijene. PREV / NEXT idu u krug i preskaču ugašenu karticu;
    - desno kartica projekta (klijent, godina, format, dani izrade, alati, opis, klipovi);
    - scroll, strelice ← → i swipe NIKAD ne mijenjaju projekt ni klip. Tijek stranice (dolazak i odlazak) vodi js/main.js, Flow.
-   Korak 1: klip se vrti u petlji; popis klipova i WATCH WITH SOUND su samo prikaz. Video je bez zvuka (SOUND je skriven).
+   Klip se vrti u petlji, bez zvuka. Klik na klip u popisu ga pusti; WATCH WITH SOUND ili dodir na monitor pali i gasi zvuk
+   (klip krene od početka), samo ako klip ima zvuk (polje sound). Bez zvuka gumb i "Tap to watch with sound" se ne prikazuju (brand/44 A).
+   Prazan red kartice (npr. Delivered in) se ne prikazuje.
    Projekti su u js/reels-data.js. */
 (function () {
   "use strict";
@@ -20,6 +22,7 @@
 
   var section = $("#work"), screenBox = $("#wk-screen"), monitor = $("#monitor"), screen = $("#screen"), cardsEl = $("#wk-cards");
   var tc = $("#tc"), mRatio = $("#m-ratio"), mProg = $("#m-prog"), card = $("#wk-card"), clipsEl = $("#wk-clips"), bar = $("#bar");
+  var watch = $("#wk-watch"), tapNote = section && section.querySelector(".wk-tap");
   if (!section || !DATA.length) return;
   var vids = [].slice.call(screen.querySelectorAll("video")), front = 0, token = 0;
   var real = DATA.filter(function (p) { return !p.disabled && p.clips && p.clips.length; });
@@ -34,6 +37,11 @@
   function isNarrow() { return window.innerWidth <= 900; }
   function barH() { return bar ? bar.offsetHeight : 56; }
   function set(id, t) { var el = document.getElementById(id); if (el) el.textContent = t || ""; }
+  function fact(id, t) {                                               // red kartice: bez podatka se ne prikazuje (ni naziv reda)
+    var el = document.getElementById(id); if (!el) return;
+    el.textContent = t || ""; el.hidden = !t;
+    var dt = el.previousElementSibling; if (dt && dt.tagName === "DT") dt.hidden = !t;
+  }
 
   /* ---------- ploča: kartica po projektu ---------- */
   var keys = DATA.map(function (p, i) {
@@ -64,8 +72,8 @@
     var p = DATA[cur];
     set("wk-pi", p.number); set("wk-pc", " / " + pad(real.length));
     set("wk-pt", p.title); set("wk-ptag", p.tag);
-    set("wk-client", p.client); set("wk-year", p.year); set("wk-format", p.format);
-    set("wk-days", p.deliveredIn); set("wk-tools", p.madeWith); set("wk-desc", p.description);
+    fact("wk-client", p.client); fact("wk-year", p.year); fact("wk-format", p.format);
+    fact("wk-days", p.deliveredIn); fact("wk-tools", p.madeWith); set("wk-desc", p.description);
     clipsEl.innerHTML = "";
     p.clips.forEach(function (c, ci) {
       var li = document.createElement("li");
@@ -74,6 +82,11 @@
       li.querySelector(".ct").textContent = c.title;
       li.querySelector(".cd").textContent = durOf(cur, ci) ? fmt(durOf(cur, ci)) : "--:--";
       li.setAttribute("aria-current", ci === clip ? "true" : "false");
+      if (p.clips.length > 1) {                                        // više klipova: klik (ili Enter / razmak) pusti klip
+        li.tabIndex = 0; li.setAttribute("role", "button");
+        li.addEventListener("click", function () { pickClip(ci); });
+        li.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pickClip(ci); } });
+      }
       clipsEl.appendChild(li);
     });
     if (!reduce) { card.classList.remove("swap"); void card.offsetWidth; card.classList.add("swap"); }   // nova kartica kratko izroni
@@ -131,13 +144,21 @@
   function pick(i) {
     var p = DATA[i];
     if (!p || p.disabled || !p.clips.length || i === cur) return;
-    cur = i; clip = 0;
+    cur = i; clip = 0; sound = false;
     keys.forEach(function (b, k) { b.setAttribute("aria-current", k === i ? "true" : "false"); b.querySelector(".wk-pbar").style.transform = "scaleX(0)"; });
     var b = keys[i], lr = cardsEl.getBoundingClientRect(), br = b.getBoundingClientRect();   // mobitel: aktivna kartica vidljiva na ploči
     if (br.left < lr.left || br.right > lr.right) cardsEl.scrollTo({ left: cardsEl.scrollLeft + br.left - lr.left - 4, behavior: reduce ? "auto" : "smooth" });
     showCard();
     setFrame(p.clips[0]);
     load(p.clips[0]);
+  }
+  function pickClip(ci) {
+    var c = DATA[cur].clips[ci];
+    if (!c || ci === clip) return;
+    clip = ci;
+    [].forEach.call(clipsEl.children, function (li, k) { li.setAttribute("aria-current", k === ci ? "true" : "false"); });
+    setFrame(c);
+    load(c);
   }
   function step(s) {                                                   // PREV / NEXT: u krug, preko ugašenih
     var n = DATA.length, k = cur;
@@ -148,11 +169,12 @@
   var inView = false, wantPlay = !reduce;
   function load(c) {
     var my = ++token, nv = vids[1 - front], ov = vids[front];
-    nv.poster = c.poster || ""; nv.src = c.file; nv.muted = true; nv.loop = true;   // korak 1: klip se vrti u petlji
+    sound = sound && !!c.sound; showSound(c);
+    nv.poster = c.poster || ""; nv.src = c.file; nv.muted = !sound; nv.loop = true;   // klip se vrti u petlji
     var swapped = false;
     function swap() {
       if (swapped || my !== token) return; swapped = true;
-      nv.classList.add("on"); ov.classList.remove("on"); front = vids.indexOf(nv);
+      nv.classList.add("on"); ov.classList.remove("on"); ov.muted = true; front = vids.indexOf(nv);
       if (wantPlay && inView) play();
       setTimeout(function () { if (vids[front] !== ov) { ov.pause(); ov.removeAttribute("src"); ov.removeAttribute("poster"); ov.load(); } }, 650);
     }
@@ -162,6 +184,24 @@
   }
   function play() { var v = vids[front]; if (!v.src) return; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   function pause() { vids.forEach(function (v) { v.pause(); }); }
+
+  /* ---------- zvuk: WATCH WITH SOUND i dodir na monitor (preglednik pušta zvuk tek nakon klika) ---------- */
+  var sound = false;
+  function showSound(c) {
+    var has = !!(c && c.sound);
+    if (watch) { watch.hidden = !has; watch.setAttribute("aria-pressed", sound ? "true" : "false"); }
+    if (tapNote) tapNote.hidden = !has;
+    monitor.classList.toggle("has-sound", has);
+  }
+  function setSound(on) {
+    var c = DATA[cur] && DATA[cur].clips[clip], v = vids[front];
+    sound = !!on && !!(c && c.sound);
+    v.muted = !sound;
+    if (sound) { v.currentTime = 0; play(); }
+    showSound(c);
+  }
+  if (watch) watch.addEventListener("click", function () { setSound(!sound); });
+  monitor.addEventListener("click", function () { if (monitor.classList.contains("has-sound")) setSound(!sound); });
   vids.forEach(function (v) {
     v.addEventListener("play", function () { if (v === vids[front]) monitor.classList.add("playing"); });
     v.addEventListener("pause", function () { if (v === vids[front]) monitor.classList.remove("playing"); });
@@ -190,7 +230,7 @@
     var r = shown() ? monRatio : 0;
     inView = r > 0.3;
     if (r > 0.15) monitor.classList.add("open");
-    if (inView) { if (wantPlay) play(); startTick(); } else pause();
+    if (inView) { if (wantPlay || sound) play(); startTick(); } else { if (sound) setSound(false); pause(); }
   }
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(function (es) { es.forEach(function (e) { secSeen = e.isIntersecting; }); syncView(); }, { rootMargin: "0px 0px -30% 0px" }).observe(section);
