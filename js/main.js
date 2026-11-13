@@ -159,7 +159,7 @@
   var heroVideo = $(".hero-video"), heroCovered = false;
   function playV(v) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
   var AUTO = AUTO_ADVANCE && !reduce;                                   // uz smanjeni pokret ništa ne ide samo (i videi ostaju u petlji)
-  function fromStart(v) { if (AUTO && v) { try { v.currentTime = 0; } catch (e) {} } }   // povratak na ekran: video ispočetka (samo uz AUTO_ADVANCE)
+  function fromStart(v) { if (AUTO && v && v.currentTime > 0.04) { try { v.currentTime = 0; } catch (e) {} } }   // povratak na ekran: video ispočetka (samo uz AUTO_ADVANCE); već na početku: bez premotavanja (brand/45 G2)
   /* zaključak (Kristian, 21. 10. 2026.): na pokret prema dolje nakon treće karte (Flow) rečenice na kartama izblijede (200 ms), pa trake
      odu svaka na svoju stranu (gornja lijevo, srednja desno, donja lijevo) i otkriju #sum: lijevo papir s rečenicom
      WHERE ART MEETS INTELLIGENCE. (tekst je u index.html), desno video. Malo nakon zadnje trake uđe rečenica, a nakon nje SCROLL (Flow).
@@ -248,6 +248,7 @@
     function enter(done) {                                              // 1, 2, 3; video trake krene s njom ili kad sve sjednu (BAND_VIDEO_ON_ENTER); kad sve sjednu, hero stane
       box.classList.add("bands");
       if (HERO_STOP_ON_BANDS && heroVideo) heroVideo.pause();
+      Who.preload();
       cards.forEach(function (c) { fromStart(c.v); });
       ready(function () {
         cards.forEach(function (c, k) { later(function () { if (BAND_VIDEO_ON_ENTER) c.on = true; show(c, true); entered = k + 1; onScroll(); }, k * T.STEP); });
@@ -298,7 +299,18 @@
       }); });
     }
     function instant() { if (!el) return; el.classList.add("in"); state = "in"; if (under) under.classList.add("under"); }   // #next: polovice već stoje
-    return { enter: enter, leave: leave, hint: hint, instant: instant, covers: function () { return state === "in"; }, inMs: T.IN };
+    /* video oka cijeli u memoriji prije nego što polovice uđu (brand/45 G2): mobilni Safari ne učitava video unaprijed, pa bi se punio tek kad krene.
+       Dohvat počne kad trake uđu (WHO WE ARE? je najmanje dva ekrana dalje); zamjena izvora samo dok ekran nije ni blizu, uz dekodiranu prvu sličicu. */
+    var preloaded = false;
+    function preload() {
+      if (preloaded || !v || reduce || !window.fetch || !window.URL || !URL.createObjectURL) return; preloaded = true;
+      fetch(v.currentSrc || v.src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); }).then(function (b) {
+        if (state !== "off") return;                                    // ekran već ulazi ili stoji: ostaje izvorna adresa
+        var t = v.currentTime; v.src = URL.createObjectURL(b); v.load(); if (t) { try { v.currentTime = 0; } catch (e) {} }
+        primeVideo(v);
+      }).catch(function () {});
+    }
+    return { enter: enter, leave: leave, hint: hint, instant: instant, preload: preload, covers: function () { return state === "in"; }, inMs: T.IN };
   })();
   function renderCards(q, inView) {
     if (!CARDS) return;
@@ -309,7 +321,7 @@
     });
     // trake su sjele: u zaključanom tijeku Sum pokreće Flow; slobodan scroll (nakon SCROLL, smanjeni pokret) ovdje
     if (q < 3 - 2 / vh) Sum.back(); else if (Flow.free()) Sum.start();
-    Sum.view(inView);
+    Sum.view(inView && !(Who && Who.covers()));                                  // ispod ekrana WHO WE ARE? video bloka WHERE ART stoji (brand/45 G: na mobitelu dva videa odjednom zapinju)
     document.documentElement.classList.toggle("cards-dark", inView && Bands.covered());   // traka za scrollbar uz tamne karte; tek kad trake stoje, ne usred pokreta
     Sound.videoLevel(1 - Bands.entered() / cards.length);               // zvuk heroja se utiša kako trake prekrivaju video
     var covered = Bands.covered() || !inView;                           // hero video stoji kad se ne vidi
@@ -898,14 +910,15 @@
     if (!door || !work || !CARDS) return null;
     var SPLIT = 900;                                                     // razdvajanje i sastavljanje (cubic-bezier(0.65, 0, 0.35, 1), u CSS-u)
     door.style.setProperty("--why-split", SPLIT + "ms");
-    var open = false, busyUntil = 0, t = 0;
+    var open = false, busyUntil = 0, t = 0, dv = door.querySelector(".split-v");
     function reveal(v) { work.classList.toggle("revealed", v); work.dispatchEvent(new Event("am:reveal")); }
     function move() { clearTimeout(t); door.classList.add("moving"); t = setTimeout(function () { door.classList.remove("moving"); }, SPLIT); busyUntil = performance.now() + SPLIT; }
     function doOpen() {
       open = true; Who.hint(false); door.classList.add("apart"); move(); reveal(true); onScroll();
+      setTimeout(function () { if (open && dv) dv.pause(); }, SPLIT);   // vrata otvorena: video oka se više ne vidi i stoji (brand/45 G2)
     }
     function close() {                                                   // #work natrag pod vrata; #why se vrati na početak (redovi opet dođu sami)
-      fromStart(door.querySelector(".split-v"));                        // povratak na WHO WE ARE?: video ispočetka (sam korak opet tek pred kraj)
+      fromStart(dv); if (dv && !reduce) playV(dv);                       // povratak na WHO WE ARE?: video ispočetka i u pokretu (sam korak opet tek pred kraj)
       open = false; reveal(false); door.classList.remove("apart"); move(); onScroll();
       if (Why) Why.reset();
       setTimeout(function () { if (!open) Who.hint(true); }, SPLIT);
