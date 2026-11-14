@@ -67,6 +67,8 @@ html.cards-dark { background: #0A0A0A; }
 .card.c2 { transform: translate3d(calc(100% + 90px), 0, 0); }
 .card.seat { transform: none; }                                      /* sjela: bez vlastitog sloja, tekst je oštar */
 .cards.bands .card { transition: transform var(--band-in, 1050ms) var(--band-ease, cubic-bezier(.16, 1, .3, 1)); will-change: transform; }   /* sloj samo dok se traka miče (Bands) */
+html.follow .card, html.follow .card-t > span, html.follow .sum .split-t, html.follow .sum .split-v,
+html.follow #split-2 .split-paper, html.follow #split-2 .split-media { transition: none !important; }   /* prijelaze vodi pokret (js/main.js, Follow; brand/45 H): bez CSS tranzicija */
 .card-v { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }   /* svaka traka svoj video, sredina kadra (brand/37) */
 .card::before {                                                      /* blago zatamnjenje iza rečenice */
   content: ""; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 100%;
