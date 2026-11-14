@@ -1,6 +1,7 @@
 /* FUNSWAP: popis videa u galeriji (brand/26, brand/31). Videi nisu u repou, nego u R2 servisa (gallery/<datoteka>); stranica adresu slaže iz AM_FUNSWAP.api + "/gallery/".
    Polja: id (isto ime izvornika u R2: <id>.mp4 ide Higgsfieldu), number ("01"…), name (može prazno), category (može prazno), duration ("0:12"),
    src (datoteka za prikaz; HEVC izvornici imaju H.264 kopiju <id>-h264.mp4), poster, wide (true: vodoravan video; izmjereno 12. 11.: v07 1920×1080, v33 1128×816; brand/35 A). Puni URL ili put od korijena ostaje kakav jest.
+   badge: oznaka na pločici i u traci odabranog videa; recipe: vlastiti recept ("two": dvije osobe, "car": auto), obje fotografije obavezne, tekst stranice fotografija u js/funswap.js (RECIPES); recept i prompt na servisu (brand/50).
    Prikazuje se samo ono što je upisano; broj videa i filter kategorija računaju se iz popisa. Prva objava: 24 videa "jedna osoba". */
 window.AM_FUNSWAP_VIDEOS = [
   { id: "v01", number: "01", name: "", category: "", duration: "0:12", src: "v01.mp4", poster: "v01.jpg" },
@@ -15,6 +16,7 @@ window.AM_FUNSWAP_VIDEOS = [
   { id: "v14", number: "14", name: "", category: "", duration: "0:14", src: "v14.mp4", poster: "v14.jpg" },
   { id: "v16", number: "16", name: "", category: "", duration: "0:11", src: "v16.mp4", poster: "v16.jpg" },
   { id: "v17", number: "17", name: "", category: "", duration: "0:09", src: "v17.mp4", poster: "v17.jpg" },
+  { id: "v18", number: "18", name: "", category: "", duration: "0:14", src: "v18.mp4", poster: "v18.jpg", badge: "YOUR CAR", recipe: "car" },
   { id: "v20", number: "20", name: "", category: "", duration: "0:07", src: "v20-h264.mp4", poster: "v20.jpg" },
   { id: "v22", number: "22", name: "", category: "", duration: "0:13", src: "v22.mp4", poster: "v22.jpg" },
   { id: "v23", number: "23", name: "", category: "", duration: "0:12", src: "v23.mp4", poster: "v23.jpg" },
@@ -26,5 +28,6 @@ window.AM_FUNSWAP_VIDEOS = [
   { id: "v31", number: "31", name: "", category: "", duration: "0:14", src: "v31.mp4", poster: "v31.jpg" },
   { id: "v32", number: "32", name: "", category: "", duration: "0:14", src: "v32.mp4", poster: "v32.jpg" },
   { id: "v33", number: "33", name: "", category: "", duration: "0:10", src: "v33.mp4", poster: "v33.jpg", wide: true },
+  { id: "v34", number: "34", name: "", category: "", duration: "0:14", src: "v34.mp4", poster: "v34.jpg", badge: "TWO PEOPLE", recipe: "two" },
   { id: "v35", number: "35", name: "", category: "", duration: "0:07", src: "v35.mp4", poster: "v35.jpg" }
 ];
