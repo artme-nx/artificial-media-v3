@@ -14,6 +14,12 @@
   function fail(el, text) { el.textContent = text; el.hidden = false; }
   function media(f) { return !f || /^(https?:)?\//.test(f) ? f : cfg.api + "/gallery/" + f; }   // datoteka iz R2 servisa (js/funswap-data.js)
   list.forEach(function (v) { v.src = media(v.src); v.poster = media(v.poster); });
+  function tag(v) { return v && v.badge ? ' <small class="fs-vtag">' + v.badge + "</small>" : ""; }   // oznaka uz broj u traci odabranog videa (brand/50 B)
+  /* vlastiti recept (brand/50 C): obje fotografije obavezne, tekst uz polja; servis zna recept po videu i odbija plaćanje bez obje fotografije */
+  var RECIPES = {
+    two: { lead: "This video has two people. Add one photo of each person: front view, good light, plain background, whole head and shoulders in the frame.", slots: ["PERSON 1", "PERSON 2"], aria: ["Photo of person 1", "Photo of person 2"] },
+    car: { lead: "This video swaps the car. Add two photos of the same car from different angles: the whole car in the frame, good light, no people in the photo.", slots: ["CAR · FRONT", "CAR · SIDE"], aria: ["Car photo, front", "Car photo, side"] }
+  };
   function setThumb(el, v) { el.style.backgroundImage = v && v.poster ? "url('" + v.poster + "')" : ""; el.classList.toggle("fs-thumb--wide", !!(v && v.wide)); }   // vodoravan video: vodoravna sličica (brand/35 A)
 
   /* ---------- 1. galerija ---------- */
@@ -24,7 +30,7 @@
     var hov = null, hovT = 0, back = false, backPlay = false;           // hov: pločica povećana mišem; back: odabrani video se vraća u veliki prikaz kad miš ode
     var player = document.createElement("video");                        // jedan video za cijelu galeriju: nikad se ne vrte dva
     player.muted = true; player.loop = true; player.playsInline = true; player.setAttribute("playsinline", ""); player.preload = "none"; player.className = "fs-player";
-    $("#fs-count").textContent = "FUNSWAP · €15 incl. VAT · " + list.length + (list.length === 1 ? " video" : " videos");
+    $("#fs-count").textContent = "FUNSWAP · €10 incl. VAT · " + list.length + (list.length === 1 ? " video" : " videos");
     var cats = list.map(function (v) { return v.category; }).filter(function (c, i, a) { return c && a.indexOf(c) === i; });
     if (cats.length >= 2) {
       chips.hidden = false;
@@ -48,7 +54,7 @@
       html += '<span class="fs-play" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="#F4F3EF"><path d="M3 1.5v9l7.5-4.5z"/></svg></span>';
       html += '<span class="fs-tile-b"><span></span><span class="fs-tile-d">' + (v.duration || "") + "</span></span>";
       b.innerHTML = html;
-      b.querySelector(".fs-tile-b span").textContent = v.name || "";
+      b.querySelector(".fs-tile-b span").textContent = v.badge || v.name || "";   // oznaka videa s vlastitim receptom (TWO PEOPLE, YOUR CAR; brand/50 B)
       b.addEventListener("click", function () { choose(v, b); });
       b.addEventListener("pointerenter", function (e) {                   // samo miš; dodir i tipkovnica ostaju kakvi jesu (brand/35 B)
         if (e.pointerType !== "mouse" || !fine.matches || still.matches) return;
@@ -99,7 +105,7 @@
     function mark(t) { [].forEach.call(grid.children, function (x) { x.classList.toggle("on", x === t); x.setAttribute("aria-pressed", String(x === t)); }); }
     function show(v) {
       sel = v;
-      $("#fs-bar-n").innerHTML = 'No<span class="r">.</span> ' + v.number; setThumb($("#fs-bar-thumb"), v);
+      $("#fs-bar-n").innerHTML = 'No<span class="r">.</span> ' + v.number + tag(v); setThumb($("#fs-bar-thumb"), v);
       $("#fs-go").disabled = false; $("#fs-use").disabled = false;
       $("#fs-use-t").textContent = "Use video No. " + v.number; $("#fs-stage-n").textContent = v.number;
       stage.classList.toggle("fs-stage--wide", !!v.wide);
@@ -138,12 +144,17 @@
     if (!o) { location.replace("../"); return; }
     if (state.o !== o) state = { o: o, uploaded: {} };
     state.uploaded = state.uploaded || {}; state.thumbs = state.thumbs || {}; write(state);   // thumbs: male sličice poslanih fotografija, samo u ovoj kartici (brand/28, L.2)
-    var slots = [].slice.call(document.querySelectorAll(".fs-slot")), checks = [].slice.call(document.querySelectorAll("[data-fs-checks] input")), err = $("#fs-photo-err"), payErr = $("#fs-pay-err"), pay = $("#fs-pay"), missing = $("#fs-missing"), busy = 0;
-    if (state.number) { $("#fs-card-n").innerHTML = 'No<span class="r">.</span> ' + state.number; setThumb($("#fs-card-thumb"), state); }
-    function sync() {                                                     // profil nikad ne blokira
-      var front = !!state.uploaded.front, ticks = checks.every(function (c) { return c.checked; }), ok = front && ticks && !busy;
+    var slots = [].slice.call(document.querySelectorAll(".fs-slot")), err = $("#fs-photo-err"), payErr = $("#fs-pay-err"), pay = $("#fs-pay"), missing = $("#fs-missing"), busy = 0;
+    var vid = list.filter(function (v) { return v.id === state.id; })[0], rec = vid && RECIPES[vid.recipe];
+    if (state.number) { $("#fs-card-n").innerHTML = 'No<span class="r">.</span> ' + state.number + tag(vid); setThumb($("#fs-card-thumb"), state); }
+    if (rec) {                                                            // dva videa s vlastitim receptom: oba polja obavezna, svoj tekst
+      $(".fs-photos .fs-lead").textContent = rec.lead;
+      slots.forEach(function (s, i) { s.querySelector(".fs-slot-l").textContent = rec.slots[i]; s.querySelector(".fs-slot-k").textContent = "REQUIRED"; s.querySelector("input").setAttribute("aria-label", rec.aria[i]); });
+    }
+    function sync() {                                                     // gumb ovisi samo o fotografijama (bez kućica pristanka, brand/50 C2); profil blokira samo uz recept
+      var have = rec ? !!(state.uploaded.front && state.uploaded.side) : !!state.uploaded.front, ok = have && !busy;
       pay.hidden = !ok; missing.hidden = ok;
-      if (!ok) missing.textContent = busy ? "Uploading your photo…" : !front ? "Add your front photo to continue" : "Tick all four boxes to continue";
+      if (!ok) missing.textContent = busy ? "Uploading your photo…" : rec ? "Add both photos to continue" : "Add your front photo to continue";
     }
     function paint(slot, on, label) { slot.classList.toggle("on", on); slot.querySelector(".fs-slot-a").textContent = label; }
     function toJpeg(f) {                                                  // svaka fotografija, i HEIC, prolazi kroz canvas: najviše maxSide, uspravno, JPEG (Higgsfield ne prima HEIC)
@@ -203,10 +214,10 @@
         }).then(function () { slot.classList.remove("busy"); busy--; sync(); });
       });
     });
-    checks.forEach(function (c) { c.addEventListener("change", sync); });
     pay.addEventListener("click", function () {
       payErr.hidden = true; pay.disabled = true;
-      api("/orders/" + encodeURIComponent(o) + "/checkout", json({ adult: true, consent: true, photosUse: true, withdrawal: true })).then(function (j) { location.href = j.url; }).catch(function (e) {
+      // bez potvrda u zahtjevu: kupac nastavlja uz rečenicu iznad gumba (brand/50 C2)
+      api("/orders/" + encodeURIComponent(o) + "/checkout", json({})).then(function (j) { location.href = j.url; }).catch(function (e) {
         if (e.status === 409) { location.replace("../thanks/?o=" + encodeURIComponent(o)); return; }   // već plaćeno
         pay.disabled = false;
         if (e.status === 410) return restart();
