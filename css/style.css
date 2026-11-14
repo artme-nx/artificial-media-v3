@@ -18,9 +18,6 @@
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; cursor: default; scrollbar-gutter: stable; }   /* strelica i iznad teksta; linkovi i gumbi imaju ruku */
 html.locked { overflow: hidden; overscroll-behavior: none; }   /* tijek se ne može preskočiti (js/main.js, Flow) */
-html.snap { scroll-snap-type: y proximity; }   /* mobitel, običan scroll ispod THE WORK: preglednik sam završi zamah na WHY i završnom ekranu (brand/45 M2) */
-html.snap #why, html.snap #next { scroll-snap-align: start; }
-html.snap .foot { scroll-snap-align: end; }   /* dno stranice je također mjesto zaustavljanja: podnožje ostaje dohvatljivo */
 body { margin: 0; background: var(--bg) var(--paper) repeat; background-size: 256px 256px; color: var(--ink); font-family: var(--script); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
