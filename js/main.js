@@ -845,8 +845,38 @@
         phase = "hero"; idx = L; cur = target = S[L]; window.scrollTo(0, cur);
         tweenEnd = arrived = performance.now(); setLock(true);
         if (FOLLOW) Follow.sync(Follow.last());
+        return;
       }
+      if (!alignRaf) { clearTimeout(alignT); alignT = setTimeout(align, ALIGN_WAIT); }
     }, { passive: true });
+    /* mobitel: WHY AI PRODUCTION i završni ekran su u običnom scrollu; kad scroll stane blizu vrha jednog od njih (alignNear), stranica
+       se glatko poravna točno na njega (brand/45 L2): WHY s obje strane, završni ekran samo odozgo. Unutar THE WORK i u podnožju ništa
+       se ne hvata. Prst na ekranu ili kotačić prekida. */
+    var ALIGN_WAIT = 160, ALIGN_MS = 450, alignT = 0, alignRaf = 0, touching = false, whyEl = $("#why");
+    function alignNear() { return Math.max(120, 0.15 * vh); }
+    function alignStop() { clearTimeout(alignT); if (alignRaf) { cancelAnimationFrame(alignRaf); alignRaf = 0; } }
+    function align() {
+      if (phase !== "free" || touching || !CARDS || stops().length - 1 > W3) return;   // samo kad WHY i završni ekran nisu zaključani (mobitel)
+      var y = window.scrollY, best = null;
+      [whyEl, next].forEach(function (el) {
+        if (!el) return;
+        var t = el.getBoundingClientRect().top + y;
+        if (el === next && t < y - 0.5) return;                          // ispod vrha završnog ekrana je podnožje (na mobitelu ~80 px): ne hvata se
+        if (Math.abs(t - y) <= alignNear() && (best === null || Math.abs(t - y) < Math.abs(best - y))) best = t;
+      });
+      if (best === null) return;
+      best = Math.min(best, document.documentElement.scrollHeight - window.innerHeight);
+      if (Math.abs(best - y) < 1) return;
+      var y0 = y, t0 = performance.now();
+      (function f(now) {
+        var q = Math.min(1, (now - t0) / ALIGN_MS), e = 1 - Math.pow(1 - q, 3);
+        window.scrollTo(0, q < 1 ? y0 + (best - y0) * e : best);
+        alignRaf = q < 1 ? requestAnimationFrame(f) : 0;
+      })(t0);
+    }
+    window.addEventListener("touchstart", function () { touching = true; alignStop(); }, { passive: true });
+    window.addEventListener("touchend", function () { touching = false; clearTimeout(alignT); alignT = setTimeout(align, ALIGN_WAIT); }, { passive: true });
+    window.addEventListener("wheel", alignStop, { passive: true });
     if (!reduce) {
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
       window.scrollTo(0, 0); setLock(true);
@@ -863,10 +893,12 @@
       var IDLE_RESUME = 3000;                                            // ms bez diranja između dva ekrana, pa automatski tijek nastavi naprijed (I1.7)
       var HOLD = [4, 5];                                                 // THE WORK i WHY: lagani pokret dolje ih ne odnosi (brand/45 K2)
       var HOLD_PAUSE = 200;                                              // ms stanke: pokret dolje se opet broji od nule
+      var SEAT_FROM = 3;                                                 // računalo: od otvaranja vrata (prijelaz 3) prijelazi sami sjednu (brand/45 L1)
+      var SEAT_WAIT = 120, SEAT_MS = 500;                                // ms bez pokreta, pa dovršetak do ekrana (meko zaustavljanje)
       var SMOOTH = 33;                                                   // ms: izglađivanje pomaka (95 % za ~100 ms), bez osjetnog kašnjenja za prstom (I1.6)
       var splitEl = document.getElementById("split-2"), sumEl = document.getElementById("sum"), narrow = window.matchMedia("(max-width: 640px)");
       var X = 0, want = 0, cum = null, seg = null, play = null, posed = 0, restN = 0, loopRaf = 0, loopT = 0, idleT = 0, bandsOn = false, bandT = [];
-      var decay = 0, prevAbs = 0, thAcc = 0, thT = 0, thGate = 0, thS = -1, thCross = false;
+      var decay = 0, prevAbs = 0, thAcc = 0, thT = 0, thGate = 0, thS = -1, thCross = false, lastDir = 0, seatT = 0;
       root.classList.add("follow");
       function bez(x1, y1, x2, y2) {                                     // CSS cubic-bezier: y za zadani x
         function c(t, a, b) { return 3 * a * t * (1 - t) * (1 - t) + 3 * b * t * t * (1 - t) + t * t * t; }
@@ -1093,8 +1125,27 @@
           play.raf = requestAnimationFrame(f);
         })(t0);
       }
+      /* THE WORK, WHY i završni ekran sjedaju (brand/45 L1, samo računalo): dok se prst miče, prijelaz ga prati 1 : 1; kad pokret stane
+         usred prijelaza od vrata nadalje, stranica sama dovrši do ekrana (naprijed ako je prešla pola ili je zadnji pokret išao naprijed,
+         inače natrag), SEAT_MS, meko na početku i na kraju, istim px prozorima kao pokret, pa nema skoka. */
+      function seatable(sg) { return sg && sg.k >= SEAT_FROM && lastScreen() > 4; }
+      function seat() {
+        if (play) return;
+        if (Math.abs(want - X) > 0.5) { seatT = setTimeout(seat, 16); return; }   // izglađivanje još sustiže prst
+        if (!seatable(seg)) return;
+        if (loopRaf) { cancelAnimationFrame(loopRaf); loopRaf = 0; }
+        clearTimeout(idleT);
+        var k = seg.k, a = cum[k], z = cum[k + 1], x0 = X, to = (X - a) / (z - a) >= 0.5 || lastDir > 0 ? z : a, t0 = performance.now();
+        play = { raf: 0, seat: true };
+        (function f(now) {
+          var q = Math.min(1, (now - t0) / SEAT_MS), e = q * q * (3 - 2 * q);   // meko kreće (prst je stao) i meko stane
+          var x = q < 1 ? x0 + (to - x0) * e : to;
+          want = x; placeX(x);
+          if (q < 1) play.raf = requestAnimationFrame(f); else { play = null; want = X = to; }
+        })(t0);
+      }
       function move(dPx, isNew, notch) {
-        stopPlay();
+        stopPlay(); clearTimeout(seatT);
         if (isNew && !seg && Math.abs(want - X) < 0.5) geom(); else fresh();   // duljine se mjere na početku pokreta, nikad usred njega
         var n = lastScreen();
         dPx = hold(dPx, notch); idle();
@@ -1102,8 +1153,9 @@
         if (atEnd && thCross) { leave(); return; }                       // prag prijeđen na posljednjem ekranu (mobitel: THE WORK): dalje običan scroll
         if (!dPx) return;
         if (!seg && restN === n && dPx > 0 && Math.abs(want - cum[n]) < 0.5) { if (isNew) leave(); return; }   // s posljednjeg ekrana: dalje običan scroll
-        want = clamp(want + dPx, 0, cum[n]);
+        want = clamp(want + dPx, 0, cum[n]); lastDir = dPx > 0 ? 1 : -1;
         kick(); idle();
+        if (lastScreen() > 4) seatT = setTimeout(seat, SEAT_WAIT);
       }
       function wheel(e, dy, gap, isNew) {
         var a = Math.abs(dy);
