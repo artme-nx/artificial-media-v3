@@ -329,7 +329,7 @@
       set(on ? "in" : "off");
     }
     function coming() { if (state === "off") state = "coming"; }         // prst vodi ulazak polovica: od sada nema zamjene izvora videa (preload)
-    return { enter: enter, leave: leave, hint: hint, instant: instant, preload: preload, pose: pose, coming: coming, v: v, covers: function () { return state === "in"; }, inMs: T.IN };
+    return { enter: enter, leave: leave, hint: hint, instant: instant, preload: preload, pose: pose, coming: coming, v: v, holdMs: T.HOLD, covers: function () { return state === "in"; }, inMs: T.IN };
   })();
   function renderCards(q, inView) {
     if (!CARDS) return;
@@ -349,7 +349,7 @@
 
   // crna traka (Kristian, 10. 11. 2026.): tek kad se otvori THE WORK (brand/35 F) i dalje; ekrani prije nemaju traku
   function renderBar() {
-    var on = reduce ? work.getBoundingClientRect().top <= 1 : hero.getBoundingClientRect().bottom < vh - 1 || (Door && Door.isOpen());
+    var on = reduce ? work.getBoundingClientRect().top <= 1 : hero.getBoundingClientRect().bottom < vh - 1 || work.classList.contains("revealed");   // THE WORK otkriven (i usred otvaranja vrata; brand/45 J2)
     bar.classList.toggle("on", on);
   }
 
@@ -904,7 +904,7 @@
             anim(0, h, 0, D, "slide", pp, [{ transform: "translate3d(0, -100%, 0)" }, { transform: "translate3d(0, 0%, 0)" }]);
           } else {
             var m = narrow.matches ? 1 : -1;                              // računalo: video gore, papir dolje; mobitel: obrnuto (prema van)
-            add(0, 1, 0, 1, E.lin, function (l) { if (l > 0 && Door) Door.reveal(true); });
+            add(0, 1, 0, 1, E.lin, function (l) { if (Door && work.classList.contains("revealed") !== l > 0) Door.reveal(l > 0); });   // THE WORK otkriven čim se vrata počnu razdvajati, skriven kad se sastave (oba smjera)
             anim(0, h, 0, D, "out", md, [{ transform: "translate3d(0, 0%, 0)" }, { transform: "translate3d(0, " + (m * 100) + "%, 0)" }]);
             anim(0, h, 0, D, "out", pp, [{ transform: "translate3d(0, 0%, 0)" }, { transform: "translate3d(0, " + (-m * 100) + "%, 0)" }]);
           }
@@ -995,15 +995,27 @@
       function arrive(n) {                                               // ekran sjeo
         setReady(false); clearTimeout(holdT); tweening = false; tweenEnd = arrived = performance.now();
         if (n === 0) { bandsStop(); if (heroVideo) playV(heroVideo); }
-        if (n === 1) { if (!bandsOn) bandsStart(); seatHold(); }
-        if (n === 2) holdT = setTimeout(function () { if (restN === 2 && !seg) setReady(true); }, Sum.T.HOLD);
+        if (n === 1 && !bandsOn) bandsStart();
         if (n === 5 && Why) Why.enter();
         onScroll();
       }
       function rest(n) {                                                 // ekran: stanje u klasama, inline stil van
         var sg = seg; pose(n); idx = idxOf(n); goY(yOf(n)); seg = null; clear(sg);
         X = cum[n];
-        if (restN !== n || tweening) { restN = n; arrive(n); }
+        if (restN !== n || tweening) { restN = n; arrive(n); nearN = -2; }
+        near();
+      }
+      /* natpis SCROLL: i kad posjetitelj stane blizu ekrana, a ne točno na njemu (brand/45 J2). Trake i WHO WE ARE? s obje strane;
+         WHERE ART tek na ekranu ili iza njega (prije toga je natpis još u obliku za trake). */
+      var nearN = -2, nearT = 0;
+      function near() {
+        var NEAR = Math.max(60, 0.08 * vh), n = -1;
+        for (var s = 1; s <= 3; s++) if (Math.abs(X - cum[s]) <= NEAR && (s !== 2 || X >= cum[2] - 0.5)) n = s;
+        if (n === nearN) return; nearN = n; clearTimeout(nearT);
+        setReady(false); if (posed < 3 || n !== 3) Who.hint(false);
+        if (n === 1) nearT = setTimeout(function () { if (nearN === 1) setReady(true); }, T.SEAT_HOLD);
+        if (n === 2) nearT = setTimeout(function () { if (nearN === 2) setReady(true); }, Sum.T.HOLD);
+        if (n === 3) nearT = setTimeout(function () { if (nearN === 3) Who.hint(true); }, Who.holdMs);
       }
       function ensure(k, fromAbove) {
         if (seg && seg.k === k) return;
@@ -1018,7 +1030,7 @@
         var k = 0; while (k < n - 1 && x >= cum[k + 1]) k++;
         var fromAbove = X >= cum[k + 1] - 0.5;
         ensure(k, fromAbove);
-        seg.mode = "user"; seg.u = x - cum[k]; X = x; draw();
+        seg.mode = "user"; seg.u = x - cum[k]; X = x; draw(); near();
       }
       function loop(now) {                                               // izglađivanje: X prati want
         loopRaf = 0;
@@ -1083,7 +1095,9 @@
       }
       function sync(n) { stopPlay(); if (seg) { var sg = seg; seg = null; clear(sg); } geom(); X = want = cum[n]; posed = n; restN = n; tweening = false; }
       geom();
-      window.addEventListener("resize", function () { var n = restN; geom(); if (!seg && n >= 0) X = want = cum[n]; });
+      function regeom() { if (seg || play || Math.abs(want - X) > 0.5) return; var n = restN; geom(); if (n >= 0) X = want = cum[n]; }   // raspored gotov (učitavanje, fontovi, veličina): duljine iznova, samo u mirovanju
+      window.addEventListener("resize", regeom); window.addEventListener("load", regeom);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(regeom);
       return { wheel: wheel, touch: touch, touchEnd: touchEnd, step: step, sync: sync, last: lastScreen,
         busy: function () { return !!play || !!seg || Math.abs(want - X) > 0.5; },
         P: function () { return seg ? seg.k + (seg.mode === "auto" ? seg.ms / seg.D : seg.u / seg.L) : restN; },
@@ -1197,7 +1211,7 @@
     function instant() { open = true; door.classList.add("apart"); reveal(true); }   // #next: WHO WE ARE? razdvojen, #work otkriven
     function pose(o) {                                                   // prst vodi prijelaz (SCROLL_FOLLOW): vrata otvorena ili zatvorena, bez animacije
       clearTimeout(t); door.classList.remove("moving"); busyUntil = 0;
-      if (o === open && door.classList.contains("apart") === o) return;
+      if (o === open && door.classList.contains("apart") === o && work.classList.contains("revealed") === o) return;   // i otkrivenost THE WORK (prijelaz na vrata je mogao ostati otkriven)
       open = o; door.classList.toggle("apart", o); reveal(o); onScroll();
       if (o) { Who.hint(false); if (dv) dv.pause(); } else if (Why) Why.reset();
     }
@@ -1275,8 +1289,8 @@
       note.classList.remove("on");
     }
     if (reduce) { shown = true; rows.forEach(function (row) { row.classList.add("on"); }); note.classList.add("on"); setReady(true); }   // smanjeni pokret: sve odmah, bez odbrojavanja i crtanja, SCROLL odmah
-    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) {   // slobodan scroll (mobitel): redovi krenu kad se ekran vidi
-      if (es[0].intersectionRatio >= 0.5 && Flow.free()) enter();
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) {   // slobodan scroll (mobitel) i stranica koja prati prst: redovi krenu kad je ekran barem pola u kadru (brand/45 J1)
+      if (es[0].intersectionRatio >= 0.5 && (Flow.free() || document.documentElement.classList.contains("follow"))) enter();
     }, { threshold: [0, 0.5] }).observe(sec);
     if (go) go.addEventListener("click", function () {
       if (!ready) return;
