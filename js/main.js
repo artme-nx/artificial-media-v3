@@ -849,52 +849,124 @@
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
       window.scrollTo(0, 0); setLock(true);
     }
-    /* PRST VODI PRIJELAZ (brand/45 H; prekidač SCROLL_FOLLOW). Ekrani: 0 hero, 1 tri trake, 2 WHERE ART, 3 WHO WE ARE?, 4 THE WORK,
-       a na računalu još 5 WHY AI PRODUCTION i 6 završni ekran. Položaj P je ekran + napredak prijelaza (0–1). Napredak je vrijeme prijelaza
-       (0–D ms, isto trajanje kao dosadašnji automatski): izgled crtaju zaustavljene Web Animations s istim početnim i krajnjim stanjem,
-       kašnjenjima i krivuljama kao CSS (samo transform i opacity), a P im postavlja vrijeme. Kad ekran sjedne, stanje je u klasama kao i dosad
-       (CSS tranzicije su tada isključene: html.follow). Pokret pomiče P izravno (LEN: visina ekrana po prijelazu); kad stane između ekrana,
-       P se dovrši do bližeg (naprijed ako je prešao pola ili je zamah išao naprijed); zamah najdalje do sljedećeg ekrana; zubac kotačića,
-       tipka i SCROLL dovrše jedan ekran; automatski tijek (AUTO_ADVANCE) vrti isti napredak u stvarnom vremenu. */
+    /* STRANICA PRATI PRST (brand/45 H i I; prekidač SCROLL_FOLLOW). Ekrani: 0 hero, 1 tri trake, 2 WHERE ART, 3 WHO WE ARE?, 4 THE WORK,
+       a na računalu još 5 WHY AI PRODUCTION i 6 završni ekran. Svaki element prijelaza ima dva prozora: u pikselima pokreta (prst, touchpad,
+       kotačić: linearno, 1 : 1, bez krivulja) i u milisekundama s krivuljom iz CSS-a (automatski tijek, tipke, SCROLL). Duljine pokreta su
+       iz geometrije (geom): ništa se na ekranu ne miče brže od prsta; polovice WHO WE ARE?, vrata i vožnje idu piksel za piksel.
+       Kad pokret stane, stranica stoji tu (i između dva ekrana); nakon IDLE_RESUME bez diranja automatski tijek nastavi naprijed od tog mjesta.
+       Crta se samo transform, opacity i položaj stranice, jednom po sličici; kad ekran sjedne, stanje je u klasama kao i prije (pose). */
     var FOLLOW = SCROLL_FOLLOW && !reduce && CARDS;
     var Follow = FOLLOW ? (function () {
-      var LEN = { 0: 2, def: 1 };                                        // pokret po prijelazu, u visinama ekrana (zum i trake zajedno: 2)
-      var FLING = 0.35;                                                  // px/ms: brže od toga je zamah (nosi do sljedećeg ekrana)
-      var LET_GO = 700;                                                  // ms: najdulje dovršavanje nakon puštanja prsta (iste krivulje, brže); auto, zubac i tipke u stvarnom vremenu
-      var P = 0, seg = null, play = null, lo = 0, hi = 1, posed = 0, restN = 0, idleT = 0, bandsOn = false, bandT = [], vel = [];
+      var INERTIA = false;                                               // true: i rep inercije touchpada pomiče stranicu; false: samo pokret prsta (I1.5)
+      var IDLE_RESUME = 3000;                                            // ms bez diranja između dva ekrana, pa automatski tijek nastavi naprijed (I1.7)
+      var SMOOTH = 33;                                                   // ms: izglađivanje pomaka (95 % za ~100 ms), bez osjetnog kašnjenja za prstom (I1.6)
       var splitEl = document.getElementById("split-2"), sumEl = document.getElementById("sum"), narrow = window.matchMedia("(max-width: 640px)");
-      var OFF_L = "translate3d(calc(-100% - 90px), 0, 0)", OFF_R = "translate3d(calc(100% + 90px), 0, 0)", ZERO = "translate3d(0, 0, 0)", OUTE = "cubic-bezier(.65, 0, .35, 1)";
+      var X = 0, want = 0, cum = null, seg = null, play = null, posed = 0, restN = 0, loopRaf = 0, loopT = 0, idleT = 0, bandsOn = false, bandT = [];
+      var decay = 0, prevAbs = 0;
       root.classList.add("follow");
-      function last() { return 4 + Math.max(0, stops().length - 1 - W3); }   // mobitel: THE WORK je zadnji (dalje običan scroll)
-      function D(k) {                                                    // trajanje prijelaza k → k+1 (ms), iz istih vremena kao automatski tijek
-        if (k === 0) return T.ZOOM + Bands.inMs;
-        if (k === 1) { var t = Sum.T; return t.FADE + 2 * t.STEP + t.OUT + t.IN_DELAY + t.IN; }
-        if (k === 2) return Who.inMs;
-        if (k === 3) return Door ? Door.splitMs : T.TWEEN;
-        return T.TWEEN;
+      function bez(x1, y1, x2, y2) {                                     // CSS cubic-bezier: y za zadani x
+        function c(t, a, b) { return 3 * a * t * (1 - t) * (1 - t) + 3 * b * t * t * (1 - t) + t * t * t; }
+        return function (x) {
+          if (x <= 0) return 0; if (x >= 1) return 1;
+          var lo = 0, hi = 1, t = x;
+          for (var i = 0; i < 24; i++) { var v = c(t, x1, x2); if (Math.abs(v - x) < 1e-5) break; if (v < x) lo = t; else hi = t; t = (lo + hi) / 2; }
+          return c(t, y1, y2);
+        };
       }
-      function len(k) { return (LEN[k] || LEN.def) * vh; }
-      function A(el, kf, delay, dur, easing) { var a = el.animate(kf, { delay: delay, duration: dur, easing: easing, fill: "both" }); a.pause(); return a; }
-      function build(k) {                                                // animacije prijelaza k → k+1 (polazište = stanje ekrana k u klasama)
-        var an = [];
+      var E = { slide: bez(.16, 1, .3, 1), out: bez(.65, 0, .35, 1), ease: bez(.25, .1, .25, 1), easeOut: bez(0, 0, .58, 1), lin: function (x) { return x; } };
+      var CSS = { slide: SLIDE.EASE, out: "cubic-bezier(.65, 0, .35, 1)", ease: "ease", easeOut: "ease-out" };
+      function lastScreen() { return 4 + Math.max(0, stops().length - 1 - W3); }   // mobitel: THE WORK je zadnji (dalje običan scroll)
+      function band(el, k) { var s = el === cards[1].el ? 1 : -1; return "translate3d(calc(" + (s * k).toFixed(4) + " * (100% + 90px)), 0, 0)"; }
+      function build(k) {                                                // prijelaz k → k+1: L (px pokreta), D (ms automatski), elementi
+        var tr = [], W = window.innerWidth, Wb = W + 90, S = stops(), L = 0, D = 0;
+        function add(u0, u1, t0, t1, ease, set) { tr.push({ u0: u0, u1: u1, t0: t0, t1: t1, ease: ease, set: set }); }
+        function anim(u0, u1, t0, t1, e, el, kf) { tr.push({ u0: u0, u1: u1, t0: t0, t1: t1, ease: E[e], css: CSS[e], el: el, kf: kf }); }   // crta preglednik (Web Animations)
         if (k === 0) {
-          cards.forEach(function (c, i) { an.push(A(c.el, [{ transform: i === 1 ? OFF_R : OFF_L }, { transform: ZERO }], T.ZOOM + i * Bands.T.STEP, Bands.T.IN, SLIDE.EASE)); });
+          var bt = Bands.T, z = S[0], r = Wb / bt.IN;                     // zum: stranica 1 : 1; trake: 1 px prsta = 1 px trake, isti razmak između traka
+          add(0, z, 0, T.ZOOM, smooth, function (l) { if (l < 1) { idx = 0; goY(z * l); } });
+          add(z, z + 1, T.ZOOM, T.ZOOM + 1, E.lin, function (l) { if (l > 0) { idx = C3; goY(S[C3]); bandsStart(); } else bandsStop(); });
+          cards.forEach(function (c, i) { anim(z + i * bt.STEP * r, z + (i * bt.STEP + bt.IN) * r, T.ZOOM + i * bt.STEP, T.ZOOM + i * bt.STEP + bt.IN, "slide", c.el, [{ transform: band(c.el, 1) }, { transform: band(c.el, 0) }]); });
+          L = z + (2 * bt.STEP + bt.IN) * r; D = T.ZOOM + Bands.inMs;
         } else if (k === 1) {
-          var st = Sum.T;
-          [].forEach.call(cardsEl.querySelectorAll(".card-t > span"), function (el) { an.push(A(el, [{ opacity: 1 }, { opacity: 0 }], 0, st.FADE, "ease")); });
-          cards.forEach(function (c, i) { an.push(A(c.el, [{ transform: ZERO }, { transform: i === 1 ? OFF_R : OFF_L }], st.FADE + i * st.STEP, st.OUT, OUTE)); });
-          if (Sum.v) an.push(A(Sum.v, [{ opacity: 0 }, { opacity: 1 }], st.FADE, st.VIDEO_FADE, "ease"));
+          var st = Sum.T, q = Wb / st.OUT, a = st.FADE, s0 = a + 2 * st.STEP + st.OUT + st.IN_DELAY;   // trake odlaze 1 px prsta = 1 px trake
+          [].forEach.call(cardsEl.querySelectorAll(".card-t > span"), function (el) { anim(0, a * q, 0, a, "ease", el, [{ opacity: 1 }, { opacity: 0 }]); });
+          add(a * q, a * q + 1, a, a + 1, E.lin, function (l) { cardsEl.classList.toggle("open", l > 0); });
+          cards.forEach(function (c, i) { anim((a + i * st.STEP) * q, (a + i * st.STEP + st.OUT) * q, a + i * st.STEP, a + i * st.STEP + st.OUT, "out", c.el, [{ transform: band(c.el, 0) }, { transform: band(c.el, 1) }]); });
+          if (Sum.v) anim(a * q, (a + st.VIDEO_FADE) * q, a, a + st.VIDEO_FADE, "ease", Sum.v, [{ opacity: 0 }, { opacity: 1 }]);
           var tt = sumEl && sumEl.querySelector(".split-t");
-          if (tt) an.push(A(tt, [{ opacity: 0, transform: "translateY(" + st.RISE + "px)" }, { opacity: 1, transform: "none" }], st.FADE + 2 * st.STEP + st.OUT + st.IN_DELAY, st.IN, "ease-out"));
-        } else if (k === 2 && splitEl) {
-          an.push(A(splitEl.querySelector(".split-media"), [{ transform: "translate3d(0, 100%, 0)" }, { transform: ZERO }], 0, Who.inMs, SLIDE.EASE));
-          an.push(A(splitEl.querySelector(".split-paper"), [{ transform: "translate3d(0, -100%, 0)" }, { transform: ZERO }], 0, Who.inMs, SLIDE.EASE));
-        } else if (k === 3 && splitEl) {                                  // računalo: video gore, papir dolje; mobitel: obrnuto (prema van)
-          var m = narrow.matches ? "100%" : "-100%", pp = narrow.matches ? "-100%" : "100%";
-          an.push(A(splitEl.querySelector(".split-media"), [{ transform: ZERO }, { transform: "translate3d(0, " + m + ", 0)" }], 0, D(3), OUTE));
-          an.push(A(splitEl.querySelector(".split-paper"), [{ transform: ZERO }, { transform: "translate3d(0, " + pp + ", 0)" }], 0, D(3), OUTE));
+          if (tt) anim(s0 * q, (s0 + st.IN) * q, s0, s0 + st.IN, "easeOut", tt, [{ opacity: 0, transform: "translateY(" + st.RISE + "px)" }, { opacity: 1, transform: "translateY(0px)" }]);
+          D = s0 + st.IN; L = D * q;
+        } else if (k === 2 || k === 3) {                                  // polovice i vrata: pomak polovice = pomak prsta
+          var md = splitEl.querySelector(".split-media"), pp = splitEl.querySelector(".split-paper"), h = Math.max(md.offsetHeight, pp.offsetHeight);
+          D = k === 2 ? Who.inMs : Door ? Door.splitMs : T.TWEEN; L = h;
+          if (k === 2) {
+            anim(0, h, 0, D, "slide", md, [{ transform: "translate3d(0, 100%, 0)" }, { transform: "translate3d(0, 0%, 0)" }]);
+            anim(0, h, 0, D, "slide", pp, [{ transform: "translate3d(0, -100%, 0)" }, { transform: "translate3d(0, 0%, 0)" }]);
+          } else {
+            var m = narrow.matches ? 1 : -1;                              // računalo: video gore, papir dolje; mobitel: obrnuto (prema van)
+            add(0, 1, 0, 1, E.lin, function (l) { if (l > 0 && Door) Door.reveal(true); });
+            anim(0, h, 0, D, "out", md, [{ transform: "translate3d(0, 0%, 0)" }, { transform: "translate3d(0, " + (m * 100) + "%, 0)" }]);
+            anim(0, h, 0, D, "out", pp, [{ transform: "translate3d(0, 0%, 0)" }, { transform: "translate3d(0, " + (-m * 100) + "%, 0)" }]);
+          }
+        } else {                                                          // vožnja na WHY i završni ekran: stranica 1 : 1
+          var y0 = S[W3 + k - 4], y1 = S[W3 + k - 3];
+          L = y1 - y0; D = T.TWEEN;
+          add(0, L, 0, D, ease, function (l) { idx = W3 + k - 4; goY(y0 + (y1 - y0) * l); });
         }
-        return an;
+        return { k: k, tr: tr, L: Math.max(1, L), D: D, mode: "user", u: 0, ms: 0 };
+      }
+      function geom() {                                                  // duljine prijelaza u px pokreta (mjeri se samo na početku i kod promjene veličine)
+        var n = lastScreen(); cum = [0];
+        for (var k = 0; k < n; k++) cum.push(cum[k] + build(k).L);
+        return cum;
+      }
+      function fresh() { if (!cum || cum.length !== lastScreen() + 1) geom(); }   // stranica se složila drukčije (fontovi, veličina): duljine iznova
+      function clear(sg) {                                               // animacije i inline stil prijelaza van: vrijede klase
+        if (sg) sg.tr.forEach(function (t) { if (t.a) { t.a.cancel(); t.a = null; } });
+        cardsEl.classList.remove("bands"); if (splitEl) splitEl.classList.remove("moving");
+        cards.forEach(function (c) { c.el.style.transform = ""; });
+        [].forEach.call(cardsEl.querySelectorAll(".card-t > span"), function (el) { el.style.opacity = ""; });
+        if (Sum.v) Sum.v.style.opacity = "";
+        var tt = sumEl && sumEl.querySelector(".split-t"); if (tt) { tt.style.opacity = ""; tt.style.transform = ""; }
+        if (splitEl) [].forEach.call(splitEl.querySelectorAll(".split-media, .split-paper"), function (el) { el.style.transform = ""; });
+        if (sg && sg.k === 1) cardsEl.classList.toggle("open", posed >= 2);
+      }
+      function draw() {                                                  // pokret: animacije bez krivulje, vrijeme = px; automatski: s krivuljom, vrijeme = ms
+        var auto = seg.mode === "auto";
+        seg.tr.forEach(function (t) {
+          if (!t.el) { t.set(auto ? t.ease(clamp((seg.ms - t.t0) / (t.t1 - t.t0), 0, 1)) : clamp((seg.u - t.u0) / (t.u1 - t.u0), 0, 1)); return; }
+          if (!t.a || t.am !== seg.mode) {
+            if (t.a) t.a.cancel();
+            t.a = t.el.animate(t.kf, auto ? { delay: t.t0, duration: t.t1 - t.t0, easing: t.css, fill: "both" } : { delay: t.u0, duration: Math.max(1, t.u1 - t.u0), easing: "linear", fill: "both" });
+            t.a.pause(); t.am = seg.mode;
+          }
+          t.a.currentTime = auto ? seg.ms : seg.u;
+        });
+      }
+      function lead(sg) {                                                // element koji je usred svog pomaka (za prijelaz između pokreta i automatskog tijeka)
+        var best = null;
+        sg.tr.forEach(function (t) {
+          if (t.u1 - t.u0 < 2) return;
+          var l = sg.mode === "auto" ? (sg.ms - t.t0) / (t.t1 - t.t0) : (sg.u - t.u0) / (t.u1 - t.u0);
+          if (l > 0 && l < 1 && (!best || t.u1 - t.u0 > best.u1 - best.u0)) best = t;
+        });
+        return best;
+      }
+      function toUser(sg) {                                              // automatski → pokret: isti izgled glavnog elementa
+        if (sg.mode === "user") return;
+        var t = lead(sg);
+        sg.u = t ? t.u0 + t.ease(clamp((sg.ms - t.t0) / (t.t1 - t.t0), 0, 1)) * (t.u1 - t.u0) : sg.ms / sg.D * sg.L;
+        sg.mode = "user";
+      }
+      function toAuto(sg) {                                              // pokret → automatski: isti izgled glavnog elementa
+        if (sg.mode === "auto") return;
+        var t = lead(sg), ms = sg.u / sg.L * sg.D;
+        if (t) {
+          var y = clamp((sg.u - t.u0) / (t.u1 - t.u0), 0, 1), lo = 0, hi = 1;
+          for (var i = 0; i < 30; i++) { var m = (lo + hi) / 2; if (t.ease(m) < y) lo = m; else hi = m; }
+          ms = t.t0 + (lo + hi) / 2 * (t.t1 - t.t0);
+        }
+        sg.ms = ms; sg.mode = "auto";
       }
       function pose(n) {                                                 // stanje ekrana n u klasama, bez animacije
         if (posed === n) return; posed = n;
@@ -903,20 +975,12 @@
       function yOf(n) { var S = stops(); return n === 0 ? 0 : n <= 4 ? S[C3] : S[W3 + n - 4]; }
       function idxOf(n) { return n === 0 ? 0 : n <= 2 ? C3 : n === 3 || n === 4 ? W3 : W3 + n - 4; }
       function goY(y) { if (Math.abs(cur - y) > 0.3) { cur = target = y; window.scrollTo(0, y); } }
-      function bandsStart() {                                            // videi traka kreću kao i dosad: 0, STEP, 2 × STEP od početka ulaska, neovisno o brzini prsta
+      function bandsStart() {                                            // videi traka kreću 0, STEP, 2 × STEP od početka ulaska, neovisno o brzini prsta
         if (bandsOn) return; bandsOn = true; Who.preload();
         if (HERO_STOP_ON_BANDS && heroVideo) heroVideo.pause();
         cards.forEach(function (c, i) { fromStart(c.v); bandT.push(setTimeout(function () { c.on = true; onScroll(); }, BAND_VIDEO_ON_ENTER ? i * Bands.T.STEP : Bands.inMs)); });
       }
       function bandsStop() { bandT.forEach(clearTimeout); bandT = []; if (!bandsOn) return; bandsOn = false; cards.forEach(function (c) { c.on = false; }); onScroll(); }
-      function onT(k, ms) {                                              // dio prijelaza koji nije animacija: položaj stranice, klasa open, otkrivanje THE WORK
-        if (k === 0) {
-          if (ms < T.ZOOM) { idx = 0; goY(stops()[0] * smooth(ms / T.ZOOM)); bandsStop(); }
-          else { idx = C3; goY(stops()[C3]); bandsStart(); }
-        } else if (k === 1) cardsEl.classList.toggle("open", ms >= Sum.T.FADE);
-        else if (k === 3 && Door && ms > 0) Door.reveal(true);
-        else if (k >= 4) { var S = stops(), a = S[W3 + k - 4], b = S[W3 + k - 3]; idx = W3 + k - 4; goY(a + (b - a) * ease(ms / D(k))); }
-      }
       function enterSeg(k, fromAbove) {                                  // prijelaz počinje: videi kreću kad njihov ekran počne ulaziti
         if (k === 0 && fromAbove) { bandsOn = true; fromStart(heroVideo); }
         if (k === 1) {
@@ -936,84 +1000,94 @@
         if (n === 5 && Why) Why.enter();
         onScroll();
       }
-      function drop() { if (seg) { seg.an.forEach(function (a) { a.cancel(); }); seg = null; } }
-      function apply(np) {
-        var L = last(); np = clamp(np, 0, L);
-        var n = Math.round(np);
-        if (Math.abs(np - n) < 1e-4) {                                   // ekran: stanje u klasama
-          pose(n); idx = idxOf(n); goY(yOf(n)); drop(); P = n;
-          if (restN !== n || tweening) { restN = n; arrive(n); }
-          return;
-        }
-        var k = Math.min(Math.floor(np), L - 1), ms = (np - k) * D(k);
-        if (!seg || seg.k !== k) {
-          var fromAbove = P >= k + 1;
-          pose(k); drop(); seg = { k: k, an: build(k) }; restN = -1;
-          tweening = true; setReady(false); clearTimeout(holdT);
-          enterSeg(k, fromAbove);
-        }
-        P = np;
-        seg.an.forEach(function (a) { a.currentTime = ms; });
-        onT(k, ms);
+      function rest(n) {                                                 // ekran: stanje u klasama, inline stil van
+        var sg = seg; pose(n); idx = idxOf(n); goY(yOf(n)); seg = null; clear(sg);
+        X = cum[n];
+        if (restN !== n || tweening) { restN = n; arrive(n); }
       }
-      function stopPlay() { if (play) { cancelAnimationFrame(play.raf); play = null; } }
-      function settle(to, maxMs) {                                       // P glatko do ekrana "to": brzinom automatskog tijeka (iste krivulje, isto trajanje), ili najviše maxMs
-        stopPlay(); to = clamp(to, 0, last());
-        if (Math.abs(to - P) < 1e-4) { apply(to); return; }
-        var dir = to > P ? 1 : -1, t0 = performance.now(), k = dir > 0 ? Math.floor(P) : Math.ceil(P) - 1, ms0 = (P - k) * D(k);
-        var rate = maxMs ? Math.max(1, Math.abs(to - P) * D(k) / maxMs) : 1;
+      function ensure(k, fromAbove) {
+        if (seg && seg.k === k) return;
+        var sg = seg; pose(k); seg = build(k); clear(sg); restN = -1;
+        cardsEl.classList.toggle("bands", k <= 1); if (splitEl) splitEl.classList.toggle("moving", k === 2 || k === 3);   // vlastiti sloj (will-change) samo dok se pomiču
+        tweening = true; setReady(false); clearTimeout(holdT);
+        enterSeg(k, fromAbove);
+      }
+      function placeX(x) {                                               // pokret: položaj x (px od heroja)
+        fresh(); var n = lastScreen(); x = clamp(x, 0, cum[n]);
+        for (var s = 0; s <= n; s++) if (Math.abs(x - cum[s]) < 0.5) { rest(s); return; }
+        var k = 0; while (k < n - 1 && x >= cum[k + 1]) k++;
+        var fromAbove = X >= cum[k + 1] - 0.5;
+        ensure(k, fromAbove);
+        seg.mode = "user"; seg.u = x - cum[k]; X = x; draw();
+      }
+      function loop(now) {                                               // izglađivanje: X prati want
+        loopRaf = 0;
+        var dt = Math.min(64, now - (loopT || now)) || 16; loopT = now;
+        var d = want - X;
+        if (Math.abs(d) < 0.5) { placeX(want); loopT = 0; return; }
+        placeX(X + d * (1 - Math.exp(-dt / SMOOTH)));
+        loopRaf = requestAnimationFrame(loop);
+      }
+      function kick() { if (!loopRaf) { loopT = 0; loopRaf = requestAnimationFrame(loop); } }
+      function stopPlay() {                                              // automatski prijelaz prekinut pokretom: preuzme od trenutnog izgleda
+        if (!play) return; cancelAnimationFrame(play.raf); play = null;
+        if (seg) { toUser(seg); X = want = cum[seg.k] + seg.u; } else want = X;
+      }
+      function idle() {                                                  // nitko ne dira: ostavljeno između ekrana → naprijed automatskim tijekom
+        clearTimeout(idleT);
+        idleT = setTimeout(function () { if (seg && !play && Math.abs(want - X) < 0.5) settle(seg.k + 1); }, IDLE_RESUME);
+      }
+      function settle(to) {                                              // automatski do ekrana "to" (krivulje i trajanje kao dosad)
+        clearTimeout(idleT); fresh(); if (loopRaf) { cancelAnimationFrame(loopRaf); loopRaf = 0; }
+        if (play) { cancelAnimationFrame(play.raf); play = null; }
+        to = clamp(to, 0, lastScreen());
+        if (!seg) {
+          var n = restN;                                                 // na ekranu restN
+          if (to === n) return;
+          var k0 = to > n ? n : n - 1; ensure(k0, to < n); seg.mode = "auto"; seg.ms = to > n ? 0 : seg.D;
+        } else toAuto(seg);
+        var dir = to > seg.k ? 1 : -1, t0 = performance.now(), ms0 = seg.ms;
         play = { raf: 0 };
         (function f(now) {
-          var ms = ms0 + dir * (now - t0) * rate, np = k + ms / D(k);
-          if ((dir > 0 && np >= to) || (dir < 0 && np <= to)) { play = null; apply(to); return; }
-          apply(np); play.raf = requestAnimationFrame(f);
+          var ms = ms0 + dir * (now - t0);
+          if ((dir > 0 && ms >= seg.D) || (dir < 0 && ms <= 0)) { play = null; var n2 = dir > 0 ? seg.k + 1 : seg.k; rest(n2); want = X; return; }
+          seg.ms = ms; draw(); X = want = cum[seg.k] + seg.ms / seg.D * seg.L;
+          play.raf = requestAnimationFrame(f);
         })(t0);
       }
-      function gesture() {                                               // novi pokret: preuzme od trenutnog napretka; najdalje do susjednog ekrana
-        stopPlay(); clearTimeout(idleT); vel = [];
-        var f = P - Math.floor(P);
-        if (f > 1e-4) { lo = Math.floor(P); hi = lo + 1; } else { lo = P - 1; hi = P + 1; }
-      }
       function move(dPx, isNew) {
-        if (isNew) gesture();
-        var L = last();
-        if (Math.abs(P - L) < 1e-4 && dPx > 0) { if (isNew) { stopPlay(); leave(); } return; }   // s posljednjeg ekrana: dalje običan scroll
-        var k = P - Math.floor(P) > 1e-4 ? Math.floor(P) : dPx > 0 ? Math.round(P) : Math.round(P) - 1;
-        if (k < 0 || k > L - 1) return;
-        var now = performance.now(); vel.push([now, dPx]); vel = vel.filter(function (v) { return now - v[0] < 100; });
-        apply(clamp(P + dPx / len(k), Math.max(lo, 0), Math.min(hi, L)));
-      }
-      function speed() {                                                 // px/ms u zadnjih 100 ms do puštanja (prst koji je stao pa se digao: 0)
-        var now = performance.now(); vel = vel.filter(function (v) { return now - v[0] < 100; });
-        if (vel.length < 2) return 0;
-        var d = vel.reduce(function (s, v) { return s + v[1]; }, 0), t = vel[vel.length - 1][0] - vel[0][0];
-        return t > 0 ? d / t : 0;
-      }
-      function release(v) {                                              // pokret stao: do bližeg ekrana (zamah: u njegovu smjeru)
-        if (play) return;
-        var f = P - Math.floor(P); if (f < 1e-4) return;
-        var dir = v > FLING ? 1 : v < -FLING ? -1 : 0;
-        settle(dir > 0 ? Math.ceil(P) : dir < 0 ? Math.floor(P) : f > 0.5 ? Math.ceil(P) : Math.floor(P), LET_GO);
-      }
-      function step(dir) {                                               // zubac kotačića, tipka, SCROLL, sam korak: jedan ekran
         stopPlay();
-        var f = P - Math.floor(P), to = f > 1e-4 ? (dir > 0 ? Math.ceil(P) : Math.floor(P)) : P + dir;
-        if (to > last()) { if (f < 1e-4) leave(); return; }
+        if (isNew && !seg && Math.abs(want - X) < 0.5) geom(); else fresh();   // duljine se mjere na početku pokreta, nikad usred njega
+        var n = lastScreen();
+        if (!seg && restN === n && dPx > 0 && Math.abs(want - cum[n]) < 0.5) { if (isNew) leave(); return; }   // s posljednjeg ekrana: dalje običan scroll
+        want = clamp(want + dPx, 0, cum[n]);
+        kick(); idle();
+      }
+      function wheel(e, dy, gap, isNew) {
+        var a = Math.abs(dy);
+        if (!INERTIA) {                                                  // rep inercije: pomaci koji samo slabe, gusto jedan za drugim
+          if (isNew || gap > 40 || a >= prevAbs * 0.97) decay = 0; else decay++;
+          prevAbs = a;
+          if (decay >= 4) return;
+        }
+        move(dy, isNew);
+      }
+      function touch(dy, isNew) { move(dy, isNew); }                     // prst 1 : 1; nakon podizanja nema klizanja
+      function touchEnd() {}
+      function step(dir) {                                               // tipka, SCROLL, sam korak: jedan ekran
+        stopPlay();
+        var to = seg ? (dir > 0 ? seg.k + 1 : seg.k) : restN + dir;
+        if (to > lastScreen()) { if (!seg) leave(); return; }
         if (to < 0) return;
         settle(to);
       }
-      function wheel(e, dy, gap, isNew) {
-        var notch = e.deltaMode === 1 || (Number.isInteger(e.deltaY) && e.wheelDeltaY && Math.abs(e.wheelDeltaY) >= 120 && e.wheelDeltaY % 120 === 0);
-        if (notch) { if (gap > 60) step(dy > 0 ? 1 : -1); return; }      // miš: zubac dovrši jedan ekran
-        move(dy, isNew);
-        clearTimeout(idleT); idleT = setTimeout(function () { release(0); }, 140);   // touchpad: inercija je već u pomacima; kad stane, do bližeg
-      }
-      function touch(dy, isNew) { move(dy, isNew); }
-      function touchEnd() { release(speed()); }
-      function sync(n) { stopPlay(); drop(); P = n; posed = n; restN = n; tweening = false; }   // stanje već postavljeno drugdje (#next, povratak iz slobodnog scrolla)
-      function auto() { step(1); }
-      return { wheel: wheel, touch: touch, touchEnd: touchEnd, step: step, sync: sync, auto: auto, last: last,
-        busy: function () { return !!play || !!seg; }, P: function () { return P; } };
+      function sync(n) { stopPlay(); if (seg) { var sg = seg; seg = null; clear(sg); } geom(); X = want = cum[n]; posed = n; restN = n; tweening = false; }
+      geom();
+      window.addEventListener("resize", function () { var n = restN; geom(); if (!seg && n >= 0) X = want = cum[n]; });
+      return { wheel: wheel, touch: touch, touchEnd: touchEnd, step: step, sync: sync, last: lastScreen,
+        busy: function () { return !!play || !!seg || Math.abs(want - X) > 0.5; },
+        P: function () { return seg ? seg.k + (seg.mode === "auto" ? seg.ms / seg.D : seg.u / seg.L) : restN; },
+        lengths: function () { return cum.map(function (c, i) { return i ? +((c - cum[i - 1]) / vh).toFixed(2) : 0; }).slice(1); } };
     })() : null;
     /* sam korak (brand/45 E2): kad video ekrana odvrti krug, isti korak kao pokret dolje (push), uz iste uvjete.
        Kreće samo ako je taj ekran i dalje trenutni; ako korak još nije dopušten (prijelaz, SCROLL još nije spreman), čeka; skrivena kartica čeka. */
@@ -1089,6 +1163,7 @@
       state: function () { return phase + ":" + idx + ":" + Math.round(cur); },
       screen: screenNow, autoCheck: autoCheck, lead: leadMs,
       P: function () { return Follow ? Follow.P() : -1; },              // položaj prijelaza (za provjeru u testovima)
+      lengths: function () { return Follow ? Follow.lengths() : null; },  // duljine prijelaza u visinama ekrana (za provjeru)
       held: function () { return arrived ? Math.round(performance.now() - arrived) : -1; }
     };
   })();
